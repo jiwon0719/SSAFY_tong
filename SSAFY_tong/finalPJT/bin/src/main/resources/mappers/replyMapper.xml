@@ -5,24 +5,25 @@
   
 <mapper namespace="com.ssafy.tong.reply.model.dao.ReplyDao">
 	<!-- 전체 조회 -->
-	<select id="selectReply" resultType="Reply">
-		SELECT reply_id, comment_id, replier, content, reg_date
-		  FROM reply;
+	<select id="selectReply" resultType="Comment" parameterType="int">
+		SELECT comment_id, board_id, commenter, content, reg_date, parent_comment_id
+		  FROM comment
+		 WHERE parent_comment_id = #{parentCommentId};
 	</select>
 
 	<!-- 삭제 -->
 	<delete id="deleteReply" parameterType="int">
 		DELETE 
-		  FROM reply
-		 WHERE reply_id = #{replyId};   
+		  FROM comment
+		 WHERE comment_id = #{commentId};   
 	</delete>
 	
 	<!-- 등록 -->
-	<insert id="insertReply" parameterType="Reply">
-		INSERT INTO reply(
-			comment_id, replier, content, reg_date
+	<insert id="insertReply" parameterType="Comment">
+		INSERT INTO comment(
+			board_id, commenter, content, reg_date, parent_comment_id
 		) VALUES (
-			#{commentId}, #{replier}, #{content}, now()
+			#{boardId}, #{commenter}, #{content}, now(), #{parentCommentId}
 		);
 	</insert>
 </mapper>
