@@ -6,6 +6,14 @@ public class Comment {
 	private String commenter;
 	private String content;
 	private String regDate;
+	private int parentCommentId;
+	
+	public int getParentCommentId() {
+		return parentCommentId;
+	}
+	public void setParentCommentId(int parentCommentId) {
+		this.parentCommentId = parentCommentId;
+	}
 	public int getCommentId() {
 		return commentId;
 	}
@@ -39,6 +47,6 @@ public class Comment {
 	@Override
 	public String toString() {
 		return "Comment [commentId=" + commentId + ", boardId=" + boardId + ", commenter=" + commenter + ", content="
-				+ content + ", regDate=" + regDate + "]";
+				+ content + ", regDate=" + regDate + ", parentCommentId=" + parentCommentId + "]";
 	}
 }

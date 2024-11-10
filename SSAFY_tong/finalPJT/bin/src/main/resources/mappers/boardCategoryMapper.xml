@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ssafy.tong.board.model.dao.BoardCategoryDao">
+	<!-- 전체 조회 -->
+	<select id="selectBoardCategory" resultType="BoardCategory">
+		SELECT category_id, user_id, category, description
+		  FROM board_category;
+	</select>
+	
+	<!-- 상세 조회 -->
+	<select id="selectBoardCategoryByPk" resultType="BoardCategory" parameterType="int">
+		SELECT category_id, user_id, category, description
+		  FROM board_category
+		 WHERE category_id = #{categoryId};
+	</select>
+
+	<!-- 삭제 -->
+	<delete id="deleteBoardCategory" parameterType="int">
+		DELETE 
+		  FROM board_category
+		 WHERE category_id = #{categoryId};
+	</delete>
+	
+	<!-- 등록 -->
+	<insert id="insertBoardCategory" parameterType="BoardCategory">
+		INSERT INTO board_category(
+			user_id, category, description
+		) VALUES (
+			#{userId}, #{category}, #{description}
+		);
+	</insert>
+	
+	<!-- 수정 -->
+	<update id="updateBoardCategory" parameterType="BoardCategory">
+		UPDATE board_category
+		   SET category=#{category}, description = #{description}
+		 WHERE category_id = #{categoryId};
+	</update>  
+</mapper>

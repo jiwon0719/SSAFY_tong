@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ssafy.tong.reply.model.dao.ReplyDao">
+	<!-- 전체 조회 -->
+	<select id="selectReply" resultType="Reply">
+		SELECT reply_id, comment_id, replier, content, reg_date
+		  FROM reply;
+	</select>
+
+	<!-- 삭제 -->
+	<delete id="deleteReply" parameterType="int">
+		DELETE 
+		  FROM reply
+		 WHERE reply_id = #{replyId};   
+	</delete>
+	
+	<!-- 등록 -->
+	<insert id="insertReply" parameterType="Reply">
+		INSERT INTO reply(
+			comment_id, replier, content, reg_date
+		) VALUES (
+			#{commentId}, #{replier}, #{content}, now()
+		);
+	</insert>
+</mapper>

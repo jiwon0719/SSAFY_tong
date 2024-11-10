@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssafy.tong.reply.model.Reply;
+import com.ssafy.tong.comment.model.Comment;
 import com.ssafy.tong.reply.model.service.ReplyService;
 
 @RestController
@@ -25,12 +25,12 @@ public class ReplyController {
 		this.replyService = replyService;
 	}
 
-	// 전체 조회
-	@GetMapping
-	public ResponseEntity<Object> list() {
+	// (대댓글) 전체 조회
+	@GetMapping("{parent_comment_id}")
+	public ResponseEntity<Object> list(@PathVariable("parent_comment_id") int parentCommentId) {
 		ResponseEntity<Object> responseEntity;
 		try {
-			List<Reply> list = replyService.list();
+			List<Comment> list = replyService.list(parentCommentId);
 			if(list.isEmpty()) {
 				responseEntity = new ResponseEntity<>(list, HttpStatus.NO_CONTENT); 
 			} else {
@@ -43,16 +43,17 @@ public class ReplyController {
 	}
 	
 	
-	// 삭제
+	// (대댓글) 삭제
 	@DeleteMapping("{reply_id}")
 	public void remove(@PathVariable("reply_id") int replyId) {
 		replyService.remove(replyId);
 	}
 
 	
-	// 등록
-	@PostMapping
-	public void regist(@RequestBody Reply reply) {
+	// (대댓글) 등록
+	@PostMapping("{parent_comment_id}")
+	public void regist(@RequestBody Comment reply, @PathVariable("parent_comment_id") int parentCommentId) {
+		reply.setParentCommentId(parentCommentId); 
 		replyService.regist(reply);
 	}	
 }

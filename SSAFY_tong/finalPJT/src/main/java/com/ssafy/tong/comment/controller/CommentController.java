@@ -26,7 +26,7 @@ public class CommentController {
 		this.commentService = commentService;
 	}
 	
-	// 전체 조회
+	// (댓글) 전체 조회
 	@GetMapping
 	public ResponseEntity<Object> list() {
 		ResponseEntity<Object> responseEntity;
@@ -44,14 +44,14 @@ public class CommentController {
 	}
 	
 	
-	// 삭제
+	// (댓글) 삭제
 	@DeleteMapping("{comment_id}")
 	public void remove(@PathVariable("comment_id") int commentId) {
 		commentService.remove(commentId);
 	}
 
 	
-	// 등록
+	// (댓글) 등록
 	@PostMapping
 	public void regist(@RequestBody Comment comment) {
 		commentService.regist(comment);

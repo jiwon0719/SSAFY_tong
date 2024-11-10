@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.ssafy.tong.reply.model.Reply;
+import com.ssafy.tong.comment.model.Comment;
 import com.ssafy.tong.reply.model.dao.ReplyDao;
 
 @Service
@@ -15,8 +15,8 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 	// 전체 조회
 	@Override
-	public List<Reply> list() {
-		return replyDao.selectReply();
+	public List<Comment> list(int parentCommentId) {
+		return replyDao.selectReply(parentCommentId);
 	}
 	// 삭제 
 	@Override
@@ -25,7 +25,7 @@ public class ReplyServiceImpl implements ReplyService {
 	}
 	// 등록
 	@Override
-	public void regist(Reply reply) {
+	public void regist(Comment reply) {
 		replyDao.insertReply(reply);
 	}
 

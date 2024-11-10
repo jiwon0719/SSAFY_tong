@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ssafy.tong.comment.model.dao.CommentDao">
+	<!-- 전체 조회 -->
+	<select id="selectComment" resultType="Comment">
+		SELECT comment_id, board_id, commenter, content, reg_date
+		  FROM comment;
+	</select>
+
+	<!-- 삭제 -->
+	<delete id="deleteComment" parameterType="int">
+		DELETE 
+		  FROM comment
+		 WHERE comment_id = #{commentId};   
+	</delete>
+	
+	<!-- 등록 -->
+	<insert id="insertComment" parameterType="Comment">
+		INSERT INTO comment(
+			board_id, commenter, content, reg_date
+		) VALUES (
+			#{boardId}, #{commenter}, #{content}, now()
+		);
+	</insert>
+</mapper>

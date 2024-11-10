@@ -2,14 +2,14 @@ package com.ssafy.tong.reply.model.service;
 
 import java.util.List;
 
-import com.ssafy.tong.reply.model.Reply;
+import com.ssafy.tong.comment.model.Comment;
 
 public interface ReplyService {
 	// 전체 조회
-	List<Reply> list();
+	List<Comment> list(int parentCommentId);
 	// 삭제
 	void remove(int replyId);
 	// 등록
-	void regist(Reply reply);
+	void regist(Comment reply);
 	
 }
