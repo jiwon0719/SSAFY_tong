@@ -62,6 +62,13 @@
 			<version>3.0.3</version>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- JSON 처리에 필요한 의존성 추가 -->
+	    <dependency>
+	        <groupId>org.json</groupId>
+	        <artifactId>json</artifactId>
+	        <version>20230227</version>
+	    </dependency>
 	</dependencies>
 
 	<build>
