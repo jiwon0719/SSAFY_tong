@@ -13,7 +13,14 @@ public class Expert {
 	private String companyName; // 회사명
 	private double latitude; // 위도
 	private double longitude; // 경도
+	private ExpertImage expertImage; // 전문가 상세페이지 - 이미지
 	
+	public ExpertImage getExpertImage() {
+		return expertImage;
+	}
+	public void setExpertImage(ExpertImage expertImage) {
+		this.expertImage = expertImage;
+	}
 	public int getExpertId() {
 		return expertId;
 	}

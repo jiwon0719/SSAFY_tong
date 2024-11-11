@@ -22,9 +22,9 @@ import com.ssafy.tong.expert.model.service.ExpertService;
 @CrossOrigin
 // 전문가
 // 본인 PR 자기소개 페이지
-public class expertController {
+public class ExpertController {
 	private final ExpertService expertService;
-	public expertController(ExpertService expertService) {
+	public ExpertController(ExpertService expertService) {
 		this.expertService = expertService;
 	}
 	
@@ -65,7 +65,7 @@ public class expertController {
 	}
 	
 
-	// 등록
+	// 등록 및 파일 업로드
 	@PostMapping
 	public void regist(@RequestBody Expert expert) {
 		expertService.regist(expert);
