@@ -33,6 +33,15 @@
 		);
 	</insert>
 	
+	<!-- 파일 업로드 -->
+	<select id="insertExportImage" parameterType="ExpertImage">
+		INSERT INTO expert_image(
+			expert_id, file_path, ori_name, system_name, extension
+		) VALUES (
+			#{expertId}, #{filePath}, #{oriName}, #{systemName}, #{extension}			
+		);
+	</select>
+	
 	<!-- 수정 -->
 	<update id="updateExpert" parameterType="Expert">
 		UPDATE expert

@@ -180,6 +180,14 @@ CREATE TABLE `reservation` (
 
 
 -- -----------------------------------------------------
+-- admin 계정 추가
+insert into user(
+	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
+    values(
+    "admin", "A", "admin", "admin", "admin@tong.com", "000-0000-0000", "00000000", "대전시", "X"); 
+-- expert 계정 추가
+insert into user(
+	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
+    values(
+    "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X");     
 select * from user;
-
-DELETE FROM user WHERE name = '유승호';

@@ -1,8 +1,14 @@
 package com.ssafy.tong.expert.controller;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,9 +18,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ssafy.tong.expert.model.Expert;
+import com.ssafy.tong.expert.model.ExpertImage;
 import com.ssafy.tong.expert.model.service.ExpertService;
 
 @RestController
@@ -65,9 +75,27 @@ public class ExpertController {
 	}
 	
 
-	// 등록 및 파일 업로드
-	@PostMapping
-	public void regist(@RequestBody Expert expert) {
+	// 등록
+	// 파일 업로드
+	@PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+	public void regist(@RequestPart("expert") Expert expert, @RequestPart("file") MultipartFile file) throws Exception {
+		String oriName = file.getOriginalFilename(); // 파일 실제 이름
+		if(oriName.length() > 0) {
+			String extension = oriName.substring(oriName.lastIndexOf(".") + 1); 
+			String subDir = new SimpleDateFormat("/yyyy/MM/dd/HH").format(new Date()); // 수정
+			File dir = new File("c:/SSAFY/SSAFY_tong/uploads" + subDir);
+			dir.mkdirs();
+			String systemName = UUID.randomUUID().toString() + oriName; 
+			file.transferTo(new File(dir, systemName));
+
+			ExpertImage expertImage = new ExpertImage();
+			expertImage.setFilePath(subDir);
+			expertImage.setOriName(oriName);
+			expertImage.setSystemName(systemName);
+			expertImage.setExtension(extension);
+			expert.setExpertImage(expertImage);
+			
+		}
 		expertService.regist(expert);
 	}
 	
