@@ -2,6 +2,7 @@ package com.ssafy.tong.expert.model.service;
 
 import java.util.List;
 
+
 import com.ssafy.tong.expert.model.Expert;
 
 public interface ExpertService {
@@ -12,6 +13,7 @@ public interface ExpertService {
 	// 삭제
 	void remove(int expertId);
 	// 등록
+	// 파일 업로드
 	void regist(Expert expert);
 	// 수정
 	void modify(Expert expert);

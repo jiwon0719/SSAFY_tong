@@ -12,11 +12,10 @@ CREATE TABLE `user` (
      `birthdate` VARCHAR(10) NOT NULL,  -- `생일축하합니다~` 기능 - 로그인 시 인터셉터
      `address` VARCHAR(100) NOT NULL,  -- 주소는 100자
      `updated_password` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 비밀번호 변경시 길이
-     `is_kakao_member` CHAR(1) default 'X' COMMENT 'O : 카카오 유저, X: 일반 유저',  
+     `is_kakao_member` CHAR(1) COMMENT 'O : 카카오 유저, X: 일반 유저',  
      `user_profile_img_path` VARCHAR(255), -- user 프로필 이미지 경로 , 후에 default로 기본 이미지 경로 설정
      PRIMARY KEY (`user_id`)
 );
-
 
 
 -- expert 테이블: 전문가 정보
@@ -186,6 +185,9 @@ insert into user(
 	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
     values(
     "admin", "A", "admin", "admin", "admin@tong.com", "000-0000-0000", "00000000", "대전시", "X"); 
+-- expert 계정 추가
+insert into user(
+	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
+    values(
+    "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X");     
 select * from user;
-
-

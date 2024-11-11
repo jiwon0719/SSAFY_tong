@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.tong.expert.model.Expert;
+import com.ssafy.tong.expert.model.ExpertImage;
 import com.ssafy.tong.expert.model.dao.ExpertDao;
 
 @Service
@@ -29,9 +30,20 @@ public class ExpertServiceImpl implements ExpertService {
 		expertDao.deleteExpert(expertId);
 	}
 	// 등록
+	// 파일업로드 
 	@Override
 	public void regist(Expert expert) {
-		expertDao.insertExport(expert);
+		expertDao.insertExport(expert); // 전문가 번호 auto_increment
+		
+		int generatedExpertId = expert.getExpertId();
+		List<ExpertImage> expertImages = expert.getExpertImage();
+
+		if(expertImages != null && generatedExpertId > 0) {
+			for(ExpertImage expertImage : expertImages) {
+				expertImage.setExpertId(generatedExpertId);
+				expertDao.insertExportImage(expertImage);
+			}
+		}
 	}
 	// 수정
 	@Override
