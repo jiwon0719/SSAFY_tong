@@ -34,10 +34,15 @@ public class ExpertServiceImpl implements ExpertService {
 	@Override
 	public void regist(Expert expert) {
 		expertDao.insertExport(expert); // 전문가 번호 auto_increment
-		ExpertImage expertImage = expert.getExpertImage();
-		if(expertImage != null) {
-			expertImage.setExpertId(expert.getExpertId());
-			expertDao.insertExportImage(expertImage);
+		
+		int generatedExpertId = expert.getExpertId();
+		List<ExpertImage> expertImages = expert.getExpertImage();
+
+		if(expertImages != null && generatedExpertId > 0) {
+			for(ExpertImage expertImage : expertImages) {
+				expertImage.setExpertId(generatedExpertId);
+				expertDao.insertExportImage(expertImage);
+			}
 		}
 	}
 	// 수정

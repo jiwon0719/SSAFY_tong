@@ -1,5 +1,7 @@
 package com.ssafy.tong.expert.model;
 
+import java.util.List;
+
 public class Expert {
 	private int expertId;
 	private String userId; // 전문가 아이디
@@ -13,12 +15,13 @@ public class Expert {
 	private String companyName; // 회사명
 	private double latitude; // 위도
 	private double longitude; // 경도
-	private ExpertImage expertImage; // 전문가 상세페이지 - 이미지
+	private List<ExpertImage> expertImage; // 전문가 상세페이지 - 이미지
 	
-	public ExpertImage getExpertImage() {
+	
+	public List<ExpertImage> getExpertImage() {
 		return expertImage;
 	}
-	public void setExpertImage(ExpertImage expertImage) {
+	public void setExpertImage(List<ExpertImage> expertImage) {
 		this.expertImage = expertImage;
 	}
 	public int getExpertId() {

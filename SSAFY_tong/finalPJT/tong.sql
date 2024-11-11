@@ -191,3 +191,6 @@ insert into user(
     values(
     "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X");     
 select * from user;
+
+select * from expert;
+select * from expert_image;

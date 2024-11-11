@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.tong.user.model.dao.UserDao">
+	<!-- 회원 가입 -->
+	<insert id="signUp" parameterType="User">
+		INSERT INTO `user` (
+		`user_id`,
+		`user_type`,
+		`password`,
+		`name`,
+		`email`,
+		`phone`,
+		`birthdate`,
+		`address`,
+		`updated_password`,
+		`is_kakao_member`,
+		`user_profile_img_path`
+		)
+		VALUES (
+		#{userId},
+		#{userType},
+		#{password},
+		#{name},
+		#{email},
+		#{phone},
+		#{birthdate},
+		#{address},
+		now(),
+		#{isKakaoMember},
+		#{userProfileImgPath}
+		);
+	</insert>
+
+
+
+	<!-- 로그인 -->
+	<select id="signIn" parameterType="string" resultType="User">
+		SELECT
+		user_id AS userId,
+		user_type AS userType,
+		password,
+		name,
+		email,
+		phone,
+		birthdate,
+		address,
+		updated_password AS updatedPassword,
+		is_kakao_member
+		AS isKakaoMember,
+		user_profile_img_path AS userProfileImgPath
+		FROM
+		`user`
+		WHERE user_id = #{userId}
+	</select>
+
+
+	<!-- 비밀번호 번경 -->
+	<update id="updatePassword" parameterType="User" >
+		UPDATE user
+		SET
+		password = #{password},
+		updated_password = NOW()
+		WHERE
+		user_id = #{userId};
+	</update>
+
+
+
+
+
+</mapper>
