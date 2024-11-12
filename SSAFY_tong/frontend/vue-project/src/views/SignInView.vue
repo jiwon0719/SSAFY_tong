@@ -6,7 +6,7 @@
   
   <script>
   // SignIn 컴포넌트를 불러옵니다.
-  import SignIn from '../components/SignUp.vue'
+  import SignIn from '../components/SignIn.vue'
   
   export default {
     name: 'SignInView',

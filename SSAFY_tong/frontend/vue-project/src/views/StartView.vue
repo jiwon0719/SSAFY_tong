@@ -1,9 +1,7 @@
 <template>
     <div class="start-view">
-      <h1>Welcome to Start Page</h1>
       <!-- 버튼 클릭 시 Main 페이지로 이동 -->
       <Start />
-      <button @click="goToMainPage">Go to Main Page</button>
     </div>
   </template>
   
@@ -16,12 +14,6 @@
     components: {
       Start
     },
-    methods: {
-      goToMainPage() {
-        // Vue Router를 사용하여 Main 페이지로 이동
-        this.$router.push({ name: 'main' })
-      }
-    }
   }
   </script>
 

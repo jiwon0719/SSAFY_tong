@@ -3,7 +3,9 @@ import StartView from '../views/StartView.vue'
 import MainView from '../views/MainView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
-import Community from '@/components/Community.vue'
+import CommunityView from '@/views/CommunityView.vue'
+import CommunityDetail from '@/components/CommunityDetail.vue'
+import CommunityDefault from '@/components/CommunityDefault.vue'
 
 
 const routes = [
@@ -16,28 +18,36 @@ const routes = [
     path: '/main',
     name: 'main',
     component: MainView, // Main 페이지
-
-    children : [
-      {
-        path: "/community",
-        name: 'community',
-        component: Community,
-      },
-
-
-    ]
-  
   },
   {
     path: '/signUp',
     name: 'signUp',
-    component: SignUpView  // Main 페이지
+    component: SignUpView  // signUp 페이지
   }, 
   {
     path: '/signIn',
     name: 'signIn',
-    component: SignInView  // Main 페이지
+    component: SignInView  // signIn 페이지
   }, 
+  {
+    path: '/community',
+    name: 'community',
+    component: CommunityView,  // community 페이지
+
+    children :[
+      {
+        path: '',
+        name: 'communityDefault',
+        component: CommunityDefault,
+      },
+      {
+        path: '/communityDetail',
+        name: 'communityDetail',
+        component: CommunityDetail,
+      },
+    ]
+  }, 
+  
   
 
 ]
