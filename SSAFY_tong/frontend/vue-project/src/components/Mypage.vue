@@ -14,7 +14,7 @@
                     <div class="text-----"  >
                         매칭 전문가 채팅 및 알람
                     </div>
-                    <div class="text--7">
+                    <div class="text--7" @click="changeComponent('ChatList')">
                         채팅
                     </div>
                     <svg id="10:1825" class="clip-7"></svg>
@@ -115,7 +115,7 @@
             </div>
         </div>
         <div class="mypagedefault">
-            <component :is="currentComponent" />
+            <component :is="currentComponent" @change-component="changeComponent"/>
         </div>
     </div>
 </template>
@@ -1496,6 +1496,8 @@
 
 <script>
 import MypageDefault from '@/components/MypageDefault.vue';
+import ChatList from '@/components/ChatList.vue';
+import ChattingRoom from '@/components/ChattingRoom.vue';
 
 export default {
   data() {
@@ -1509,12 +1511,20 @@ export default {
   },
   components: {
     MypageDefault,  // MypageDefault 컴포넌트를 등록
+    ChatList,
+    ChattingRoom,
   },
   methods: {
     // 버튼 클릭 시 scoreFrame 값을 toggle하여 보이거나 숨기기
     toggleScoreFrame() {
       this.scoreFrame = !this.scoreFrame;
     },
+
+    changeComponent(componentName) {
+        alert(componentName+"으로 이동합니다."); 
+      this.currentComponent = componentName;
+    },
+
   },
 };
 </script>

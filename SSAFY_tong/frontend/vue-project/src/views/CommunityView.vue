@@ -18,7 +18,7 @@
   </script>
   
   <style scoped>
-  .main-view {
+  .commnunity-view {
     padding: 20px;
   }
   </style>
