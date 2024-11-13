@@ -6,7 +6,7 @@ import SignInView from '@/views/SignInView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import CommunityDetail from '@/components/CommunityDetail.vue'
 import CommunityDefault from '@/components/CommunityDefault.vue'
-
+import CommunityRegist from '@/components/CommunityRegist.vue'
 
 const routes = [
   {
@@ -44,6 +44,11 @@ const routes = [
         path: '/communityDetail',
         name: 'communityDetail',
         component: CommunityDetail,
+      },
+      {
+        path: '/communityRegist',
+        name: 'communityRegist',
+        component: CommunityRegist,
       },
     ]
   }, 

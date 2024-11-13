@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="communitymainframe">
-            <component :is="currentComponent"></component>
+            <component :is="currentComponent" @change-component="changeComponent" />
         </div>
         <div class="asideframe">
             <div class="group--sidebar">
@@ -239,7 +239,7 @@
                     </div>
                 </div>
             </div>
-            <div class="group---31">
+            <div class="group---31" v-if="!isComponentRegist" @click="changeComponent('CommunityRegist')">
                 <div class="rectangle--1">
                 </div>
                 <div class="text---20">
@@ -3260,6 +3260,7 @@
     
     import CommunityDefault from '@/components/CommunityDefault.vue';
     import CommunityDetail from './CommunityDetail.vue';
+    import CommunityRegist from './CommunityRegist.vue';
     
 
     export default {
@@ -3268,6 +3269,7 @@
         components : {
             CommunityDefault,
             CommunityDetail,
+            CommunityRegist,
         },
         data() {
             return {
@@ -3276,7 +3278,7 @@
             };
         },
         methods: {
-                changeComponent(componentName) {
+            changeComponent(componentName) {
               this.currentComponent = componentName; // 동적으로 컴포넌트를 변경
             },
         }
