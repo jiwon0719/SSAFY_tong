@@ -13,6 +13,10 @@ import MypageDefault from '@/components/MypageDefault.vue'
 import ChatList from '@/components/ChatList.vue'
 import ChattingRoom from '@/components/ChattingRoom.vue'
 import UpdateUserInfo from '@/components/UpdateUserInfo.vue'
+import CalendarView from '@/views/CalendarView.vue'
+import CalendarDefault from '@/components/CalendarDefault.vue'
+import CalendarDefaultReservation from '@/components/CalendarDefaultReservation.vue'
+import CalendarDefaultCalendar from '@/components/CalendarDefaultCalendar.vue'
 
 const routes = [
   {
@@ -90,7 +94,34 @@ const routes = [
         component : UpdateUserInfo,
       },
     ]
-  }
+  },
+  {
+    path: '/calendar',
+    name: 'calendar',
+    component : CalendarView,
+
+    children : [
+      {
+        path : '',
+        name : 'calendarDefault',
+        component : CalendarDefault,
+
+        children : [
+          {
+            path : '/calendarDefaultCalendar',
+            name : 'calendarDefaultCalendar',
+            component : CalendarDefaultCalendar
+          },
+          {
+            path : '/calendarDefaultReservation',
+            name : 'calendarDefaultReservation',
+            component : CalendarDefaultReservation
+          },
+        ]
+      },
+      
+    ]
+  },
   
   
 
