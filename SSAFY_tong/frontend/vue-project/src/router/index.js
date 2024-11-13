@@ -6,7 +6,13 @@ import SignInView from '@/views/SignInView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import CommunityDetail from '@/components/CommunityDetail.vue'
 import CommunityDefault from '@/components/CommunityDefault.vue'
-
+import CommunityRegist from '@/components/CommunityRegist.vue'
+import CommunityBoardRegist from '@/components/CommunityBoardRegist.vue'
+import MypageView from '@/views/MypageView.vue'
+import MypageDefault from '@/components/MypageDefault.vue'
+import ChatList from '@/components/ChatList.vue'
+import ChattingRoom from '@/components/ChattingRoom.vue'
+import UpdateUserInfo from '@/components/UpdateUserInfo.vue'
 
 const routes = [
   {
@@ -45,8 +51,46 @@ const routes = [
         name: 'communityDetail',
         component: CommunityDetail,
       },
+      {
+        path: '/communityRegist',
+        name: 'communityRegist',
+        component: CommunityRegist,
+      },
+      {
+        path: '/communityBoardRegist',
+        name: 'communityBoardRegist',
+        component: CommunityBoardRegist,
+      },
     ]
   }, 
+  {
+    path : '/mypage',
+    name : 'mypage',
+    component : MypageView,
+
+    children : [
+      {
+        path : '',
+        name : 'mypageDefault',
+        component : MypageDefault,
+      },
+      {
+        path : '/chatList',
+        name : 'chatList',
+        component : ChatList,
+      },
+      {
+        path : '/chattingRoom',
+        name : 'chattingRoom',
+        component : ChattingRoom,
+      },
+      {
+        path : '/updateUserInfo',
+        name : 'updateUserInfo',
+        component : UpdateUserInfo,
+      },
+    ]
+  }
   
   
 

@@ -63,12 +63,12 @@
                 </div>
                 <svg id="0:902" class="arcticonslitmatch"></svg><svg id="0:908" class="uitcalender"></svg><svg id="0:910" class="fluentchat-32-light"></svg>
             </div>
-            <div class="tong">
+            <div class="tong" @click="goToMainPage">
                 TONG
             </div>
         </div>
         <div class="communitymainframe">
-            <component :is="currentComponent"></component>
+            <component :is="currentComponent" @change-component="changeComponent" @set-is-component-regist="setIsComponentRegist" :isComponentRegist="isComponentRegist"/>
         </div>
         <div class="asideframe">
             <div class="group--sidebar">
@@ -239,7 +239,7 @@
                     </div>
                 </div>
             </div>
-            <div class="group---31">
+            <div class="group---31" v-show="!isComponentRegist" @click="changeComponent('CommunityRegist')">
                 <div class="rectangle--1">
                 </div>
                 <div class="text---20">
@@ -3256,30 +3256,73 @@
 </style>
 
 
+
 <script>
-    
-    import CommunityDefault from '@/components/CommunityDefault.vue';
-    import CommunityDetail from './CommunityDetail.vue';
-    
+import CommunityDefault from '@/components/CommunityDefault.vue';
+import CommunityDetail from './CommunityDetail.vue';
+import CommunityRegist from './CommunityRegist.vue';
+import CommunityBoardRegist from '@/components/CommunityBoardRegist.vue';
 
-    export default {
+export default {
+  name: 'Community',
+  components: {
+    CommunityDefault,
+    CommunityDetail,
+    CommunityRegist,
+    CommunityBoardRegist,
+  },
+  data() {
+    return {
+      currentComponent: 'CommunityDefault',
+      isComponentRegist: false,
+    };
+  },
+  created() {
+    // 페이지가 로드될 때 sessionStorage에서 저장된 상태값을 불러옵니다.
+    const savedComponent = localStorage.getItem('currentComponent');
+    const savedRegistStatus = localStorage.getItem('isComponentRegist');
 
-        name: 'Community',  // 컴포넌트 이름
-        components : {
-            CommunityDefault,
-            CommunityDetail,
-        },
-        data() {
-            return {
-            // 디폴트로 보여지는 컴포넌트
-            currentComponent: 'CommunityDefault', 
-            };
-        },
-        methods: {
-                changeComponent(componentName) {
-              this.currentComponent = componentName; // 동적으로 컴포넌트를 변경
-            },
-        }
+    if (savedComponent) {
+      this.currentComponent = savedComponent;
     }
+    if (savedRegistStatus !== null) {
+      this.isComponentRegist = JSON.parse(savedRegistStatus);
+    //   this.isComponentRegist = false;
+    }
+  },
+  watch: {
+    // currentComponent나 isComponentRegist가 변경되면 localStorage에 저장합니다.
+    currentComponent(newValue) {
+      localStorage.setItem('currentComponent', newValue);
+    },
+    isComponentRegist(newValue) {
+      localStorage.setItem('isComponentRegist', JSON.stringify(newValue));
+    },
+  },
+  methods: {
+    changeComponent(componentName) {
+      if (componentName === 'CommunityRegist') {
+        this.isComponentRegist = !this.isComponentRegist;
+        
+      }
 
+      this.currentComponent = componentName;
+    },
+
+    setIsComponentRegist(status) {
+        this.isComponentRegist = status;
+    },
+
+    goToMainPage() {
+      alert("메인 페이지로 이동합니다.");
+      this.$router.push({ name: 'main' });
+
+      // 상태를 초기화하여 페이지 이동 후 돌아왔을 때 기본값을 유지합니다.
+      localStorage.removeItem('currentComponent');
+      localStorage.removeItem('isComponentRegist');
+    },
+  },
+};
 </script>
+
+
