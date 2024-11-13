@@ -7,7 +7,7 @@
               등록
           </div>
       </div>
-      <div class="frame--1">
+      <div class="frame--1" @click="goToDefault">
           <div class="rectangle--1">
           </div>
           <div class="text--1">
@@ -64,7 +64,7 @@
     .frame- {
         position: absolute;
         top: 43px;
-        left: 946px;
+        left: 958px;
         width: 101px;
         height: 48px;
         overflow: hidden;
@@ -144,7 +144,7 @@
     .text-- {
         position: absolute;
         top: 13px;
-        left: 0px;
+        left: 20px;
         width: 112px;
         height: 29px;
         white-space: nowrap;
@@ -303,9 +303,22 @@
 </style>
 
 <script>
-   
+    export default {
+        props: {
+            isComponentRegist: Boolean, // 부모로부터 받은 isComponentRegist 값
+        },
+        name: 'CommunityRegist',
+        emits: ['changeComponent'],  // changeComponent 이벤트 선언
+        methods: {
+            goToDefault() {
+            // 부모 컴포넌트의 changeComponent 메서드를 호출하여 컴포넌트 전환
+            this.$emit('change-component', 'CommunityDefault');
+            
+            // 또한, 부모에게 isComponentRegist를 false로 설정하라고 알리기 위해 별도의 이벤트를 전달
+            this.$emit('set-is-component-regist', false);
+
+            },
+  },
+    }
 </script>
 
-17 208
-313
- 792

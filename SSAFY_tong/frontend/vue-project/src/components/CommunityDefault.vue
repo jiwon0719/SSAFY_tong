@@ -1,5 +1,5 @@
 <template>
-        <div class="group--">
+        <div class="group--" @click="goToBoardRegist" >
             <div class="rectangle-">
             </div>
             <div class="text--">
@@ -1958,7 +1958,7 @@
     .text---10 {
         position: absolute;
         top: 13px;
-        left: 12px;
+        left: 20px;
         width: 112px;
         height: 29px;
         white-space: nowrap;
@@ -2234,6 +2234,10 @@
 <script>
 export default {
   name: 'CommunityDefault',
+  emits: ['changeComponent'],  // changeComponent 이벤트 선언
+  props: {
+    isComponentRegist: Boolean, // 부모로부터 받은 isComponentRegist 값
+  },
   methods: {
     goToDetail() {
       // 부모 컴포넌트의 changeComponent 메서드를 호출하여 컴포넌트 전환
@@ -2243,6 +2247,11 @@ export default {
     goToRegist() {
       // 부모 컴포넌트의 changeComponent 메서드를 호출하여 컴포넌트 전환
       this.$emit('change-component', 'CommunityRegist');
+    },
+
+    goToBoardRegist() {
+      // 부모 컴포넌트의 changeComponent 메서드를 호출하여 컴포넌트 전환
+      this.$emit('change-component', 'CommunityBoardRegist');
     },
 
   },

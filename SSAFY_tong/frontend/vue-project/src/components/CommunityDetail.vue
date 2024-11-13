@@ -190,8 +190,8 @@
     overflow: hidden;
     .text-- {
         position: absolute;
-        top: 15px;
-        left: 7px;
+        top: 13px;
+        left: 20px;
         width: 112px;
         height: 29px;
         white-space: nowrap;
@@ -1044,6 +1044,7 @@
 <script>
 export default {
   name: 'CommunityDetail',
+  emits: ['changeComponent'],  // changeComponent 이벤트 선언
   methods: {
     goToDefault() {
       // 부모 컴포넌트의 changeComponent 메서드를 호출하여 컴포넌트 전환
