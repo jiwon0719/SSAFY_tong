@@ -7,13 +7,16 @@
               등록
           </div>
       </div>
-      <div class="frame--1" @click="goToDefault">
-          <div class="rectangle--1">
-          </div>
-          <div class="text--1">
-              목록으로
-          </div>
-      </div>
+      <router-link to="/community">
+
+          <div class="frame--1" >
+              <div class="rectangle--1">
+            </div>
+            <div class="text--1">
+                목록으로
+            </div>
+        </div>
+    </router-link>
       <div class="frame--2">
           <div class="rectangle--">
           </div>

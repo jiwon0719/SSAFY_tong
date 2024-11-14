@@ -3255,7 +3255,7 @@
 
 
 <script>
-import CommunityDefault from '@/components/CommunityDefault.vue';
+import CommunityDefault from '@/components/CommunityList.vue';
 import CommunityDetail from './CommunityDetail.vue';
 import CommunityRegist from './CommunityRegist.vue';
 import CommunityBoardRegist from '@/components/CommunityBoardRegist.vue';

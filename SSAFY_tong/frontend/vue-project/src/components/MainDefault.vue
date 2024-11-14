@@ -14,14 +14,20 @@
   </script>
   
   <style scoped lang="scss">
+  /* 부모 요소 설정 */
+  html, body {
+    height: 100%; /* 부모 요소가 화면을 꽉 채우도록 설정 */
+    margin: 0; /* 기본 여백 제거 */
+  }
+  
   .main-container {
     display: grid;
     grid-template-columns: 1fr 1fr; /* 2개의 열로 나누기 */
     grid-template-rows: 1fr 1fr; /* 2개의 행으로 나누기 */
     gap: 20px; /* 각 사분면 사이의 간격 */
-    height: 100%; /* 부모 요소의 높이에 맞게 설정 */
+    height: 100vh; /* 화면을 꽉 채우도록 설정 */
     width: 100%; /* 부모 요소의 너비에 맞게 설정 */
-    padding: 20px; /* 경계와의 간격 */
+    padding: 30px; /* 경계와의 간격 */
     box-sizing: border-box; /* padding이 크기 계산에 포함되도록 설정 */
   
     /* 각 사분면 스타일 */

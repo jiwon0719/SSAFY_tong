@@ -1,56 +1,65 @@
 <template>
-  <div class="community-layout">
-    <!-- 왼쪽 사이드바 영역 -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <h2 class="board-title">게시판</h2>
-        <router-link to="/communityRegist">
-   
-          <button class="post-register-btn">게시판 등록</button>
+<main class="main-content">
+      <div class="content-container">
+        <!-- 상단 검색 영역 -->
+        <div class="search-bar">
+          <div class="search-input-wrapper">
+            <input 
+              type="text" 
+              placeholder="제목, 내용으로 검색" 
+              class="search-input"
+            >
+            <button class="search-btn">
+              <span>🔍</span>
+            </button>
+          </div>
+          <div class="action-buttons">
+            <select class="post-count-select">
+              <option>10개씩 보기 ▼</option>
+            </select>
+            <router-link to="/communityBoardRegist">
+                <button class="write-post-btn">게시물 작성</button>
+            </router-link>
+          </div>
+        </div>
+
+        <!-- 게시물 목록 -->
+        
+        <router-link to="/communityDetail">
+            <div class="posts-container">
+                <div class="post-item" v-for="i in 2" :key="i">
+                    <div class="post-content">
+                        <div class="user-info">
+                            <div class="user-avatar"></div>
+                            <div class="post-details">
+                                <p class="username">hjw9265</p>
+                                <p class="post-text">너무 힘들다..</p>
+                                <p class="post-text">주말에 열심히 해결해...</p>
+                            </div>
+                        </div>
+                        <div class="post-stats">
+                            <span class="view-count">👁️ 21</span>
+                            <span class="comment-count">💬 3</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </router-link>
-      </div>
-      
-      <!-- HOT 게시판 -->
-      <div class="board-section">
-        <div class="hot-board">
-          <span class="hot-icon">🔥</span>
-          <span>HOT 게시판 목록</span>
-        </div>
-        <div class="board-item" >
-          <span class="board-icon">💪</span>
-          <span>헬스방</span>
-          <br>
-          <span class="board-desc">디비에있는 헬스방 소개글</span>
+
+        <!-- 페이지네이션 -->
+        <div class="pagination-wrapper">
+          <div class="pagination">
+            <button class="page-nav">◀</button>
+            <div class="page-numbers">
+              <button v-for="n in 7" :key="n" class="page-number">{{ n }}</button>
+            </div>
+            <button class="page-nav">▶</button>
+          </div>
         </div>
       </div>
-
-      <hr>
-      <br>
-
-      <!-- 정보게시판 -->
-      <div class="board-section">
-        <div class="info-board">
-          <span>정보게시판</span>
-        </div>
-        <div class="board-item">
-          <span class="board-desc">운영 활성 대회조</span>
-        </div>
-      </div>
-    </aside>
-
-    <!-- 오른쪽 메인 컨텐츠 영역 -->
-    <main class="main-content">
-    <router-view></router-view>
-
     </main>
 
-
-  </div>
 </template>
-
-<script setup>
-// 컴포넌트 로직
-</script>
 
 <style scoped>
 /* community-layout의 스타일을 수정 */
@@ -291,3 +300,5 @@
   cursor: pointer;
 }
 </style>
+
+<script></script>

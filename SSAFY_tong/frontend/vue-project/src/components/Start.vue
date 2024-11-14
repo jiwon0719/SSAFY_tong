@@ -139,9 +139,12 @@
         </div>
         <div class="header">
             <div class="link" >
-                <button class="main-button" @click="goToMainPage">
-                  Main
-                </button>
+                <router-link to="/main">
+
+                    <button class="main-button">
+                        Main
+                    </button>
+                </router-link>
                 <div class="frame-6">
                     <div class="tong">
                         TONG
