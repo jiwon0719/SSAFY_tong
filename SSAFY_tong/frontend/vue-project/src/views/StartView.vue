@@ -1,5 +1,7 @@
 <template>
   <div class="start-view">
+
+    
     <Start />
   </div>
 </template>

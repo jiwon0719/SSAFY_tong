@@ -5,7 +5,7 @@ import SignUpView from '@/views/SignUpView.vue'
 import SignInView from '@/views/SignInView.vue'
 import CommunityView from '@/views/CommunityView.vue'
 import CommunityDetail from '@/components/CommunityDetail.vue'
-import CommunityDefault from '@/components/CommunityDefault.vue'
+import CommunityList from '@/components/CommunityList.vue'
 import CommunityRegist from '@/components/CommunityRegist.vue'
 import CommunityBoardRegist from '@/components/CommunityBoardRegist.vue'
 import MypageView from '@/views/MypageView.vue'
@@ -48,8 +48,8 @@ const routes = [
         children :[
           {
             path: '',
-            name: 'communityDefault',
-            component: CommunityDefault,
+            name: 'communityList',
+            component: CommunityList,
           },
           {
             path: '/communityDetail',
