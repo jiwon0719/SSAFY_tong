@@ -5,14 +5,16 @@
         <div class="frame-2">
             <div class="rectangle-22">
             </div>
-            <div class="tong">
-                TONG
-            </div>
-            <div class="frame-3">
-                <div class="id">
+            <router-link to="/main">
+                <div class="tong">
+                    TONG
                 </div>
+            </router-link>
+            <div class="frame-3">
                 <div class="text-">
                     아이디
+                </div>
+                <div class="id">
                 </div>
                 <div class="text--1">
                     비밀번호
@@ -28,11 +30,11 @@
             </div>
             <div class="frame-5">
                 <div class="group-104">
-                    <button  @click="goTosignUpPage" style="all: unset;"> 
-                        <div class="text--3">
-                            회원가입
-                        </div>
-                    </button>
+                    <router-link to="/signUp">
+                            <div class="text--3">
+                                회원가입
+                            </div>
+                    </router-link>
                     <div class="text--with-kakao">
                         회원가입 with KAKAO
                     </div>
@@ -98,6 +100,7 @@
             background: linear-gradient(180deg, rgba(197, 197, 197, 0.21) 0%, rgba(197, 197, 197, 0.21) 6%, rgba(113, 113, 113, 0.21) 46%, rgba(95, 95, 95, 0.21) 100%);
         }
         .tong {
+            z-index: 2;
             position: absolute;
             top: 12px;
             left: 309.5px;
@@ -115,6 +118,7 @@
             text-align: center;
         }
         .frame-3 {
+            z-index: 1;
             position: absolute;
             top: 121px;
             left: 71px;
@@ -284,15 +288,4 @@
 </style>
 
 <script>
-    export default {
-        name: 'SignIn',  // 컴포넌트 이름
-        methods: {
-            goTosignUpPage() {
-            // 버튼 클릭 시 이동할 페이지를 설정하거나 다른 로직을 추가
-            alert('회원가입 페이지로 이동합니다!');
-            // 예: Vue Router를 사용하여 페이지 이동
-            this.$router.push({ name: 'signUp' });
-            }
-        }
-    }
-  </script>
+</script>

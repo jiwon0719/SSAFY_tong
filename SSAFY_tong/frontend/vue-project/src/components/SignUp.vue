@@ -6,9 +6,11 @@
         <div class="frame-2">
             <div class="rectangle-22">
             </div>
-            <div class="tong">
-                TONG
-            </div>
+            <router-link to="/main">
+                <div class="tong">
+                    TONG
+                </div>
+            </router-link>
             <div class="frame-6">
                 <div class="id">
                     <div class="rectangle-18">
@@ -86,12 +88,16 @@
             </div>
             <div class="frame-5">
                 <div class="group-106">
-                    <div class="text--7">
-                        로그인
-                    </div>
-                    <div class="text--8">
-                        메인
-                    </div>
+                    <router-link to="/signIn">
+                        <div class="text--7">
+                            로그인
+                        </div>
+                    </router-link>
+                    <router-link to="/main">
+                        <div class="text--8">
+                            메인
+                        </div>
+                    </router-link>
                     <div class="line-4">
                     </div>
                 </div>
@@ -165,6 +171,7 @@
             background: linear-gradient(180deg, rgba(197, 197, 197, 0.21) 0%, rgba(197, 197, 197, 0.21) 6%, rgba(113, 113, 113, 0.21) 46%, rgba(95, 95, 95, 0.21) 100%);
         }
         .tong {
+            z-index: 2;
             position: absolute;
             top: 12px;
             left: 434.5px;
@@ -182,6 +189,7 @@
             text-align: center;
         }
         .frame-6 {
+            // z-index: 1;
             position: absolute;
             top: 60px;
             left: calc(100% - 1057px + 52px);
