@@ -5,7 +5,6 @@
       <div class="sidebar-header">
         <h2 class="board-title">게시판</h2>
         <router-link to="/communityRegist">
-   
           <button class="post-register-btn">게시판 등록</button>
         </router-link>
       </div>
@@ -27,21 +26,20 @@
       <hr>
       <br>
 
-      <!-- 정보게시판 -->
-      <div class="board-section">
+      <!-- 일반 게시판 -->
+      <div class="board-section" v-for="category in store.categoryList">
         <div class="info-board">
-          <span>정보게시판</span>
+          <span @click="console.log(category.categoryId); store.selectCategoryIMethod(category.categoryId)">📝 {{ category.category }}</span>
         </div>
         <div class="board-item">
-          <span class="board-desc">운영 활성 대회조</span>
+          <span class="board-desc">{{ category.description }}</span>
         </div>
       </div>
     </aside>
 
     <!-- 오른쪽 메인 컨텐츠 영역 -->
     <main class="main-content">
-    <router-view></router-view>
-
+      <router-view></router-view>
     </main>
 
 
@@ -49,7 +47,15 @@
 </template>
 
 <script setup>
-// 컴포넌트 로직
+
+import { useCommunityStore } from '@/stores/community'
+import { ref, onMounted } from 'vue';
+
+const store = useCommunityStore(); 
+onMounted(() => {
+    store.getcategoryList();
+})
+
 </script>
 
 <style scoped>
@@ -102,28 +108,40 @@
   margin-bottom: 30px;
 }
 
+.info-board {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: background-color 0.3s, transform 0.3s;  /* 부드러운 전환 효과 */
+}
+
 .hot-board {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
-  color: #ab4545;
 }
 
-.board-item {
-  /* display: flex; */
-  display : inline-block;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  margin-bottom: 8px;
+.board-section:hover .info-board {
+  background-color: #f0f0f0; /* info-board 배경 색 변화 */
+  transform: scale(1.05); /* 크기 확대 */
+}
 
+.board-section:hover .board-item {
+  background-color: #f9f9f9; /* board-item 배경 색 변화 */
+  transform: scale(1.03); /* 크기 확대 */
+}
+
+.board-section:hover {
+  cursor: pointer; /* 마우스를 손 모양으로 변경 */
 }
 
 .board-desc {
-  color: #666;
-  font-size: 0.9rem;
+  color: #777;
+  font-size: small;
 }
+
 
 /* main-content의 스타일을 수정 */
 .main-content {
