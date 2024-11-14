@@ -2,16 +2,19 @@
     <div>
       <matching />
     </div>
-  </template>
+</template>
   
-  <script>
+<script>
   import matching from '../components/Matching.vue';  
   
   export default {
-    name: 'matchingpage',
+    name: 'MatchingView',
     components: {
-        matching,  
+      matching,  
     }
   }
-  </script>
+</script>
   
+<style lang="scss">
+
+</style>

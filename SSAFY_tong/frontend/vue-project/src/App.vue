@@ -23,6 +23,7 @@ export default {
 /* 글씨 폰트인 Jocky One 불러와서 사용 */
 @import url('https://fonts.googleapis.com/css2?family=Jockey+One&display=swap');
 
+
 header {
   line-height: 1.5;
   max-height: 100vh;

@@ -1,26 +1,29 @@
 <template>
-    <div class="start-view">
-      <!-- 버튼 클릭 시 Main 페이지로 이동 -->
-      <Start />
-    </div>
-  </template>
-  
-  <script>
-  // Start 컴포넌트를 불러옵니다.
-  import Start from '../components/Start.vue'
-  
-  export default {
-    name: 'StartView',
-    components: {
-      Start
-    },
-  }
-  </script>
+  <div class="start-view">
+    <Start />
+  </div>
+</template>
+
+<script>
+// Start 컴포넌트를 불러옵니다.
+import Start from '../components/Start.vue'
+
+export default {
+  name: 'StartView',
+  components: {
+    Start
+  },
+}
+</script>
 
 <style scoped>
 .start-view {
-  text-align: center;
-  padding: 20px;
+  display: flex;
+  justify-content: center;  /* 수평 중앙 정렬 */
+  align-items: center;      /* 수직 중앙 정렬 */
+  height: 100vh;            /* 화면 전체 높이 */
+  padding: 0;               /* 불필요한 패딩 제거 */
+  margin: 0;                /* 불필요한 마진 제거 */
 }
 
 button {

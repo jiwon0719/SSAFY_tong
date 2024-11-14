@@ -17,8 +17,6 @@
   </script>
   
   <style scoped>
-  .signUp-view {
-    padding: 20px;
-  }
+  
   </style>
   

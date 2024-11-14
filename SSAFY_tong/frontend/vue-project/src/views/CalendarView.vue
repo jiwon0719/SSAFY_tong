@@ -16,8 +16,6 @@
   </script>
   
   <style scoped>
-  .calendar-view {
-    padding: 20px;
-  }
+  
   </style>
   

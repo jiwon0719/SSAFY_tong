@@ -2,7 +2,6 @@
     <div class="signup">
         <div class="rectangle-21">
         </div>
-        <svg id="0:2774" class="group"></svg><svg id="0:2979" class="group-52"></svg>
         <div class="frame-2">
             <div class="rectangle-22">
             </div>
@@ -46,19 +45,25 @@
 
 <style lang="scss">
     .signup {
-    position: absolute;
-    top: 2px;
-    left: 6px;
-    width: 1440px;
-    height: 1024px;
+        background-image: url('../assets/images/background.png'); /* 실제 이미지 경로를 넣어주세요 */
+  background-size: cover;   /* 배경 이미지를 컨테이너 크기에 맞게 조정 */
+  background-position: center; /* 배경 이미지가 중앙에 위치하도록 설정 */
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+
+
+    position: relative;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100vh;
     box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
     overflow: hidden;
     .rectangle-21 {
         position: absolute;
         top: 0px;
         left: 0px;
-        width: 1440px;
-        height: 1024px;
+        width: 100%;
+        height: 100vh;
         background: linear-gradient(180deg, rgba(47, 47, 47, 0.8) 0%, rgba(78, 78, 78, 0.8) 50%, rgba(149, 149, 149, 0.8) 100%);
     }
     .group {
@@ -77,18 +82,19 @@
     }
     .frame-2 {
         position: absolute;
-        top: calc(100% - 1024px + 91px);
-        left: calc(100% - 1440px + 316px);
+        top: 50%;
+        left: 50%;
         width: 807px;
         height: 871px;
         border-radius: 20px;
         overflow: hidden;
+        transform: translate(-50%, -50%);  /* 화면 중앙으로 이동 */
         .rectangle-22 {
             position: absolute;
             top: 0px;
             left: 0px;
-            width: 805px;
-            height: 871px;
+            width: 100%;
+            height: 100vh;
             background: linear-gradient(180deg, rgba(197, 197, 197, 0.21) 0%, rgba(197, 197, 197, 0.21) 6%, rgba(113, 113, 113, 0.21) 46%, rgba(95, 95, 95, 0.21) 100%);
         }
         .tong {
