@@ -22,7 +22,6 @@ import MatchingView from '@/views/MatchingView.vue'
 import MatchingDefault from '@/components/MatchingDefault.vue'
 import MatchingExpertDetail from '@/components/MatchingExpertDetail.vue'
 import MatchingExpertRegist from '@/components/MatchingExpertRegist.vue'
-import MainDefault from '@/components/MainDefault.vue'
 
 const routes = [
   {
@@ -34,42 +33,6 @@ const routes = [
     path: '/main',
     name: 'main',
     component: MainView, // Main 페이지
-
-    children: [
-      {
-        path: '', // 빈 경로는 MainDefault로 기본 렌더링
-        component: MainDefault, // MainDefault 컴포넌트를 기본 컴포넌트로 설정
-      },
-      {
-        path: '/community',
-        name: 'community',
-        component: CommunityView,  // community 페이지
-    
-        children :[
-          {
-            path: '',
-            name: 'communityDefault',
-            component: CommunityDefault,
-          },
-          {
-            path: '/communityDetail',
-            name: 'communityDetail',
-            component: CommunityDetail,
-          },
-          {
-            path: '/communityRegist',
-            name: 'communityRegist',
-            component: CommunityRegist,
-          },
-          {
-            path: '/communityBoardRegist',
-            name: 'communityBoardRegist',
-            component: CommunityBoardRegist,
-          },
-        ]
-      },
-    ],
-
   },
   {
     path: '/signUp',
@@ -84,7 +47,35 @@ const routes = [
     component: SignInView,  // signIn 페이지
     meta: { layout: 'none' }  // 헤더와 풋터가 필요 없는 페이지
 
-  },  
+  }, 
+  {
+    path: '/community',
+    name: 'community',
+    component: CommunityView,  // community 페이지
+
+    children :[
+      {
+        path: '',
+        name: 'communityDefault',
+        component: CommunityDefault,
+      },
+      {
+        path: '/communityDetail',
+        name: 'communityDetail',
+        component: CommunityDetail,
+      },
+      {
+        path: '/communityRegist',
+        name: 'communityRegist',
+        component: CommunityRegist,
+      },
+      {
+        path: '/communityBoardRegist',
+        name: 'communityBoardRegist',
+        component: CommunityBoardRegist,
+      },
+    ]
+  }, 
   {
     path : '/mypage',
     name : 'mypage',

@@ -17,8 +17,6 @@
   </script>
   
   <style scoped>
-  .signIn-view {
-    padding: 20px;
-  }
+
   </style>
   

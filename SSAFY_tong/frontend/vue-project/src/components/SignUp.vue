@@ -112,19 +112,25 @@
 
 <style lang="scss">
     .regist {
-    position: absolute;
-    top: 2px;
-    left: 6px;
-    width: 1440px;
-    height: 1024px;
-    box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    overflow: hidden;
+        background-image: url('../assets/images/background.png'); /* 실제 이미지 경로를 넣어주세요 */
+  background-size: cover;   /* 배경 이미지를 컨테이너 크기에 맞게 조정 */
+  background-position: center; /* 배경 이미지가 중앙에 위치하도록 설정 */
+  background-repeat: no-repeat; /* 배경 이미지 반복 방지 */
+
+
+        position: relative;
+  top: 0;
+  left: 0;
+  width: 100vw; /* 화면 너비에 맞게 설정 */
+  height: 100vh; /* 화면 높이에 맞게 설정 */
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  overflow: hidden; /* 내용이 넘칠 경우 숨기기 */
     .rectangle-21 {
         position: absolute;
         top: 0px;
         left: 0px;
-        width: 1440px;
-        height: 1024px;
+        width: 100vw;
+        height: 100vh;
         background: linear-gradient(180deg, rgba(47, 47, 47, 0.8) 0%, rgba(78, 78, 78, 0.8) 50%, rgba(149, 149, 149, 0.8) 100%);
     }
     .group {
@@ -143,12 +149,13 @@
     }
     .frame-2 {
         position: absolute;
-        top: calc(100% - 1024px + 77px);
-        left: calc(100% - 1440px + 191px);
+        top: 50%;
+        left: 50%;
         width: 1057px;
         height: 871px;
         border-radius: 20px;
         overflow: hidden;
+        transform: translate(-50%, -50%);  /* 화면 중앙으로 이동 */
         .rectangle-22 {
             position: absolute;
             top: 0px;

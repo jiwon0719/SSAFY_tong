@@ -17,8 +17,6 @@
   </script>
   
   <style scoped>
-  .mypage-view {
-    padding: 20px;
-  }
+  
   </style>
   

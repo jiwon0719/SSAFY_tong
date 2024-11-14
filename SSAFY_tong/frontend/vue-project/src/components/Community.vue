@@ -1,8 +1,5 @@
 <template>
     <div class="frame--">
-        <div>
-           <img src="../assets/images/Rectangle41.svg" alt="Rectangle Image" />
-        </div>
         <div class="group-">
             <div class="frame-9">
                 <img src="https://image-resource.creatie.ai/142625939968981/142625939968983/b5adf0d50405e44725dca99054dcbdb2.jpg" class="close-up-portrait-of-female-model-under-blue-light" />
