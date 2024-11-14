@@ -1,9 +1,39 @@
 <template>
-    
+    <div class="mypagedefault">
         <div class="text---">
             나의 매칭 전문가
         </div>
-        
+        <div class="expert">
+            <div class="rectangle--">
+            </div>
+            <div class="pt1">
+                <div class="frame-">
+                    <div class="text-">
+                        매칭됨
+                    </div>
+                    <div class="text--2024-11-04--">
+                        [ 2024. 11. 04. 토~ ]
+                    </div>
+                </div>
+                <div class="frame--">
+                    <div class="text--1">
+                        정형외과
+                    </div>
+                    <svg id="10:3728" class="line-3"></svg>
+                    <div class="text--">
+                        유승홍 선생님
+                    </div>
+                </div>
+                <img src="https://image-resource.creatie.ai/142625939968981/142625939968983/dd8e514e3827f4c92de288233469584a.jpg" class="rectangle-" />
+                <div class="frame--1" >
+                    <div class="rectangle--1">
+                    </div>
+                    <div class="text--2">
+                        점수주기
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="expert-1">
             <div class="rectangle---1">
             </div>
@@ -26,16 +56,16 @@
                     </div>
                 </div>
                 <img src="https://image-resource.creatie.ai/142625939968981/142625939968983/dd8e514e3827f4c92de288233469584a.jpg" class="rectangle--2" />
-                <div class="frame--3" @click='toggleScoreFrame'>
+                <div class="frame--3" >
                     <div class="rectangle--3">
                     </div>
-                    <div class="text--5">
+                    <div class="text--5" @click='toggleScoreFrame'>
                         점수주기
                     </div>
                 </div>
             </div>
         </div>
-        <div class="score" v-show="scoreFrame" >
+        <div class="score">
             <div class="pt1-2">
                 <div class="rectangle---2">
                 </div>
@@ -53,7 +83,7 @@
                     / 5
                 </div>
             </div>
-            <div class="frame--4" @click='toggleScoreFrame'>
+            <div class="frame--4">
                 <div class="rectangle--4">
                 </div>
                 <div class="text--6">
@@ -61,10 +91,10 @@
                 </div>
             </div>
         </div>
-
+    </div>
 </template>
 
-<style lang='scss'>
+<style lang="scss">
     .mypagedefault {
     width: 1083px;
     height: 792px;
@@ -493,6 +523,8 @@
 }
 </style>
 
+
+
 <script>
 
 export default {
@@ -510,5 +542,5 @@ export default {
     },
   },
 };
-
+{/* <div class="frame--3" > */}
 </script>

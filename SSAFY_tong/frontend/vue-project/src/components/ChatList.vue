@@ -3,28 +3,33 @@
         <div class="text--">
             채팅 리스트
         </div>
-        <div class="pt1-1">
-            <div class="rectangle---1">
+        <router-link to="/chattingRoom">
+
+            <div class="pt1-1">
+                <div class="rectangle---1">
+                </div>
+                <div class="text---1">
+                    김혜준 트레이너
+                </div>
+                <div class="text----">
+                    지원님~ 오늘 운동은 잘하셨나요??
+                </div>
+                <svg id="0:2520" class="pen-"></svg>
             </div>
-            <div class="text---1">
-                김혜준 트레이너
+        </router-link>
+        <router-link to="/chattingRoom">
+            <div class="pt1-2" >
+                <div class="rectangle---2">
+                </div>
+                <div class="text---2">
+                    유승호 선생님
+                </div>
+                <div class="text---3">
+                    매칭이 수락되었습니다.
+                </div>
+                <img src="https://image-resource.creatie.ai/142625939968981/142625939968983/d56daf0628fcabb2304963bb911f09d1.jpg" class="rectangle-" />
             </div>
-            <div class="text----">
-                지원님~ 오늘 운동은 잘하셨나요??
-            </div>
-            <svg id="0:2520" class="pen-"></svg>
-        </div>
-        <div class="pt1-2" @click="goToChattingRoom">
-            <div class="rectangle---2">
-            </div>
-            <div class="text---2">
-                유승호 선생님
-            </div>
-            <div class="text---3">
-                매칭이 수락되었습니다.
-            </div>
-            <img src="https://image-resource.creatie.ai/142625939968981/142625939968983/d56daf0628fcabb2304963bb911f09d1.jpg" class="rectangle-" />
-        </div>
+        </router-link>
     </div>
 </template>
 

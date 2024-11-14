@@ -36,9 +36,59 @@ const routes = [
     component: MainView, // Main 페이지
 
     children: [
+      
       {
-        path: '', // 빈 경로는 MainDefault로 기본 렌더링
-        component: MainDefault, // MainDefault 컴포넌트를 기본 컴포넌트로 설정
+        path: '/calendar',
+        name: 'calendar',
+        component : CalendarView,
+    
+        children : [
+          {
+            path : '',
+            name : 'calendarDefault',
+            component : CalendarDefault,
+          },
+              {
+                path : '/calendarDefaultCalendar',
+                name : 'calendarDefaultCalendar',
+                component : CalendarDefaultCalendar
+              },
+              {
+                path : '/calendarDefaultReservation',
+                name : 'calendarDefaultReservation',
+                component : CalendarDefaultReservation
+              },
+          
+        ]
+      },
+
+      {
+        path : '/mypage',
+        name : 'mypage',
+        component : MypageView,
+
+        children : [
+              {
+                path : '',
+                name : 'mypageDefault',
+                component : MypageDefault,
+              },
+              {
+                path : '/chatList',
+                name : 'chatList',
+                component : ChatList,
+              },
+              {
+                path : '/chattingRoom',
+                name : 'chattingRoom',
+                component : ChattingRoom,
+              },
+              {
+                path : '/updateUserInfo',
+                name : 'updateUserInfo',
+                component : UpdateUserInfo,
+              },
+        ],
       },
       {
         path: '/community',
@@ -85,61 +135,6 @@ const routes = [
     meta: { layout: 'none' }  // 헤더와 풋터가 필요 없는 페이지
 
   },  
-  {
-    path : '/mypage',
-    name : 'mypage',
-    component : MypageView,
-
-    children : [
-      {
-        path : '',
-        name : 'mypageDefault',
-        component : MypageDefault,
-      },
-      {
-        path : '/chatList',
-        name : 'chatList',
-        component : ChatList,
-      },
-      {
-        path : '/chattingRoom',
-        name : 'chattingRoom',
-        component : ChattingRoom,
-      },
-      {
-        path : '/updateUserInfo',
-        name : 'updateUserInfo',
-        component : UpdateUserInfo,
-      },
-    ]
-  },
-  {
-    path: '/calendar',
-    name: 'calendar',
-    component : CalendarView,
-
-    children : [
-      {
-        path : '',
-        name : 'calendarDefault',
-        component : CalendarDefault,
-
-        children : [
-          {
-            path : '/calendarDefaultCalendar',
-            name : 'calendarDefaultCalendar',
-            component : CalendarDefaultCalendar
-          },
-          {
-            path : '/calendarDefaultReservation',
-            name : 'calendarDefaultReservation',
-            component : CalendarDefaultReservation
-          },
-        ]
-      },
-      
-    ]
-  },
   {
     path : '/matching',
     name : 'matching',
