@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.tong.expert.model.dao.ExpertDao">
+	<!-- 전체 조회 -->
+	<select id="selectExpert" resultType="Expert">
+		SELECT expert_id, user_id, location, introduction, price, price_detail, grade, total_score, total_score_cnt, company_name, latitude, longitude
+		  FROM expert;
+	</select>
+	
+	<!-- 상세 조회 -->
+	<select id="selectExpertByPK" resultType="Expert" parameterType="int">
+		SELECT expert_id, user_id, location, introduction, price, price_detail, grade, total_score, total_score_cnt, company_name, latitude, longitude
+		  FROM expert
+		 WHERE expert_id = #{expertId};
+	</select>
+
+	<!-- 삭제 -->
+	<delete id="deleteExpert" parameterType="int">
+		DELETE 
+		  FROM expert
+		 WHERE expert_id = #{expertId};   
+	</delete>
+	
+	<!-- 등록 -->
+	<insert id="insertExpert" parameterType="Expert">
+		INSERT INTO expert(
+			user_id, location, introduction, price, price_detail, grade, company_name, latitude, longitude
+		) VALUES (
+			#{userId}, #{location}, #{introduction}, #{price}, #{priceDetail}, #{grade}, #{companyName}, #{latitude}, #{longitude}
+		);
+	</insert>
+	
+	<!-- 파일 업로드 -->
+	<select id="insertExportImage" parameterType="ExpertImage">
+		INSERT INTO expert_image(
+			expert_id, file_path, ori_name, system_name, extension
+		) VALUES (
+			#{expertId}, #{filePath}, #{oriName}, #{systemName}, #{extension}			
+		);
+	</select>
+	
+	<!-- 수정 -->
+	<update id="updateExpert" parameterType="Expert">
+		UPDATE expert
+		   SET location = #{location} , introduction = #{introduction}, price = #{price}, price_detail = #{priceDetail}, 
+		   	   grade = #{grade}, company_name = #{companyName}, latitude = #{latitude}, longitude = #{longitude}
+		 WHERE expert_id = #{expertId};
+	</update>
+</mapper>

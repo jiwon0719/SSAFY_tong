@@ -25,11 +25,20 @@
 	</delete>
 	
 	<!-- 등록 -->
-	<insert id="insertExpert" parameterType="Expert">
+	<insert id="insertExport" parameterType="Expert" useGeneratedKeys="true" keyProperty="expertId">
 		INSERT INTO expert(
 			user_id, location, introduction, price, price_detail, grade, company_name, latitude, longitude
 		) VALUES (
 			#{userId}, #{location}, #{introduction}, #{price}, #{priceDetail}, #{grade}, #{companyName}, #{latitude}, #{longitude}
+		);
+	</insert>
+	
+	<!-- 파일 업로드 -->
+	<insert id="insertExportImage" parameterType="ExpertImage">
+		INSERT INTO expert_image(
+			expert_id, file_path, ori_name, system_name, extension
+		) VALUES (
+			#{expertId}, #{filePath}, #{oriName}, #{systemName}, #{extension}			
 		);
 	</insert>
 	
