@@ -93,17 +93,18 @@
     </div>
 </template>
 
+
 <style lang="scss">
     .matchingframe {
         width: 100%;
-        height: 100%;
+        height: 100vh;
         display: flex;
         flex-direction: row;
     .expert {
         width: 30%;  /* 또는 원하는 너비 */
-  height: 100%;
-  overflow-y: auto;  /* 내용이 많을 경우 스크롤 */
-  padding: 20px;
+        height: 100%;
+        overflow-y: auto;  /* 내용이 많을 경우 스크롤 */
+        padding: 20px;
         .button {
             position: absolute;
             top: 13px;

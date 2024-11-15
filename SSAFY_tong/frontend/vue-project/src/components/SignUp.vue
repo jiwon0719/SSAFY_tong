@@ -187,6 +187,13 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+
+            transition: transform 0.3s ease;
+
+            &:hover {
+            transform: scale(1.05);
+        }
+
         }
         .frame-6 {
             // z-index: 1;
@@ -403,6 +410,12 @@
                 left: calc(100% - 973px + 341px);
                 width: 291px;
                 height: 49px;
+
+                transition: transform 0.3s ease;
+
+            &:hover {
+            transform: scale(1.05);
+        }
                 .rectangle-25 {
                     position: absolute;
                     top: 0px;

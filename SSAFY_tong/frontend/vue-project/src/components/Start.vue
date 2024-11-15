@@ -9,7 +9,7 @@
                 </div>
             </div>
         </div>
-        <div class="frame-13">
+        <!-- <div class="frame-13">
             <div class="slogan-1">
                 <div class="slogan-2">
                     <div class="text-1">
@@ -136,7 +136,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="header">
             <div class="link" >
                 <router-link to="/main">
