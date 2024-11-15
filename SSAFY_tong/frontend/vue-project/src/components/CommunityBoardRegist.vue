@@ -1,394 +1,243 @@
-<template>
-    <div class="communityboardregist">
-        <div class="frame-30">
-            <div class="frame-">
-                <div class="rectangle-">
-                </div>
-                <div class="text-">
-                    등록
-                </div>
-            </div>
-            <router-link to="/community">
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
-                <div class="frame--1">
-                    <div class="rectangle--1">
-                    </div>
-                    <div class="text--1">
-                        목록으로
-                    </div>
-                </div>
-            </router-link>
-        </div>
-        <div class="frame--2">
-            <div class="rectangle--">
-            </div>
-        </div>
-        <div class="text--">
-            게시물 쓰기
-        </div>
-        <div class="frame--3">
-            <div class="text--2">
-                작성자
-            </div>
-            <div class="rectangle--2">
-            </div>
-            <div class="hjw9265">
-                hjw9265
-            </div>
-        </div>
-        <div class="frame--4">
-            <div class="text--3">
-                내용
-            </div>
-            <div class="rectangle--3">
-            </div>
-            <div class="text--------">
-                금요일까지 게시판 완료하기. 토요일에 매칭 완료하기. 일요일엔 쉬고싶다아
-            </div>
-        </div>
-        <div class="frame--5">
-            <div class="text--4">
-                제목
-            </div>
-            <div class="rectangle--4">
-            </div>
-            <div class="text---">
-                이번주 내 계획
-            </div>
-        </div>
-        <div class="frame--6">
-            <div class="text--5">
-                카테고리
-            </div>
-            <div class="rectangle--5">
-            </div>
-            <div class="text---1">
-                자유 게시판
-            </div>
-        </div>
-    </div>
-</template>
+const router = useRouter()
 
+// 폼 데이터
+const postForm = ref({
+  category_id: '',
+  title: '',
+  writer: 'admin', // 실제로는 로그인된 사용자 정보를 사용
+  content: '',
+  view_cnt: 0
+})
 
+// 카테고리 목록 (실제로는 API에서 가져올 데이터)
+const categories = ref([
+  { category_id: 1, name: '자유게시판' },
+  { category_id: 2, name: '운동게시판' },
+  { category_id: 3, name: '마음게시판' }
+])
 
-<style lang="scss">
-    .communityboardregist {
-    width: 1083px;
-    height: 792px;
-    overflow: hidden;
-    .frame-30 {
-        position: absolute;
-        top: 43px;
-        left: 838px;
-        width: 221px;
-        height: 48px;
-        overflow: hidden;
-        .frame- {
-            position: absolute;
-            top: 0px;
-            left: 120px;
-            width: 101px;
-            height: 48px;
-            overflow: hidden;
-            .rectangle- {
-                position: absolute;
-                top: 0px;
-                left: 0px;
-                width: 101px;
-                height: 48px;
-                border-radius: 12px;
-                background: #E2495B;
-            }
-            .text- {
-                position: absolute;
-                top: 16px;
-                left: 35px;
-                width: 29px;
-                height: 19px;
-                white-space: nowrap;
-                color: #FFFFFF;
-                font-family: "Bebas Neue";
-                font-size: 16px;
-                line-height: 19px;
-                font-weight: 400;
-                display: flex;
-                align-items: center;
-            }
-        }
-        .frame--1 {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 101px;
-            height: 48px;
-            overflow: hidden;
-            .rectangle--1 {
-                position: absolute;
-                top: 0px;
-                left: 0px;
-                width: 101px;
-                height: 48px;
-                border-radius: 12px;
-                background: #E2495B;
-            }
-            .text--1 {
-                position: absolute;
-                top: 16px;
-                left: 22px;
-                width: 57px;
-                height: 19px;
-                white-space: nowrap;
-                color: #FFFFFF;
-                font-family: "Bebas Neue";
-                font-size: 16px;
-                line-height: 19px;
-                font-weight: 400;
-                display: flex;
-                align-items: center;
-            }
-        }
-    }
-    .frame--2 {
-        position: absolute;
-        top: 106px;
-        left: 3px;
-        width: 1042px;
-        height: 404px;
-        overflow: hidden;
-        .rectangle-- {
-            position: absolute;
-            top: 0px;
-            left: 0px;
-            width: 1042px;
-            height: 404px;
-            background: rgba(217, 217, 217, 0.32);
-        }
-    }
-    .text-- {
-        position: absolute;
-        top: 13px;
-        left: 20px;
-        width: 112px;
-        height: 29px;
-        white-space: nowrap;
-        color: #000000;
-        font-family: "Bebas Neue";
-        font-size: 24px;
-        line-height: 29px;
-        font-weight: 400;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-    .frame--3 {
-        position: absolute;
-        top: 237px;
-        left: 19px;
-        width: 482px;
-        height: 34px;
-        overflow: hidden;
-        .text--2 {
-            position: absolute;
-            top: 9px;
-            left: 0px;
-            width: 43px;
-            height: 19px;
-            white-space: nowrap;
-            color: #000000;
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-        .rectangle--2 {
-            position: absolute;
-            top: 0px;
-            left: 64px;
-            width: 418px;
-            height: 34px;
-            border-radius: 12px;
-            background: #D9D9D9;
-        }
-        .hjw9265 {
-            position: absolute;
-            top: 9px;
-            left: 81px;
-            width: 42px;
-            height: 19px;
-            white-space: nowrap;
-            color: rgba(0, 0, 0, 0.43);
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-    }
-    .frame--4 {
-        position: absolute;
-        top: 291px;
-        left: 19px;
-        width: 991px;
-        height: 196px;
-        overflow: hidden;
-        .text--3 {
-            position: absolute;
-            top: 18px;
-            left: 0px;
-            width: 29px;
-            height: 19px;
-            white-space: nowrap;
-            color: #000000;
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-        .rectangle--3 {
-            position: absolute;
-            top: 0px;
-            left: 64px;
-            width: 927px;
-            height: 196px;
-            border-radius: 12px;
-            background: #D9D9D9;
-        }
-        .text-------- {
-            position: absolute;
-            top: 18px;
-            left: 81px;
-            width: 458px;
-            height: 19px;
-            white-space: nowrap;
-            color: rgba(0, 0, 0, 0.43);
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-    }
-    .frame--5 {
-        position: absolute;
-        top: 183px;
-        left: 19px;
-        width: 482px;
-        height: 34px;
-        overflow: hidden;
-        .text--4 {
-            position: absolute;
-            top: 9px;
-            left: 0px;
-            width: 29px;
-            height: 19px;
-            white-space: nowrap;
-            color: #000000;
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-        .rectangle--4 {
-            position: absolute;
-            top: 0px;
-            left: 64px;
-            width: 418px;
-            height: 34px;
-            border-radius: 12px;
-            background: #D9D9D9;
-        }
-        .text--- {
-            position: absolute;
-            top: 9px;
-            left: 81px;
-            width: 89px;
-            height: 19px;
-            white-space: nowrap;
-            color: rgba(0, 0, 0, 0.43);
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-    }
-    .frame--6 {
-        position: absolute;
-        top: 128px;
-        left: 19px;
-        width: 482px;
-        height: 34px;
-        overflow: hidden;
-        .text--5 {
-            position: absolute;
-            top: 9px;
-            left: 0px;
-            width: 57px;
-            height: 19px;
-            white-space: nowrap;
-            color: #000000;
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-        .rectangle--5 {
-            position: absolute;
-            top: 0px;
-            left: 64px;
-            width: 418px;
-            height: 34px;
-            border-radius: 12px;
-            background: #D9D9D9;
-        }
-        .text---1 {
-            position: absolute;
-            top: 9px;
-            left: 81px;
-            width: 73px;
-            height: 19px;
-            white-space: nowrap;
-            color: rgba(0, 0, 0, 0.43);
-            font-family: "Bebas Neue";
-            font-size: 16px;
-            line-height: 19px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-        }
-    }
+// 게시글 등록
+const submitPost = () => {
+  // 유효성 검사
+  if (!postForm.value.category_id || !postForm.value.title || !postForm.value.content) {
+    alert('모든 필드를 입력해주세요.')
+    return
+  }
+
+  // 제목 길이 체크 (20자 제한)
+  if (postForm.value.title.length > 20) {
+    alert('제목은 20자를 초과할 수 없습니다.')
+    return
+  }
+
+  // 내용 길이 체크 (255자 제한)
+  if (postForm.value.content.length > 255) {
+    alert('내용은 255자를 초과할 수 없습니다.')
+    return
+  }
+
+  // TODO: API 호출하여 게시글 등록
+  console.log('게시글 등록:', postForm.value)
+  
+  // 등록 후 목록으로 이동
+  router.push('/community')
 }
-</style>
 
-<script>
-    export default {
-        props: {
-            isComponentRegist: Boolean, // 부모로부터 받은 isComponentRegist 값
-        },
-        name: 'CommunityBoardRegist',
-        emits: ['changeComponent'],  // changeComponent 이벤트 선언
-        methods: {
-            goToDefault() {
-            // 부모 컴포넌트의 changeComponent 메서드를 호출하여 컴포넌트 전환
-            this.$emit('change-component', 'CommunityDefault');
-            
-            // 또한, 부모에게 isComponentRegist를 false로 설정하라고 알리기 위해 별도의 이벤트를 전달
-            this.$emit('set-is-component-regist', false);
-
-            },
-  },
-    }
+// 목록으로 돌아가기
+const goBack = () => {
+  router.push('/community')
+}
 </script>
 
+<template>
+  <div class="post-create">
+    <h1>게시글 등록</h1>
+    
+    <div class="post-form">
+      <div class="form-group">
+        <label>카테고리</label>
+        <select 
+          v-model="postForm.category_id"
+          class="form-input"
+        >
+          <option value="">카테고리를 선택해주세요</option>
+          <option 
+            v-for="category in categories" 
+            :key="category.category_id"
+            :value="category.category_id"
+          >
+            {{ category.name }}
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>제목</label>
+        <input 
+          type="text" 
+          v-model="postForm.title"
+          placeholder="제목을 입력해주세요 (20자 이내)"
+          maxlength="20"
+          class="form-input"
+        >
+        <span class="char-count">{{ postForm.title.length }}/20</span>
+      </div>
+
+      <div class="form-group">
+        <label>작성자</label>
+        <input 
+          type="text" 
+          v-model="postForm.writer"
+          disabled
+          class="form-input"
+        >
+      </div>
+
+      <div class="form-group">
+        <label>내용</label>
+        <textarea 
+          v-model="postForm.content"
+          placeholder="내용을 입력해주세요 (255자 이내)"
+          maxlength="255"
+          class="form-textarea"
+        ></textarea>
+        <span class="char-count">{{ postForm.content.length }}/255</span>
+      </div>
+
+      <div class="form-actions">
+        <button 
+          class="btn btn-secondary"
+          @click="goBack"
+        >
+          목록으로
+        </button>
+        <button 
+          class="btn btn-primary"
+          @click="submitPost"
+        >
+          등록
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped>
+.post-create {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 1.5rem;
+  margin-bottom: 30px;
+}
+
+.post-form {
+  background: #fff;
+  padding: 70px;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-input:disabled {
+  background: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.char-count {
+  position: absolute;
+  right: 0;
+  bottom: -20px;
+  font-size: 12px;
+  color: #666;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.btn {
+  padding: 8px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-primary {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #c0392b;
+}
+
+.btn-secondary {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.btn-secondary:hover {
+  background: #e0e0e0;
+}
+
+/* 반응형 스타일 */
+@media (max-width: 768px) {
+  .post-create {
+    padding: 15px;
+  }
+  
+  .post-form {
+    padding: 30px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+</style>

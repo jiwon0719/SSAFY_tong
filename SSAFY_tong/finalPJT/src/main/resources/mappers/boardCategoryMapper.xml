@@ -11,10 +11,13 @@
 	</select>
 	
 	<!-- 상세 조회 -->
-	<select id="selectBoardCategoryByPk" resultType="BoardCategory" parameterType="int">
-		SELECT category_id, user_id, category, description
-		  FROM board_category
-		 WHERE category_id = #{categoryId};
+	<select id="selectBoardCategoryByPk" resultType="Board" parameterType="int">
+		SELECT b.board_id, b.title, b.writer, b.content, b.view_cnt, b.reg_date
+		  FROM board b
+		  JOIN board_category bc 
+		    ON b.category_id = bc.category_id
+		 WHERE bc.category_id = #{categoryId}
+		 ORDER BY b.reg_date DESC;
 	</select>
 
 	<!-- 삭제 -->

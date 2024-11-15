@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.tong.board.model.Board;
 import com.ssafy.tong.board.model.BoardCategory;
 import com.ssafy.tong.board.model.service.BoardCategoryService;
 
@@ -45,14 +46,14 @@ public class BoardCategoryController {
 	}
 	
 	
-	// 상세 조회
+	// 상세 조회 : 카테고리별 게시글 조회
 	@GetMapping("{category_id}")
-	public ResponseEntity<BoardCategory> detail(@PathVariable("category_id") int categoryId) {
-		BoardCategory boardCategory = boardCategoryService.detail(categoryId);
-		if(boardCategory == null) { // 요청한 게시글 존재하지 않는 경우
+	public ResponseEntity<Object> detail(@PathVariable("category_id") int categoryId) {
+		List<Board> list = boardCategoryService.detail(categoryId);
+		if(list == null) { // 요청한 게시글 존재하지 않는 경우
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(boardCategory);
+		return ResponseEntity.status(HttpStatus.OK).body(list);
 	}
 	
 	

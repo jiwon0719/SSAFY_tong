@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.ssafy.tong.board.model.Board;
 import com.ssafy.tong.board.model.BoardCategory;
 import com.ssafy.tong.board.model.dao.BoardCategoryDao;
 @Service
@@ -20,7 +21,7 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 	}
 	// 상세 조회
 	@Override
-	public BoardCategory detail(int categoryId) {
+	public List<Board> detail(int categoryId) {
 		return boardCategoryDao.selectBoardCategoryByPk(categoryId);
 	}
 	// 삭제
