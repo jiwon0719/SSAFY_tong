@@ -1,58 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-// 폼 데이터
-const postForm = ref({
-  category_id: '',
-  title: '',
-  writer: 'admin', // 실제로는 로그인된 사용자 정보를 사용
-  content: '',
-  view_cnt: 0
-})
-
-// 카테고리 목록 (실제로는 API에서 가져올 데이터)
-const categories = ref([
-  { category_id: 1, name: '자유게시판' },
-  { category_id: 2, name: '운동게시판' },
-  { category_id: 3, name: '마음게시판' }
-])
-
-// 게시글 등록
-const submitPost = () => {
-  // 유효성 검사
-  if (!postForm.value.category_id || !postForm.value.title || !postForm.value.content) {
-    alert('모든 필드를 입력해주세요.')
-    return
-  }
-
-  // 제목 길이 체크 (20자 제한)
-  if (postForm.value.title.length > 20) {
-    alert('제목은 20자를 초과할 수 없습니다.')
-    return
-  }
-
-  // 내용 길이 체크 (255자 제한)
-  if (postForm.value.content.length > 255) {
-    alert('내용은 255자를 초과할 수 없습니다.')
-    return
-  }
-
-  // TODO: API 호출하여 게시글 등록
-  console.log('게시글 등록:', postForm.value)
-  
-  // 등록 후 목록으로 이동
-  router.push('/community')
-}
-
-// 목록으로 돌아가기
-const goBack = () => {
-  router.push('/community')
-}
-</script>
-
 <template>
   <div class="post-create">
     <h1>게시글 등록</h1>
@@ -60,19 +5,11 @@ const goBack = () => {
     <div class="post-form">
       <div class="form-group">
         <label>카테고리</label>
-        <select 
-          v-model="postForm.category_id"
-          class="form-input"
-        >
-          <option value="">카테고리를 선택해주세요</option>
-          <option 
-            v-for="category in categories" 
-            :key="category.category_id"
-            :value="category.category_id"
-          >
-            {{ category.name }}
-          </option>
-        </select>
+        <input 
+          type="text" 
+          :value="selectCategoryTitle"
+          disabled
+          class="form-input">
       </div>
 
       <div class="form-group">
@@ -125,6 +62,83 @@ const goBack = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCommunityStore} from '@/stores/community';
+import { useBoardStore} from '@/stores/board';
+import { storeToRefs } from 'pinia';
+
+const router = useRouter()
+const communityStore = useCommunityStore();
+const boardStore = useBoardStore();
+// 반응형 상태를 가져오는 방법
+const { selectCategoryId, selectCategoryTitle } = storeToRefs(communityStore)
+
+// 폼 데이터
+const postForm = ref({
+  categoryId: selectCategoryId.value,
+  title: '',
+  writer: 'admin', // 실제로는 로그인된 사용자 정보를 사용
+  content: '',
+  viewCnt: 0
+})
+
+
+// 컴포넌트 마운트 시 카테고리 목록 로드
+onMounted(async () => {
+  await communityStore.getcategoryList()
+
+  console.log(selectCategoryId.value)
+  if(selectCategoryId.value) {
+    postForm.value.categoryId = selectCategoryId.value
+  }
+})
+
+
+// 게시글 등록
+const submitPost = async () => {
+  // 유효성 검사
+  if (!postForm.value.categoryId || !postForm.value.title || !postForm.value.content) {
+    alert('모든 필드를 입력해주세요.')
+    return
+  }
+
+  // 제목 길이 체크 (20자 제한)
+  if (postForm.value.title.length > 20) {
+    alert('제목은 20자를 초과할 수 없습니다.')
+    return
+  }
+
+  // 내용 길이 체크 (255자 제한)
+  if (postForm.value.content.length > 255) {
+    alert('내용은 255자를 초과할 수 없습니다.')
+    return
+  }
+
+  try {
+    console.log(postForm.value)
+    await boardStore.createBoard(postForm.value)
+    alert("게시글이 성공적으로 등록되었습니다.")
+
+    // 게시글 등록 후 해당 카테고리의 게시글 목록을 새로 가져옴
+    await communityStore.fetchPostsByCategory(postForm.value.categoryId, selectCategoryTitle.value)
+
+    // 등록 후 목록으로 이동
+    router.push('/community')  
+  } catch(error) {
+    alert("게시글 등록에 실패했습니다.")
+    console.log("게시글 등록 오류:", error)
+    console.log(postForm.value)
+  }
+}
+
+// 목록으로 돌아가기
+const goBack = () => {
+  router.push('/community')
+}
+</script>
 
 <style scoped>
 .post-create {
