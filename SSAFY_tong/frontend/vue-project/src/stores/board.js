@@ -3,8 +3,10 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-const BOARD_API_URL = `http://localhost:8080/api/board`
-const REST_API_URL = `http://localhost:8080/api/boardCategory`
+// const BOARD_API_URL = `http://localhost:8080/api/board`
+// const REST_API_URL = `http://localhost:8080/api/boardCategory`
+const BOARD_API_URL = `http://192.168.210.55:8080/api/board`
+const REST_API_URL = `http://192.168.210.55:8080/api/boardCategory`
 
 export const useBoardStore = defineStore('board', () => {
   const boardList = ref([]) // 게시글 목록
