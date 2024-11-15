@@ -27,15 +27,17 @@
       <br>
 
       <!-- 일반 게시판 -->
-      <div class="board-section" v-for="category in store.categoryList">
+      <router-link to="/community">
+      <div class="board-section" v-for="category in store.categoryList" :key="category.categoryId"  @click="fetchCategoryPosts(category.categoryId, category.category)">
         <div class="info-board">
-          <span @click="console.log(category.categoryId); store.selectCategoryIMethod(category.categoryId)">📝 {{ category.category }}</span>
+            <span>📝 {{ category.category }}</span>
+          </div>
+          <div class="board-item">
+            <span class="board-desc">{{ category.description }}</span>
+          </div>
         </div>
-        <div class="board-item">
-          <span class="board-desc">{{ category.description }}</span>
-        </div>
-      </div>
-    </aside>
+      </router-link>
+    </aside>  
 
     <!-- 오른쪽 메인 컨텐츠 영역 -->
     <main class="main-content">
@@ -55,6 +57,13 @@ const store = useCommunityStore();
 onMounted(() => {
     store.getcategoryList();
 })
+
+// 선택한 카테고리의 게시글을 가져오는 메서드
+const fetchCategoryPosts = (categoryId, categoryTitle) => {
+  console.log(categoryId);
+  
+  store.fetchPostsByCategory(categoryId, categoryTitle); // Pinia 스토어의 fetchPostsByCategory 호출
+};
 
 </script>
 

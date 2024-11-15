@@ -9,7 +9,7 @@ public interface BoardCategoryDao {
 	// 전체 조회
 	List<BoardCategory> selectBoardCategory();
 	// 상세 조회
-	Board selectBoardCategoryByPk(int categoryId);
+	List<Board> selectBoardCategoryByPk(int categoryId);
 	// 삭제
 	void deleteBoardCategory(int categoryId);
 	// 삽입

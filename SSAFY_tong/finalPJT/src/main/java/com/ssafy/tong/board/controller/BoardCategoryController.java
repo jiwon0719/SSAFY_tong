@@ -48,12 +48,12 @@ public class BoardCategoryController {
 	
 	// 상세 조회 : 카테고리별 게시글 조회
 	@GetMapping("{category_id}")
-	public ResponseEntity<Board> detail(@PathVariable("category_id") int categoryId) {
-		Board board = boardCategoryService.detail(categoryId);
-		if(board == null) { // 요청한 게시글 존재하지 않는 경우
+	public ResponseEntity<Object> detail(@PathVariable("category_id") int categoryId) {
+		List<Board> list = boardCategoryService.detail(categoryId);
+		if(list == null) { // 요청한 게시글 존재하지 않는 경우
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
-		return ResponseEntity.status(HttpStatus.OK).body(board);
+		return ResponseEntity.status(HttpStatus.OK).body(list);
 	}
 	
 	

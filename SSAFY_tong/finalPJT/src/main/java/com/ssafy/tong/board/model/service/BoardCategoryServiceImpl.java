@@ -21,7 +21,7 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 	}
 	// 상세 조회
 	@Override
-	public Board detail(int categoryId) {
+	public List<Board> detail(int categoryId) {
 		return boardCategoryDao.selectBoardCategoryByPk(categoryId);
 	}
 	// 삭제

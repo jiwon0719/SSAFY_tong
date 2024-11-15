@@ -9,7 +9,7 @@ public interface BoardCategoryService {
 	// 전체 조회
 	List<BoardCategory> list();
 	// 상세 조회
-	Board detail(int categoryId);
+	List<Board> detail(int categoryId);
 	// 삭제
 	void remove(int categoryId);
 	// 등록
