@@ -30,11 +30,11 @@
           <!-- 게시물 목록 -->
           <div v-if="store.boardList.length > 0">
             <div class="posts-container" v-for="board in store.boardList" :key="board.boardId" @click="viewBoardDetail(board.boardId)">
-              <router-link to="/communityDetail">
+              <router-link to="/communityDetail" class= "detaillink">
                 <div class="post-item">
                   <div class="post-content">
                     <div class="user-info">
-                      <div class="user-avatar">😊</div>
+                      <div class="user-avatar">  <!-- 😊 --></div>
                       <div class="post-details" >
                         <p class="username">{{ board.writer }}</p>
                         <p class="post-text">{{ board.title }}</p>
@@ -95,6 +95,13 @@
   </script>
   
   <style scoped>
+
+  .detaillink {
+  text-decoration: none; /* 밑줄 제거 */
+  color: inherit; /* 기본 색상 유지 */
+  }
+
+
   /* main-content의 스타일을 수정 */
   .main-content {
     flex: 1;
@@ -177,6 +184,7 @@
   }
   
   .post-item {
+    z-index: 2;
     background: white;
     border-radius: 8px;
     padding: 15px;
@@ -194,6 +202,7 @@
   }
   
   .user-avatar {
+
     width: 40px;
     height: 40px;
     border-radius: 50%;
