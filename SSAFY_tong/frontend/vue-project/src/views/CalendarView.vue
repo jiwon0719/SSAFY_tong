@@ -21,11 +21,10 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 1057px;
   height: 871px;
   border-radius: 20px;
   overflow: hidden;
-  transform: translate(-50%, -50%); /* 화면 중앙으로 이동 */
+  transform: translate(-30%, -80%); /* 화면 중앙으로 이동 */
       flex-grow: 1;
       .text-2024-sep {
           position: absolute;

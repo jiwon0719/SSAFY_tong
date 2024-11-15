@@ -137,7 +137,7 @@
     .menu {
         position: relative;
         top: 0px;
-        left: 1000px;
+        left: 960px;
         width: 739px;
         height: 108px;
         overflow: hidden;

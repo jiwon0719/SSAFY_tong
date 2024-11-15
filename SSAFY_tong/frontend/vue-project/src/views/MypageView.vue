@@ -8,7 +8,7 @@
       <hr>
       <br>
 
-      <router-link to="/mypage">
+      <router-link to="/mypage" class="text-none">
         <div class="board-section" >
           <div class="info-board">
             <span>🧐 나의 매칭 전문가</span>
@@ -19,7 +19,7 @@
         </div>
       </router-link>
 
-      <router-link to="/chatList">
+      <router-link to="/chatList" class="text-none">
         <div class="board-section">
           <div class="info-board">
             <span>💬 채팅</span>
@@ -30,7 +30,7 @@
         </div>
       </router-link>
 
-      <router-link to="/updateUserInfo">
+      <router-link to="/updateUserInfo" class="text-none">
         <div class="board-section">
           <div class="info-board">
             <span>⚙️ 회원정보 수정</span>
@@ -116,6 +116,7 @@
 }
 
 .board-item {
+  
   /* display: flex; */
   display : inline-block;
   align-items: center;
@@ -133,7 +134,8 @@
 /* main-content의 스타일을 수정 */
 .main-content {
   flex: 1;
-  margin-left: 280px; /* sidebar 너비만큼 마진 */
+  margin-top: 20px;
+  margin-left: 100px; 
   padding: 20px;
   min-height: 100vh;
   position: relative;
@@ -294,5 +296,9 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
+}
+
+.text-none {
+  text-decoration: none;
 }
 </style>
