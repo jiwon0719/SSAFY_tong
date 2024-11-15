@@ -54,14 +54,13 @@ import { useCommunityStore } from '@/stores/community'
 import { ref, onMounted } from 'vue';
 
 const store = useCommunityStore(); 
+
 onMounted(() => {
     store.getcategoryList();
 })
 
 // 선택한 카테고리의 게시글을 가져오는 메서드
 const fetchCategoryPosts = (categoryId, categoryTitle) => {
-  console.log(categoryId);
-  
   store.fetchPostsByCategory(categoryId, categoryTitle); // Pinia 스토어의 fetchPostsByCategory 호출
 };
 

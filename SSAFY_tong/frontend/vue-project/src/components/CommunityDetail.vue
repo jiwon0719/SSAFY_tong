@@ -1,16 +1,108 @@
+<template>
+  <div class="post-detail">
+    <!-- 게시글 헤더 -->
+    <header class="post-header">
+      <h1>{{ post.title }}</h1>
+      <div class="post-info">
+        <span>작성자: {{ post.writer }}</span>
+        <span>작성일: {{ post.regDate }}</span>
+        <span>조회수: {{ post.viewCnt }}</span>
+        <span>댓글수: {{ post.commentCount }}</span> 
+      </div>
+    </header>
+
+    <!-- 게시글 내용 -->
+    <div class="post-content">
+      {{ post.content }}
+    </div>
+
+    <!-- 게시글 작업 버튼 -->
+    <div class="post-actions">
+      <button class="btn">수정</button>
+      <button class="btn">삭제</button>
+      <button class="btn" @click="$router.push('/community')">목록으로</button>
+    
+    </div>
+
+    <!-- 댓글 섹션 -->
+    <section class="comments-section">
+      <h2>댓글</h2>
+      
+      
+      <!-- 댓글 목록 -->
+      <div class="comments-list">
+          <div v-for="comment in comments" :key="comment.id" class="comment">
+              <div class="comment-header">
+                  <span class="author">{{ comment.author }}</span>
+                  <span class="date">{{ comment.date }}</span>
+                </div>
+                <div class="comment-content">{{ comment.content }}</div>
+                <div class="comment-actions">
+                    <button @click="replyToId = comment.id">대댓글</button>
+                </div>
+                
+                <!-- 대댓글 작성 폼 -->
+                <div v-if="replyToId === comment.id" class="reply-form">
+                    <textarea 
+                    v-model="newReply"
+                    placeholder="답글을 작성해주세요"
+                    ></textarea>
+                    <button @click="addReply(comment.id)">등록</button>
+                </div>
+                
+                <!-- 대댓글 목록 -->
+                <div v-for="reply in comment.replies" 
+                :key="reply.id" 
+                class="reply">
+                <div class="reply-header">
+                    <span class="author">{{ reply.author }}</span>
+                    <span class="date">{{ reply.date }}</span>
+                </div>
+                <div class="reply-content">{{ reply.content }}</div>
+            </div>
+        </div>
+    </div>
+    <!-- 댓글 작성 -->
+    <div class="comment-form">
+      <textarea 
+        v-model="newComment"
+        placeholder="댓글을 작성해주세요"
+      ></textarea>
+      <button @click="addComment">댓글 등록</button>
+    </div>
+ 
+</section>
+  </div>
+</template>
+
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
+import { useBoardStore } from '@/stores/board';
+
+const boardStore = useBoardStore();
 
 // 게시글 상세 정보
 const post = reactive({
-  id: 1,
-  title: '게시글 제목',
-  content: '게시글 내용입니다.',
-  author: '작성자',
-  date: '2024-10-31 17:56',
-  views: 21,
-  commentCount: 4
+  boardId: boardStore.currentBoard.boardId,
+  title: boardStore.currentBoard.title,
+  content: boardStore.currentBoard.content,
+  writer: boardStore.currentBoard.writer,
+  regDate: boardStore.currentBoard.regDate,
+  viewCnt: boardStore.currentBoard.viewCnt,
+  commentCount: 0
 })
+
+// 다른 게시글 선택시 데이터 변경 처리
+watch(() => boardStore.currentBoard, (newBoard) => {
+  post.boardId = newBoard.boardId
+  post.title = newBoard.title
+  post.content = newBoard.content
+  post.writer = newBoard.writer
+  post.regDate = newBoard.regDate
+  post.viewCnt = newBoard.viewCnt
+  post.commentCount = newBoard.commentCount
+})
+
 
 // 댓글 목록
 const comments = reactive([
@@ -66,83 +158,6 @@ const addReply = (commentId) => {
   }
 }
 </script>
-
-<template>
-  <div class="post-detail">
-    <!-- 게시글 헤더 -->
-    <header class="post-header">
-      <h1>{{ post.title }}</h1>
-      <div class="post-info">
-        <span>작성자: {{ post.author }}</span>
-        <span>작성일: {{ post.date }}</span>
-        <span>조회수: {{ post.views }}</span>
-        <span>댓글수: {{ post.commentCount }}</span>
-      </div>
-    </header>
-
-    <!-- 게시글 내용 -->
-    <div class="post-content">
-      {{ post.content }}
-    </div>
-
-    <!-- 게시글 작업 버튼 -->
-    <div class="post-actions">
-      <button class="btn">수정</button>
-      <button class="btn">삭제</button>
-      <button class="btn" @click="$router.push('/community')">목록으로</button>
-    
-    </div>
-
-    <!-- 댓글 섹션 -->
-    <section class="comments-section">
-      <h2>댓글</h2>
-      
-      
-      <!-- 댓글 목록 -->
-      <div class="comments-list">
-          <div v-for="comment in comments" :key="comment.id" class="comment">
-              <div class="comment-header">
-                  <span class="author">{{ comment.author }}</span>
-                  <span class="date">{{ comment.date }}</span>
-                </div>
-                <div class="comment-content">{{ comment.content }}</div>
-                <div class="comment-actions">
-                    <button @click="replyToId = comment.id">답글</button>
-                </div>
-                
-                <!-- 대댓글 작성 폼 -->
-                <div v-if="replyToId === comment.id" class="reply-form">
-                    <textarea 
-                    v-model="newReply"
-                    placeholder="답글을 작성해주세요"
-                    ></textarea>
-                    <button @click="addReply(comment.id)">답글 등록</button>
-                </div>
-                
-                <!-- 대댓글 목록 -->
-                <div v-for="reply in comment.replies" 
-                :key="reply.id" 
-                class="reply">
-                <div class="reply-header">
-                    <span class="author">{{ reply.author }}</span>
-                    <span class="date">{{ reply.date }}</span>
-                </div>
-                <div class="reply-content">{{ reply.content }}</div>
-            </div>
-        </div>
-    </div>
-    <!-- 댓글 작성 -->
-    <div class="comment-form">
-      <textarea 
-        v-model="newComment"
-        placeholder="댓글을 작성해주세요"
-      ></textarea>
-      <button @click="addComment">댓글 등록</button>
-    </div>
- 
-</section>
-  </div>
-</template>
 
 <style scoped>
 .post-detail {

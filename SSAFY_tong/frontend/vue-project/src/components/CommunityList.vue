@@ -22,14 +22,14 @@
                 <option>10개씩 보기▼</option>
               </select>
               <router-link to="/communityBoardRegist">
-                  <button class="write-post-btn">게시물 작성</button>
+                  <button class="write-post-btn" @click="onPostClick">게시물 작성</button>
               </router-link>
             </div>
           </div>
   
           <!-- 게시물 목록 -->
           <div v-if="store.boardList.length > 0">
-            <div class="posts-container" v-for="board in store.boardList" :key="board.boardId">
+            <div class="posts-container" v-for="board in store.boardList" :key="board.boardId" @click="viewBoardDetail(board.boardId)">
               <router-link to="/communityDetail">
                 <div class="post-item">
                   <div class="post-content">
@@ -71,9 +71,26 @@
   
   <script setup>
   import { useCommunityStore } from '@/stores/community'
+  import { useBoardStore } from '@/stores/board';
   import { ref, onMounted } from 'vue';
+  import { storeToRefs } from 'pinia';
   
   const store = useCommunityStore(); 
+  const boardStore = useBoardStore();
+  const { selectCategoryId, selectCategoryTitle } = storeToRefs(store);
+  
+  // 게시글 작성 버튼 클릭 시 호출되는 함수
+  const onPostClick = () => {
+    console.log("선택된 카테고리 ID:", selectCategoryId.value);
+    console.log("선택된 카테고리 제목:", selectCategoryTitle.value);
+    // 여기서 추가로 게시글 작성 로직을 수행할 수 있습니다.
+  };
+
+  // 게시글 상세 이동
+  const viewBoardDetail = async(boardId) => {
+    await boardStore.getBoardDetail(boardId);
+    console.log("게시글 상세 조회 완료 후 currentBoard:", boardStore.currentBoard);  // getBoardDetail 완료 후 값 출력
+  }
   
   </script>
   

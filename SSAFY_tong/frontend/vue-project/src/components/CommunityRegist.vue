@@ -1,37 +1,3 @@
-<script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-
-const router = useRouter()
-
-// 폼 데이터
-const postForm = ref({
-  category: '',
-  content: '',
-  author: 'admin' // 실제로는 로그인된 사용자 정보를 사용
-})
-
-// 게시글 등록
-const submitPost = () => {
-  // 유효성 검사
-  if (!postForm.value.category || !postForm.value.content) {
-    alert('모든 필드를 입력해주세요.')
-    return
-  }
-
-  // TODO: API 호출하여 게시글 등록
-  console.log('게시판 등록:', postForm.value)
-  
-  // 등록 후 목록으로 이동
-  router.push('/community')
-}
-
-// 목록으로 돌아가기
-const goBack = () => {
-  router.push('/community')
-}
-</script>
-
 <template>
   <div class="post-create">
     <h1>게시판 등록</h1>
@@ -51,7 +17,7 @@ const goBack = () => {
         <label>작성자</label>
         <input 
           type="text" 
-          v-model="postForm.author"
+          v-model="postForm.userId"
           disabled
           class="form-input"
         >
@@ -84,6 +50,53 @@ const goBack = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useCommunityStore } from '@/stores/community';
+import { storeToRefs } from 'pinia';
+
+const router = useRouter()
+const store = useCommunityStore()
+
+// 폼 데이터
+const postForm = ref({
+  category: '',
+  content: '',
+  userId: 'admin' // 실제로는 로그인된 사용자 정보를 사용
+})
+
+// 게시글 등록
+const submitPost = async () => {
+  // 유효성 검사
+  if (!postForm.value.category || !postForm.value.content) {
+    alert('모든 필드를 입력해주세요.')
+    return
+  }
+
+  try {
+    await store.createCategory({
+      category: postForm.value.category, 
+      description: postForm.value.content,
+      userId: postForm.value.userId
+    })
+
+    alert("카테고리가 성공적으로 등록되었습니다.")
+
+    // 등록 후 목록 이동
+    router.push('/community')
+  } catch(error) {
+    alert("카테고리 등록에 실패했습니다.")
+    console.error('카테고리 등록 오류', error)
+  }  
+}
+
+// 목록으로 돌아가기
+const goBack = () => {
+  router.push('/community')
+}
+</script>
 
 <style scoped>
 .post-create {
