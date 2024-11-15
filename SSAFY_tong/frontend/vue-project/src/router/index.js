@@ -102,7 +102,7 @@ const routes = [
             component: CommunityList,
           },
           {
-            path: '/communityDetail',
+            path: ':boardId',
             name: 'communityDetail',
             component: CommunityDetail,
           },

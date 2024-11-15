@@ -6,12 +6,13 @@ public class Comment {
 	private String commenter;
 	private String content;
 	private String regDate;
-	private int parentCommentId;
+	private Integer parentCommentId;
 	
-	public int getParentCommentId() {
+
+	public Integer getParentCommentId() {
 		return parentCommentId;
 	}
-	public void setParentCommentId(int parentCommentId) {
+	public void setParentCommentId(Integer parentCommentId) {
 		this.parentCommentId = parentCommentId;
 	}
 	public int getCommentId() {

@@ -16,8 +16,8 @@ public class CommentServiceImpl implements CommentService {
 
 	// 전체 조회
 	@Override
-	public List<Comment> list() {
-		return commentDao.selectComment();
+	public List<Comment> list(int boardId) {
+		return commentDao.selectComment(boardId);
 	}
 	// 삭제
 	@Override
