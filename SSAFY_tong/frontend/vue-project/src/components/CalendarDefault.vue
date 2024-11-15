@@ -5,9 +5,7 @@
                 2024 SEP
             </div>
             <div class="caldendar-frame">
-                
                 <component :is="currentComponentdefault"/>
-
             </div>
         </div>
         <div class="rectangle-46">

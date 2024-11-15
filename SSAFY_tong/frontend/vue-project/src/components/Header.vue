@@ -100,6 +100,12 @@
         align-items: center;
         justify-content: center;
         text-align: center;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: scale(1.05);
+        }
     }
     .login {
         position: absolute;
@@ -110,6 +116,15 @@
         border-radius: 10px;
         overflow: hidden;
         background: #DC606F;
+
+
+        &:hover {
+            background: #E2495B;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        
         .mdiuser-outline {
             position: absolute;
             top: 9px;

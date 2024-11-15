@@ -3,7 +3,7 @@
       <div class="chat-header">
         <router-link to="/chatList" class="back-button"
         style="">⇦</router-link>
-        <span class="chat-title">채팅방 이름</span>
+        <span class="chat-title">상대방 이름</span>
         
         <!-- 다크 모드 토글 버튼 추가 -->
         <button @click="toggleDarkMode" class="toggle-btn">
@@ -138,6 +138,10 @@
 .chatting-room.dark-mode .back-button {
     color: #fff; /* 다크 모드에서 글자 색을 흰색으로 */
 }
+
+.chatting-room.dark-mode .chat-input input::placeholder {
+    color: #bbb;  /* 다크 모드에서 placeholder 색상 */
+}
     
     .chat-title {
         font-size: 1.1rem;
@@ -195,8 +199,7 @@
 .chatting-room.dark-mode .message.other .message-content {
   background-color: #777;
 }
-/* 다크 모드에서 버튼과 입력 필드 텍스트 색 */
-.chatting-room.dark-mode .chat-input input,
+/* 다크 모드에서 버튼*/
 .chatting-room.dark-mode .chat-input button {
   color: #fff; /* 다크 모드 텍스트 색 */
 }

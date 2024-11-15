@@ -116,6 +116,12 @@
             align-items: center;
             justify-content: center;
             text-align: center;
+
+            transition: transform 0.3s ease;
+
+            &:hover {
+            transform: scale(1.05);
+        }
         }
         .frame-3 {
             z-index: 1;

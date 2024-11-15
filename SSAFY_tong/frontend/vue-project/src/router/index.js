@@ -44,7 +44,6 @@ const routes = [
         path: '/calendar',
         name: 'calendar',
         component: CalendarView,
-
         children: [
           {
             path: '',
@@ -52,12 +51,12 @@ const routes = [
             component: CalendarDefault,
           },
           {
-            path: '/calendarDefaultCalendar',
+            path: 'calendarDefaultCalendar',  // 상대 경로로 수정
             name: 'calendarDefaultCalendar',
             component: CalendarDefaultCalendar,
           },
           {
-            path: '/calendarDefaultReservation',
+            path: 'calendarDefaultReservation',  // 상대 경로로 수정
             name: 'calendarDefaultReservation',
             component: CalendarDefaultReservation,
           },
