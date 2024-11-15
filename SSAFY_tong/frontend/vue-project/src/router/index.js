@@ -37,15 +37,66 @@ const routes = [
 
     children: [
       {
-        path: '', // 빈 경로는 MainDefault로 기본 렌더링
-        component: MainDefault, // MainDefault 컴포넌트를 기본 컴포넌트로 설정
+        path: '',
+        component: MainDefault,
+      },
+      {
+        path: '/calendar',
+        name: 'calendar',
+        component: CalendarView,
+
+        children: [
+          {
+            path: '',
+            name: 'calendarDefault',
+            component: CalendarDefault,
+          },
+          {
+            path: '/calendarDefaultCalendar',
+            name: 'calendarDefaultCalendar',
+            component: CalendarDefaultCalendar,
+          },
+          {
+            path: '/calendarDefaultReservation',
+            name: 'calendarDefaultReservation',
+            component: CalendarDefaultReservation,
+          },
+        ]
+      },
+      {
+        path: '/mypage',
+        name: 'mypage',
+        component: MypageView,
+
+        children: [
+          {
+            path: '',
+            name: 'mypageDefault',
+            component: MypageDefault,
+          },
+          {
+            path: '/chatList',
+            name: 'chatList',
+            component: ChatList,
+          },
+          {
+            path: '/chattingRoom',
+            name: 'chattingRoom',
+            component: ChattingRoom,
+          },
+          {
+            path: '/updateUserInfo',
+            name: 'updateUserInfo',
+            component: UpdateUserInfo,
+          },
+        ],
       },
       {
         path: '/community',
         name: 'community',
         component: CommunityView,  // community 페이지
-    
-        children :[
+
+        children: [
           {
             path: '',
             name: 'communityList',
@@ -68,110 +119,61 @@ const routes = [
           },
         ]
       },
-    ],
+      {
+        path: '/matching',
+        name: 'matching',
+        component: MatchingView,
 
+        children: [
+          {
+            path: '',
+            name: 'matchingDefault',
+            component: MatchingDefault,
+          },
+          {
+            path: '/matchingExpertDetail',
+            name: 'matchingExpertDetail',
+            component: MatchingExpertDetail,
+          },
+          {
+            path: '/matchingExpertRegist',
+            name: 'matchingExpertRegist',
+            component: MatchingExpertRegist,
+          },
+        ]
+      },
+    ],
   },
   {
     path: '/signUp',
     name: 'signUp',
     component: SignUpView,  // signUp 페이지
     meta: { layout: 'none' }  // 헤더와 풋터가 필요 없는 페이지
-
-  }, 
+  },
   {
     path: '/signIn',
     name: 'signIn',
     component: SignInView,  // signIn 페이지
     meta: { layout: 'none' }  // 헤더와 풋터가 필요 없는 페이지
-
-  },  
-  {
-    path : '/mypage',
-    name : 'mypage',
-    component : MypageView,
-
-    children : [
-      {
-        path : '',
-        name : 'mypageDefault',
-        component : MypageDefault,
-      },
-      {
-        path : '/chatList',
-        name : 'chatList',
-        component : ChatList,
-      },
-      {
-        path : '/chattingRoom',
-        name : 'chattingRoom',
-        component : ChattingRoom,
-      },
-      {
-        path : '/updateUserInfo',
-        name : 'updateUserInfo',
-        component : UpdateUserInfo,
-      },
-    ]
   },
-  {
-    path: '/calendar',
-    name: 'calendar',
-    component : CalendarView,
-
-    children : [
-      {
-        path : '',
-        name : 'calendarDefault',
-        component : CalendarDefault,
-
-        children : [
-          {
-            path : '/calendarDefaultCalendar',
-            name : 'calendarDefaultCalendar',
-            component : CalendarDefaultCalendar
-          },
-          {
-            path : '/calendarDefaultReservation',
-            name : 'calendarDefaultReservation',
-            component : CalendarDefaultReservation
-          },
-        ]
-      },
-      
-    ]
-  },
-  {
-    path : '/matching',
-    name : 'matching',
-    component : MatchingView,
-
-    children : [
-      {
-        path: '/',
-        name: 'matchingDefault',
-        component : MatchingDefault,
-      },
-      {
-        path: '/matchingExpertDetail',
-        name: 'matchingExpertDetail',
-        component : MatchingExpertDetail,
-      },
-      {
-        path: '/matchingExpertRegist',
-        name: 'matchingExpertRegist',
-        component : MatchingExpertRegist,
-      },
-    ]
-
-    
-  },
-  
-
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes
-})
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 }; // 기본적으로 최상단으로 이동
+    }
+  }
+});
+
+// 페이지 이동 후 항상 상단으로 스크롤 이동
+router.afterEach(() => {
+  window.scrollTo(0, 0); // 페이지 이동 후 항상 최상단으로 스크롤
+});
+
 
 export default router

@@ -34,8 +34,9 @@
   
   <style lang="scss">
   .footer {
+    position : fixed;
     width: 100%; /* 화면 너비의 100% */
-    height: 20vh; /* 화면 높이에 비례하여 높이를 20%로 설정 */
+    height: 20vh; 
     background: #272629;
     display: flex;
     justify-content: flex-start; /* 아이콘을 왼쪽으로 고정 */

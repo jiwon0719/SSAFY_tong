@@ -43,7 +43,12 @@ export default {
   flex-grow: 1;  /* 공간을 다 차지하도록 설정 */
   padding: 20px; /* 여백을 추가 */
   overflow: hidden; /* 스크롤을 사용하지 않도록 */
-  min-height: 0; /* 자식 요소가 넘칠 수 있도록 설정 */
+  /* min-height: 0; 자식 요소가 넘칠 수 있도록 설정 */
+
+  min-height: calc(100vh - 20vh); /* 100vh에서 헤더와 풋터 높이를 뺀 값으로 설정 */
+  
+  padding-top: 10vh;
+  padding-bottom: 10vh;
 }
 
 /* header와 footer의 높이를 고정 */

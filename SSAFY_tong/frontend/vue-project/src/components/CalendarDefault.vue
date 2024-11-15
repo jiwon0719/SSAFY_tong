@@ -52,7 +52,7 @@
 
 <style lang="scss">
     .calendarframe {
-    width: 1389px;
+    width: 100%;
     height: 813px;
     overflow: hidden;
     .frame-31 {

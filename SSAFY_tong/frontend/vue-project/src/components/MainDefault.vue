@@ -1,9 +1,9 @@
 <template>
     <div class="main-container">
-      <div class="quadrant quadrant-1">제1사분면</div>
-      <div class="quadrant quadrant-2">제2사분면</div>
-      <div class="quadrant quadrant-3">제3사분면</div>
-      <div class="quadrant quadrant-4">제4사분면</div>
+      <div class="quadrant quadrant-1">날씨</div>
+      <div class="quadrant quadrant-2">예약내역</div>
+      <div class="quadrant quadrant-3">게시판</div>
+      <div class="quadrant quadrant-4">..</div>
     </div>
   </template>
   

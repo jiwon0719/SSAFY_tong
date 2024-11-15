@@ -1,8 +1,10 @@
 <template>
     <div class="header">
-        <div class="tong">
-            TONG
-        </div>
+        <router-link to="/main">
+            <div class="tong">
+                TONG
+            </div>
+        </router-link>    
 
         <!-- 로그인 버튼을 router-link로 감싸서 로그인 페이지로 이동 -->
     <router-link to="/signIn" class="login">
@@ -135,7 +137,7 @@
     .menu {
         position: relative;
         top: 0px;
-        left: 1000px;
+        left: 960px;
         width: 739px;
         height: 108px;
         overflow: hidden;
