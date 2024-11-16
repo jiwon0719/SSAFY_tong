@@ -6,7 +6,7 @@ import com.ssafy.tong.comment.model.Comment;
 
 public interface CommentService {
 	// 전체 조회
-	List<Comment> list();
+	List<Comment> list(int boardId);
 	// 삭제
 	void remove(int commentId);
 	// 등록

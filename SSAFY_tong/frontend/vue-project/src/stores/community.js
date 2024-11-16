@@ -2,8 +2,8 @@ import { ref, onMounted } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-// const REST_API_URL = `http://localhost:8080/api/boardCategory`
-const REST_API_URL = `http://192.168.210.55:8080/api/boardCategory`
+const REST_API_URL = `http://localhost:8080/api/boardCategory`
+// const REST_API_URL = `http://192.168.210.55:8080/api/boardCategory`
 
 export const useCommunityStore = defineStore('community', () => {
   

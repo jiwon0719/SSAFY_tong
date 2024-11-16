@@ -6,7 +6,7 @@ import com.ssafy.tong.comment.model.Comment;
 
 public interface CommentDao {
 
-	List<Comment> selectComment();
+	List<Comment> selectComment(int boardId);
 
 	void deleteComment(int commentId);
 

@@ -27,11 +27,12 @@ public class CommentController {
 	}
 	
 	// (댓글) 전체 조회
-	@GetMapping
-	public ResponseEntity<Object> list() {
+	// 게시글별 댓글 조회 필요
+	@GetMapping("{board_id}")
+	public ResponseEntity<Object> list(@PathVariable("board_id") int boardId) {
 		ResponseEntity<Object> responseEntity;
 		try {
-			List<Comment> list = commentService.list();
+			List<Comment> list = commentService.list(boardId);
 			if(list.isEmpty()) {
 				responseEntity = new ResponseEntity<>(list, HttpStatus.NO_CONTENT); 
 			} else {
@@ -54,6 +55,7 @@ public class CommentController {
 	// (댓글) 등록
 	@PostMapping
 	public void regist(@RequestBody Comment comment) {
+		System.out.println(comment);
 		commentService.regist(comment);
 	}	
 	
