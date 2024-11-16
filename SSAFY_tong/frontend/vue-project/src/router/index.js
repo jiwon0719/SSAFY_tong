@@ -130,12 +130,12 @@ const routes = [
             component: MatchingDefault,
           },
           {
-            path: '/matchingExpertDetail',
+            path: 'detail/:expertId',
             name: 'matchingExpertDetail',
             component: MatchingExpertDetail,
           },
           {
-            path: '/matchingExpertRegist',
+            path: 'regist',
             name: 'matchingExpertRegist',
             component: MatchingExpertRegist,
           },

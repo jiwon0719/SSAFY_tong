@@ -49,7 +49,7 @@ public class BoardController {
 	@GetMapping("{board_id}")
 	public ResponseEntity<Board> detail(@PathVariable("board_id") int boardId) {
 		Board board = boardService.detail(boardId);
-		System.out.println(board);
+//		System.out.println(board);
 		if(board == null) { // 요청한 게시글 존재하지 않는 경우
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}

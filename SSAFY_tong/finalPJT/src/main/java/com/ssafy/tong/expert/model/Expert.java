@@ -16,8 +16,15 @@ public class Expert {
 	private double latitude; // 위도
 	private double longitude; // 경도
 	private List<ExpertImage> expertImage; // 전문가 상세페이지 - 이미지
+	private List<ExpertCareer> expertCareer; // 전문가 경력
 	
 	
+	public List<ExpertCareer> getExpertCareer() {
+		return expertCareer;
+	}
+	public void setExpertCareer(List<ExpertCareer> expertCareer) {
+		this.expertCareer = expertCareer;
+	}
 	public List<ExpertImage> getExpertImage() {
 		return expertImage;
 	}
@@ -101,6 +108,7 @@ public class Expert {
 		return "Expert [expertId=" + expertId + ", userId=" + userId + ", location=" + location + ", introduction="
 				+ introduction + ", price=" + price + ", priceDetail=" + priceDetail + ", grade=" + grade
 				+ ", totalScore=" + totalScore + ", totalScoreCnt=" + totalScoreCnt + ", companyName=" + companyName
-				+ ", latitude=" + latitude + ", longitude=" + longitude + "]";
+				+ ", latitude=" + latitude + ", longitude=" + longitude + ", expertImage=" + expertImage
+				+ ", expertCareer=" + expertCareer + "]";
 	}
 }

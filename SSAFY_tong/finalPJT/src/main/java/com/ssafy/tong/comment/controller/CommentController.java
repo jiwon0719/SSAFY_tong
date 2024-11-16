@@ -55,7 +55,7 @@ public class CommentController {
 	// (댓글) 등록
 	@PostMapping
 	public void regist(@RequestBody Comment comment) {
-		System.out.println(comment);
+//		System.out.println(comment);
 		commentService.regist(comment);
 	}	
 	

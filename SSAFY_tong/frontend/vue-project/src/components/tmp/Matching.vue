@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
     <div class="frame-">
         <div>
    <img src="../assets/images/Rectangle41.svg" alt="Rectangle Image" />
@@ -1912,4 +1912,4 @@ export default {
   },
 };
 
-</script>
+</script> -->
