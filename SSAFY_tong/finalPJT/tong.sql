@@ -107,7 +107,6 @@ CREATE TABLE `board_category_hold` (
     FOREIGN KEY (`category_id`) REFERENCES `board_category`(`category_id`) ON DELETE CASCADE
 );
 
-
 -- board 테이블: 게시글
 CREATE TABLE `board` (
     `board_id` INT NOT NULL AUTO_INCREMENT,  
@@ -240,7 +239,18 @@ VALUES
 (3, '열 번째 마음게시판 게시글', 'admin', '이것은 열 번째 테스트 게시글입니다.', 0, NOW());
 
 select * from board;
-=======
+-- 
+select * from user;
 select * from expert;
 select * from expert_image;
+select * from expert_career;
+select * from comment;
 
+
+-- 외래키 일시적으로 체크 해재: 테이블 안 필드 삭제 용이
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE expert;
+SET FOREIGN_KEY_CHECKS = 1;
+
+
+delete from expert_image;
