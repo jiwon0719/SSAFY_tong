@@ -81,9 +81,13 @@
 
 <style lang="scss">
 .header {
+    position: fixed; /* absolute에서 fixed로 변경 */
+    top: 0;
+    left: 0;
     width: 100%;
     height: 10vh;
-    overflow: hidden;
+    background: #fff; /* 배경색 추가 */
+    z-index: 1000; /* 다른 요소들 위에 표시되도록 */
     .tong {
         position: absolute;
         top: 4px;
@@ -149,10 +153,11 @@
             text-align: center;
         }
     }
+    /* menu 부분의 position 설정 수정 */
     .menu {
-        position: relative;
-        top: 0px;
-        left: 960px;
+        position: absolute; /* relative에서 absolute로 변경 */
+        right: 200px; /* left 값 대신 right 값으로 변경 */
+        top: 0;
         width: 739px;
         height: 108px;
         overflow: hidden;

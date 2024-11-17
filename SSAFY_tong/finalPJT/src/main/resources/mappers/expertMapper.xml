@@ -11,11 +11,25 @@
 	</select>
 	
 	<!-- 상세 조회 -->
+	<!-- 기본 정보 조회 -->
 	<select id="selectExpertByPK" resultType="Expert" parameterType="int">
 		SELECT expert_id, user_id, location, introduction, price, price_detail, grade, total_score, total_score_cnt, company_name, latitude, longitude
 		  FROM expert
 		 WHERE expert_id = #{expertId};
 	</select>
+	<!-- 커리어 정보 조회 -->
+	<select id="selectExpertCareerByPk" resultType="ExpertCareer" parameterType="int">
+		SELECT expert_career_id, expert_id, career_detail, start_date, end_date
+		  FROM expert_career
+		 WHERE expert_id = #{expertId};
+	</select>
+	<!-- 이미지 정보 조회 -->
+	<select id="selectExpertImageByPk" resultType="ExpertImage" parameterType="int">
+		SELECT file_id, expert_id, file_path, ori_name, system_name, extension
+		  FROM expert_image
+		 WHERE expert_id = #{expertId};
+	</select>
+	
 
 	<!-- 삭제 -->
 	<delete id="deleteExpert" parameterType="int">
@@ -42,6 +56,15 @@
 		);
 	</insert>
 	
+	<!-- 경력 업로드  -->
+	<insert id="insertExportCareer" parameterType="ExpertCareer">
+		INSERT INTO expert_career(
+			expert_id, career_detail, start_date, end_date
+		) VALUES (
+			#{expertId}, #{careerDetail}, #{startDate}, #{endDate}			
+		);
+	</insert>	
+	
 	<!-- 수정 -->
 	<update id="updateExpert" parameterType="Expert">
 		UPDATE expert
@@ -49,4 +72,14 @@
 		   	   grade = #{grade}, company_name = #{companyName}, latitude = #{latitude}, longitude = #{longitude}
 		 WHERE expert_id = #{expertId};
 	</update>
+	
+	
+	<!-- ExpertList : user + expert 조인 -->
+	<select id="selectExpertList" resultType="ExpertList">
+		SELECT e.expert_id, e.user_id, u.name, e.location, e.grade, u.user_profile_img_path
+		FROM expert e
+		JOIN user u ON e.user_id = u.user_id
+	</select>
+	
+	
 </mapper>

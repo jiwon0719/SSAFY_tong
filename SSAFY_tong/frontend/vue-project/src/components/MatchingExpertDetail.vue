@@ -1,127 +1,132 @@
 <template>
-    <div class="matching-expert-container">
-      <!-- 캐러셀 섹션 -->
-      <div class="carousel-section">
-        <div class="carousel-wrapper">
-          <button class="carousel-btn prev-btn" @click="prevSlide">&#10094;</button>
-          <div class="carousel" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
-            <div v-for="(image, index) in images" :key="index" class="carousel-item">
-              <img :src="image" alt="전문가 이미지" />
+  <div class="expert-detail">
+    <!-- 로딩 상태 표시 -->
+    <div v-if="loading" class="loading-spinner">Loading...</div>
+    
+    <!-- 에러 메시지 표시 -->
+    <div v-else-if="error" class="error-message">{{ error }}</div>
+    
+    <!-- 메인 컨텐츠 -->
+    <template v-else>
+      <!-- 이미지 캐러셀 -->
+      <section class="carousel">
+        <div class="carousel-container">
+          <button class="carousel-btn prev" @click="prevSlide">&#10094;</button>
+          <div class="carousel-wrapper" :style="{ transform: `translateX(-${currentIndex * 100}%)` }">
+            <div v-for="image in expertImages" :key="image.fileId" class="carousel-slide">
+              <img :src="image.imageUrl" :alt="image.oriName" />
             </div>
           </div>
-          <button class="carousel-btn next-btn" @click="nextSlide">&#10095;</button>
+          <button class="carousel-btn next" @click="nextSlide">&#10095;</button>
         </div>
-      </div>
+      </section>
 
-      <!-- 프로필 정보 섹션 -->
-      <div class="profile-content">
-        <!-- 프로필 이미지와 이름 -->
+      <!-- 프로필 정보 -->
+      <section class="profile">
         <div class="profile-header">
           <div class="profile-image">
-            <img src="../assets/images/trainer.jpg" alt="트레이너 프로필" />
+            <img :src="expertImages[0]?.imageUrl" alt="프로필 이미지" />
           </div>
-          <div class="profile-name">
-            <h2>김XX <span class="sub-text">/ PT 쌤</span></h2>
+          <div class="profile-info">
+            <h2>{{ expertDetail?.companyName }} <span class="grade">/ {{ expertDetail?.grade }}</span></h2>
+            <div class="rating">평점: {{ averageScore }}점</div>
           </div>
         </div>
 
-        <!-- Information 섹션 -->
+        <!-- 위치 정보 -->
         <div class="info-section">
-          <h3 class="section-title">Information</h3>
-          <div class="info-content">
-            <p>🏠 서울특별시</p>
-            <p class="address-detail">서초/사당/방배/반포/강남권/강북권</p>
-            <p class="description">안녕하세요 새벽운동팀입니다.</p>
-            <p class="description">저희 새벽운동팀과 함께라면 건강한 몸관리와 더불어 자극이 확실히 오는 운동을 보장하고 있습니다.</p>
+          <h3>Information</h3>
+          <div class="content">
+            <p>🏠 {{ expertDetail?.location }}</p>
+            <p>{{ expertDetail?.introduction }}</p>
           </div>
         </div>
 
-        <!-- Price 섹션 -->
+        <!-- 가격 정보 -->
         <div class="info-section">
-          <h3 class="section-title">Price</h3>
-          <div class="info-content">
-            <p class="price">회당 44,000원</p>
-            <p class="price-detail">시설 이용권은 따로이며 / 상담 환영</p>
+          <h3>Price</h3>
+          <div class="content">
+            <p class="price">회당 {{ expertDetail?.price?.toLocaleString() }}원</p>
+            <p>{{ expertDetail?.priceDetail }}</p>
           </div>
         </div>
 
-        <!-- Career 섹션 -->
+        <!-- 경력 정보 -->
         <div class="info-section">
-          <h3 class="section-title">Career</h3>
-          <div class="info-content career-list">
-            <div class="career-item">
-              <span class="date">2020.03-2022.03</span>
-              <span class="career-desc">싸피 수석PT</span>
-            </div>
-            <div class="career-item">
-              <span class="date">2020.03-2022.03</span>
-              <span class="career-desc">싸피 수석PT</span>
-            </div>
-            <div class="career-item">
-              <span class="date">2020.03-2022.03</span>
-              <span class="career-desc">싸피 수석PT</span>
-            </div>
-            <div class="career-item">
-              <span class="date">2020.03-2022.03</span>
-              <span class="career-desc">싸피 수석PT</span>
+          <h3>Career</h3>
+          <div class="content">
+            <div v-for="career in expertCareers" :key="career.expertCareerId" class="career-item">
+              <span class="date">{{ career.startDate }} - {{ career.endDate }}</span>
+              <span class="description">{{ career.careerDetail }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Join 버튼 -->
-        <div class="join-button">
-                <router-link to="/matching" >
-                <button>Join</button>
-                </router-link>
-                <p>신청 후, 전문가 승인 시 채팅이 갈꺼에요. 조금만 기다려주세요.</p>
-            </div>
-        
-      </div>
-    </div>
-
+        <!-- 매칭 신청 버튼 -->
+        <div class="actions">
+          <button @click="handleJoinRequest" class="join-btn">매칭 신청</button>
+          <p class="join-notice">신청 후, 전문가 승인 시 채팅이 갈꺼에요. 조금만 기다려주세요.</p>
+        </div>
+      </section>
+    </template>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { useRoute } from 'vue-router';
+import { useExpertStore } from '@/stores/expert';
+import { storeToRefs } from 'pinia';
 
-const images = ref([
-  new URL('../assets/images/trainer_1.jpg', import.meta.url).href,
-  new URL('../assets/images/trainer_2.jpg', import.meta.url).href,
-  new URL('../assets/images/trainer_3.jpg', import.meta.url).href,
-]);
+const route = useRoute();
+const expertStore = useExpertStore();
+const { expertDetail, expertCareers, expertImages, loading, error, averageScore } = storeToRefs(expertStore);
 
+// 캐러셀 관련 상태 및 로직
 const currentIndex = ref(0);
 const slideInterval = ref(null);
-const slideDuration = 5000;
+const SLIDE_DURATION = 5000;
 
 const nextSlide = () => {
-  currentIndex.value = (currentIndex.value + 1) % images.value.length;
+  if (!expertImages.value.length) return;
+  currentIndex.value = (currentIndex.value + 1) % expertImages.value.length;
   resetAutoSlide();
 };
 
 const prevSlide = () => {
-  currentIndex.value = (currentIndex.value - 1 + images.value.length) % images.value.length;
+  if (!expertImages.value.length) return;
+  currentIndex.value = (currentIndex.value - 1 + expertImages.value.length) % expertImages.value.length;
   resetAutoSlide();
 };
 
-// 자동 슬라이드 타이머 초기화
-const resetAutoSlide = () => {
-  stopAutoSlide(); // 현재 타이머 멈추기
-  startAutoSlide(); // 타이머 다시 시작
-};
-
-
 const startAutoSlide = () => {
-  slideInterval.value = setInterval(() => {
-    nextSlide();
-  }, slideDuration);
+  if (expertImages.value.length <= 1) return;
+  slideInterval.value = setInterval(nextSlide, SLIDE_DURATION);
 };
 
 const stopAutoSlide = () => {
   clearInterval(slideInterval.value);
 };
 
-onMounted(() => {
+const resetAutoSlide = () => {
+  stopAutoSlide();
+  startAutoSlide();
+};
+
+// 매칭 신청 핸들러
+const handleJoinRequest = () => {
+  // TODO: 매칭 신청 로직 구현
+  console.log('매칭 신청', expertDetail.value?.expert_id);
+};
+
+onMounted(async () => {
+  const expertId = route.params.expertId;
+  if(!expertId) {
+    console.error('Expert ID is missing')
+    return;
+  }
+
+  await expertStore.fetchExpertDetail(expertId);
   startAutoSlide();
 });
 
@@ -131,46 +136,47 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-.matching-expert-container {
-  width: 100%;
+.expert-detail {
   max-width: 1200px;
   margin: 0 auto;
-  background: #ffffff;
+  padding: 20px;
 }
 
-/* 캐러셀 섹션 스타일 유지 */
-.carousel-section {
+.loading-spinner,
+.error-message {
+  text-align: center;
+  padding: 2rem;
+}
+
+/* 캐러셀 스타일 */
+.carousel {
+  position: relative;
   width: 100%;
   height: 50vh;
   overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.carousel-container {
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .carousel-wrapper {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.carousel {
   display: flex;
-  width: 100%;
   height: 100%;
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s ease;
 }
 
-.carousel-item {
+.carousel-slide {
   flex: 0 0 100%;
-  width: 100%;
   height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
-.carousel-item img {
-  max-height: 100%;
+.carousel-slide img {
   width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -178,40 +184,34 @@ onBeforeUnmount(() => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   color: white;
   border: none;
-  padding: 10px;
+  padding: 1rem;
   cursor: pointer;
-  font-size: 24px;
   z-index: 2;
 }
 
-.prev-btn {
-  left: 10px;
-}
+.carousel-btn.prev { left: 1rem; }
+.carousel-btn.next { right: 1rem; }
 
-.next-btn {
-  right: 10px;
-}
-
-/* 프로필 컨텐츠 스타일 */
-.profile-content {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
+/* 프로필 섹션 스타일 */
+.profile {
+  background: white;
+  border-radius: 8px;
+  padding: 2rem;
 }
 
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-bottom: 30px;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .profile-image {
-  width: 200px;
-  height: 200px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
   overflow: hidden;
 }
@@ -222,83 +222,54 @@ onBeforeUnmount(() => {
   object-fit: cover;
 }
 
-.profile-name h2 {
-  font-size: 24px;
-  margin: 0;
-}
-
-.sub-text {
-  font-size: 16px;
-  color: #666;
-}
-
-/* Information, Price, Career 섹션 공통 스타일 */
 .info-section {
-  margin-bottom: 30px;
+  margin-bottom: 2rem;
 }
 
-.section-title {
-  font-size: 20px;
-  font-weight: bold;
-  margin-bottom: 15px;
+.info-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.info-content {
+.content {
   background: #f8f8f8;
-  padding: 20px;
+  padding: 1.5rem;
   border-radius: 8px;
-}
-
-.description {
-  margin: 8px 0;
-  line-height: 1.5;
-}
-
-/* Career 섹션 특별 스타일 */
-.career-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .career-item {
   display: flex;
-  gap: 15px;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .date {
   color: #666;
-  min-width: 120px;
+  min-width: 200px;
 }
 
-/* Join 버튼 스타일 */
-.join-button {
+.actions {
   text-align: center;
-  margin-top: 40px;
+  margin-top: 2rem;
 }
 
-.join-button button {
+.join-btn {
   background: #E2495B;
   color: white;
   border: none;
-  padding: 12px 40px;
+  padding: 1rem 3rem;
   border-radius: 25px;
-  font-size: 18px;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background 0.3s;
 }
 
-
-.join-button button:hover {
-    background: #c01c52;
+.join-btn:hover {
+  background: #c01c52;
 }
 
-
-/* p 태그 가운데 정렬 */
-.join-button p {
-  text-align: center; /* 텍스트 가운데 정렬 */
-  margin-top: 20px; /* 위 여백을 추가 */
-  font-size: 16px; /* 폰트 크기 조정 */
-  color: #666; /* 텍스트 색상 설정 */
+.join-notice {
+  margin-top: 1rem;
+  color: #666;
 }
 </style>

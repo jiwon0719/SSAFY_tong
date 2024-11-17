@@ -191,3 +191,56 @@ insert into user(
     values(
     "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X");     
 select * from user;
+
+
+DELETE FROM user WHERE name = '유승호';
+
+
+-- admin 계정 추가
+insert into user(
+	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
+    values(
+    "admin", "A", "admin", "admin", "admin@tong.com", "000-0000-0000", "00000000", "대전시", "X"); 
+-- expert 계정 추가
+insert into user(
+	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
+    values(
+    "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X");     
+select * from user;
+
+-- board_category 데이터 주가
+INSERT INTO board_category (user_id, category, description) VALUES 
+('admin', '자유게시판', '자유롭게 글을 쓸 수 있는 게시판'),
+('admin', '운동게시판', '운동과 관련된 내용을 공유하는 게시판'),
+('admin', '마음게시판', '마음 건강에 대해 이야기하는 게시판');
+select * from board_category;
+
+-- board 데이터 추가
+INSERT INTO `board` (`category_id`, `title`, `writer`, `content`, `view_cnt`, `reg_date`)
+VALUES
+(1, '첫 번째 자유게시판 게시글', 'admin', '이것은 첫 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '두 번째 자유게시판 게시글', 'admin', '이것은 두 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '세 번째 자유게시판 게시글', 'admin', '이것은 세 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '네 번째 자유게시판 게시글', 'admin', '이것은 네 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '다섯 번째 자유게시판 게시글', 'admin', '이것은 다섯 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '여섯 번째 자유게시판 게시글', 'admin', '이것은 여섯 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '일곱 번째 자유게시판 게시글', 'admin', '이것은 일곱 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '여덟 번째 자유게시판 게시글', 'admin', '이것은 여덟 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '아홉 번째 자유게시판 게시글', 'admin', '이것은 아홉 번째 테스트 게시글입니다.', 0, NOW()),
+(1, '열 번째 자유게시판 게시글', 'admin', '이것은 열 번째 테스트 게시글입니다.', 0, NOW()),
+(2, '첫 번째 운동게시판 게시글', 'admin', '이것은 첫 번째 테스트 게시글입니다.', 0, NOW()),
+(2, '두 번째 운동게시판 게시글', 'admin', '이것은 두 번째 테스트 게시글입니다.', 0, NOW()),
+(2, '세 번째 운동게시판 게시글', 'admin', '이것은 세 번째 테스트 게시글입니다.', 0, NOW()),
+(2, '네 번째 운동게시판 게시글', 'admin', '이것은 네 번째 테스트 게시글입니다.', 0, NOW()),
+(2, '다섯 번째 운동게시판 게시글', 'admin', '이것은 다섯 번째 테스트 게시글입니다.', 0, NOW()),
+(3, '여섯 번째 마음게시판 게시글', 'admin', '이것은 여섯 번째 테스트 게시글입니다.', 0, NOW()),
+(3, '일곱 번째 마음게시판 게시글', 'admin', '이것은 일곱 번째 테스트 게시글입니다.', 0, NOW()),
+(3, '여덟 번째 마음게시판 게시글', 'admin', '이것은 여덟 번째 테스트 게시글입니다.', 0, NOW()),
+(3, '아홉 번째 마음게시판 게시글', 'admin', '이것은 아홉 번째 테스트 게시글입니다.', 0, NOW()),
+(3, '열 번째 마음게시판 게시글', 'admin', '이것은 열 번째 테스트 게시글입니다.', 0, NOW());
+
+select * from board;
+=======
+select * from expert;
+select * from expert_image;
+
