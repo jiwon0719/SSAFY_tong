@@ -48,7 +48,7 @@ export default {
   /* min-height: calc(100vh - 20vh); 100vh에서 헤더와 풋터 높이를 뺀 값으로 설정 */
   
   padding-top: 10vh;
-  padding-bottom: 20vh;
+  padding-bottom: 100vh;
   position: relative; /* 추가 */
 }
 

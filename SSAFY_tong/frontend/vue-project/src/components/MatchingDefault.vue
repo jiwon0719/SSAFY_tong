@@ -40,7 +40,8 @@
               <div class="expert-location">{{ expert.location }}</div>
               <div class="expert-rating">
                 <i class="star-icon"></i>
-                <span>{{ calculateRating(expert) }}</span>
+                <!-- 평균 평점 표시 -->
+                <span>{{ expert.totalScoreCnt > 0 ? `${(expert.totalScore / expert.totalScoreCnt).toFixed(1)} (${expert.totalScoreCnt}개)` : '신규' }}</span>
               </div>
             </div>
           </router-link>

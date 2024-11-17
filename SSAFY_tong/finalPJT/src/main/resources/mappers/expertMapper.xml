@@ -82,4 +82,11 @@
 	</select>
 	
 	
+<select id="selectUserIdByExpertId" parameterType="int" resultType="string">
+    SELECT user_id
+    FROM expert
+    WHERE expert_id = #{expertId}
+</select>
+	
+	
 </mapper>

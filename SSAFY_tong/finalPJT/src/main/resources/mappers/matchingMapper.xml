@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ssafy.tong.matching.model.dao.MatchingDao">
+	<!--  등록(신청)  -->
+	<insert id="insertMatching" parameterType="Matching"> 
+		INSERT INTO matching(
+			 user_id, expert_user_id, status, created_at) 
+		VALUES ( 
+			#{userId}, #{expertUserId}, #{status}, now()); 
+	</insert>
+	
+	<select id="selectMatchingsByUserId" parameterType="string" resultType="expertList">
+	SELECT 
+	    e.expert_id as expertId,
+	    e.user_id as userId,
+	    u.name as name,
+	    e.location as location,
+	    e.grade as grade,
+	    u.user_profile_img_path as userProfileImgPath,
+	    MAX(m.status) as status,
+	    MAX(m.created_at) as createAt,
+	    MAX(m.score) as score,
+	    e.total_score as totalScore,
+	    e.total_score_cnt as totalScoreCnt
+	FROM matching m
+	JOIN expert e ON m.expert_user_id = e.user_id
+	JOIN user u ON e.user_id = u.user_id
+	WHERE m.user_id = #{userId}
+	GROUP BY e.expert_id, e.user_id, u.name, e.location, e.grade, u.user_profile_img_path, 
+	         e.total_score, e.total_score_cnt
+	</select>
+
+	<!-- 매칭 상태 확인 -->
+	<select id="checkExistingMatching" resultType="boolean">
+	SELECT EXISTS (
+	    SELECT 1 
+	    FROM matching 
+	    WHERE user_id = #{userId} 
+	    AND expert_user_id = #{expertUserId}
+	)
+	</select>
+	
+	<!-- 점수 업데이트  -->
+	<update id="updateScore" parameterType="map">
+	    <!-- 매칭 테이블 점수 업데이트 -->
+	    UPDATE matching m
+	    JOIN expert e ON m.expert_user_id = e.user_id
+	    SET m.score = #{score}
+	    WHERE e.expert_id = #{expertId}
+	    AND m.user_id = #{userId};
+	    
+	    <!-- expert 테이블의 total_score와 total_score_cnt 업데이트 -->
+	    UPDATE expert e
+	    SET e.total_score = (
+	        SELECT COALESCE(SUM(m.score), 0)
+	        FROM matching m
+	        WHERE m.expert_user_id = e.user_id
+	        AND m.score IS NOT NULL
+	    ),
+	    e.total_score_cnt = (
+	        SELECT COUNT(*)
+	        FROM matching m
+	        WHERE m.expert_user_id = e.user_id
+	        AND m.score IS NOT NULL
+	    )
+	    WHERE e.expert_id = #{expertId};
+	</update>
+	
+
+</mapper>

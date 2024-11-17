@@ -15,4 +15,8 @@ public interface BoardService {
 	void regist(Board board);
 	// 수정
 	void modify(Board board);
+	// 조회수 증가
+	void incrementViewCount(int boardId);
+	// 댓글수 조회
+	int getCommentCount(int boardId);
 }

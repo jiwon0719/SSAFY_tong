@@ -39,4 +39,20 @@
 		   SET category_id = #{categoryId}, title = #{title}, content = #{content}
 		 WHERE board_id = #{boardId};
 	</update>
+	
+	<!-- 조회수 증가 -->
+    <update id="updateViewCount" parameterType="int">
+	    UPDATE board 
+	    SET view_cnt = COALESCE(view_cnt, 0) + 1 
+	    WHERE board_id = #{boardId}
+	</update>
+	
+	<!-- 댓글수 조회 -->
+    <select id="selectCommentCount" parameterType="int" resultType="int">
+	    SELECT COUNT(*) 
+	    FROM comment 
+	    WHERE board_id = #{boardId}
+	</select>	
+	
+	
 </mapper>

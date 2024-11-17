@@ -74,12 +74,16 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useExpertStore } from '@/stores/expert';
+import { useMatchingStore } from '@/stores/matching';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute();
+const router = useRouter();
 const expertStore = useExpertStore();
+const matchingStore = useMatchingStore();
+
 const { expertDetail, expertCareers, expertImages, loading, error, averageScore } = storeToRefs(expertStore);
 
 // 캐러셀 관련 상태 및 로직
@@ -114,11 +118,24 @@ const resetAutoSlide = () => {
 };
 
 // 매칭 신청 핸들러
-const handleJoinRequest = () => {
-  // TODO: 매칭 신청 로직 구현
-  console.log('매칭 신청', expertDetail.value?.expert_id);
-};
-
+const handleJoinRequest = async () => {
+  try {
+    const matchingData = {
+      userId: 'user', // 실제 구현시 로그인 정보에서 가져오기
+      expertId: expertDetail.value.expertId
+    }
+    
+    const result = await matchingStore.requestMatching(matchingData)
+    // result가 null이면 이미 매칭이 존재하는 경우
+    if (result !== null) {
+      alert('매칭 신청이 완료되었습니다.')
+      router.push('/mypage')
+    }
+  } catch (error) {
+    console.error('매칭 신청 실패:', error)
+    alert('매칭 신청 중 오류가 발생했습니다.')
+  }
+}
 onMounted(async () => {
   const expertId = route.params.expertId;
   if(!expertId) {
