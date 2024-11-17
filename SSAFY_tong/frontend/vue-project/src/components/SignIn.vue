@@ -1,33 +1,49 @@
 <template>
     <div class="signup">
-        <div class="rectangle-21">
-        </div>
-        <div class="frame-2">
-            <div class="rectangle-22">
-            </div>
-            <router-link to="/main">
-                <div class="tong">
-                    TONG
-                </div>
-            </router-link>
-            <div class="frame-3">
-                <div class="text-">
-                    아이디
-                </div>
-                <div class="id">
-                </div>
-                <div class="text--1">
-                    비밀번호
-                </div>
-                <div class="password">
-                </div>
-                <div class="login-btn">
-                </div>
-                <div class="text--2">
-                    로그인
-                </div>
-                <img src="https://image-resource.creatie.ai/142625939968981/142625939968983/c131a7373ebf8184425abc238dab0d0b.png" class="kakao-login-large-narrow-1" />
-            </div>
+    <div class="rectangle-21"></div>
+    <div class="frame-2">
+      <div class="rectangle-22"></div>
+      <router-link to="/main">
+        <div class="tong">TONG</div>
+      </router-link>
+      <div class="frame-3">
+  <div class="id">
+    <!-- id와 name 속성 추가 -->
+    <input 
+      type="text" 
+      v-model="userId" 
+      placeholder="아이디를 입력하세요" 
+      class="input-field" 
+      id="userId" 
+      name="userId" 
+    />
+  </div>
+  <div class="password">
+    <!-- id와 name 속성 추가 -->
+    <input
+      :type="passwordType"
+      v-model="userPassword"
+      placeholder="비밀번호를 입력하세요"
+      class="input-field"
+      id="userPassword"
+      name="userPassword"
+    />
+    <span class="toggle-password" @click="togglePasswordVisibility" style="font-size: 28px;">
+      {{ isPasswordVisible ? "🔓" : "🔒" }}
+    </span>
+  </div>
+  <div class="login-btn">
+    <button type="button" @click="login" class="login-button">로그인</button>
+  </div>
+  <img
+      src="https://image-resource.creatie.ai/142625939968981/142625939968983/c131a7373ebf8184425abc238dab0d0b.png"
+      class="kakao-login-large-narrow-1"
+      @click="redirectToKakaoLogin"
+    />
+</div>
+
+
+
             <div class="frame-5">
                 <div class="group-104">
                     <router-link to="/signUp">
@@ -40,6 +56,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </template>
@@ -123,106 +140,117 @@
             transform: scale(1.05);
         }
         }
+        
         .frame-3 {
-            z-index: 1;
-            position: absolute;
-            top: 121px;
-            left: 71px;
-            width: 676px;
-            height: 558px;
-            border-radius: 10px;
-            overflow: hidden;
-            .id {
-                position: absolute;
-                top: 85px;
-                left: calc(100% - 676px + 106px);
-                width: 463px;
-                height: 79px;
-                border-radius: 10px;
-                border: 3px solid #FFFFFF;
-            }
-            .text- {
-                position: absolute;
-                top: 58px;
-                left: 106px;
-                width: 45px;
-                height: 22px;
-                color: #FFFFFF;
-                white-space: nowrap;
-                font-family: "Jockey One";
-                font-size: 16px;
-                line-height: 22px;
-                font-weight: 400;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            .text--1 {
-                position: absolute;
-                top: 190px;
-                left: 106px;
-                width: 57px;
-                height: 22px;
-                color: #FFFFFF;
-                white-space: nowrap;
-                font-family: "Jockey One";
-                font-size: 16px;
-                line-height: 22px;
-                font-weight: 400;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            .password {
-                position: absolute;
-                top: 221px;
-                left: 106px;
-                width: 463px;
-                height: 79px;
-                box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-                border-radius: 10px;
-                border: 3px solid #FFFFFF;
-            }
-            .login-btn {
-                position: absolute;
-                top: 325px;
-                left: calc(100% - 676px + 107px);
-                width: 463px;
-                height: 79px;
-                box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
-                border-radius: 10px;
-                background: rgba(226, 73, 91, 0.9);
-                border: 1px solid rgba(226, 73, 91, 0);
-            }
-            .text--2 {
-                position: absolute;
-                top: 340px;
-                left: calc(100% - 676px + 289px);
-                width: 99px;
-                height: 50px;
-                color: #FFFFFF;
-                white-space: nowrap;
-                font-family: "Jockey One";
-                font-size: 36px;
-                line-height: 50px;
-                font-weight: 400;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            .kakao-login-large-narrow-1 {
-                position: absolute;
-                top: 418px;
-                left: 107px;
-                width: 463px;
-                height: 76px;
-                border-radius: 10px;
-                object-fit: cover;
-            }
-        }
+    z-index: 1;
+    position: absolute;
+    top: 121px;
+    left: 71px;
+    width: 676px;
+    height: 558px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.id {
+    position: absolute;
+    top: 85px;
+    left: calc(100% - 676px + 106px);
+    width: 463px;
+    height: 79px;
+    border-radius: 10px;
+    border: 3px solid #FFFFFF;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.password {
+    position: absolute;
+    top: 221px;
+    left: 106px;
+    width: 463px;
+    height: 79px;
+    border-radius: 10px;
+    border: 3px solid #FFFFFF;
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.input-field {
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #FFFFFF;
+    font-size: 28px;
+    font-family: "Jockey One";
+    line-height: 22px;
+    font-weight: 400;
+    border-radius: 10px;
+    color: black;
+}
+
+/* 로그인 버튼 */
+.login-btn {
+    position: absolute;
+    top: 325px;
+    left: calc(100% - 676px + 107px);
+    width: 463px;
+    height: 79px;
+    border-radius: 10px;
+    background: rgba(226, 73, 91, 0.9);
+    border: 1px solid rgba(226, 73, 91, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-button {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    color: #FFFFFF;
+    font-size: 36px;
+    font-family: "Jockey One";
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.text--2 {
+    position: absolute;
+    top: 340px;
+    left: calc(100% - 676px + 289px);
+    width: 99px;
+    height: 50px;
+    color: #FFFFFF;
+    white-space: nowrap;
+    font-family: "Jockey One";
+    font-size: 36px;
+    line-height: 50px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.kakao-login-large-narrow-1 {
+    position: absolute;
+    top: 418px;
+    left: 107px;
+    width: 463px;
+    height: 76px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+
         .frame-5 {
             position: absolute;
             left: calc(100% - 807px + 101px);
@@ -293,5 +321,83 @@
 }
 </style>
 
-<script>
+
+
+
+
+<script setup>
+  import { ref, computed } from "vue";
+  import axios from "axios";
+  import { useRouter } from "vue-router";
+  import { useUserStore } from '../stores/user'; 
+
+
+
+  ////////////////////////////////////////////////////////////////////////////////////////
+  // 토글로 비밀번호 보이는 유무 설정
+
+  // 상태 변수
+  const userId = ref("");
+  const userPassword = ref("");
+  const isPasswordVisible = ref(false);
+  const router = useRouter();
+  const userStore = useUserStore();  // Pinia store 인스턴스 가져오기
+
+  // 비밀번호 타입
+  const passwordType = computed(() => (isPasswordVisible.value ? "text" : "password"));
+
+  // 비밀번호 토글 함수
+  const togglePasswordVisibility = () => {
+    isPasswordVisible.value = !isPasswordVisible.value;
+  };
+
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////
+  // 로그인 함수
+  const login = async () => {
+    // 아이디와 비밀번호가 입력되지 않은 경우
+    if (!userId.value || !userPassword.value) {
+      alert("아이디와 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    try {
+      // 로그인 요청
+      const response = await axios.post("http://localhost:8080/api/user/signIn", {
+        userId: userId.value,
+        password: userPassword.value,
+      });
+
+      // 서버 응답 확인
+      if (response.data && response.data["access-token"]) {
+        // 로그인 성공
+        alert("로그인 성공!");
+        // Pinia store에 access-token 저장
+        userStore.saveTokenToStorage(response.data["access-token"]);
+        
+        // 메인 페이지로 이동
+        router.push({ name: "main" })
+          .then(() => {
+            console.log("라우팅 완료:", router.currentRoute.value.name);
+          })
+          .catch((error) => {
+            console.error("라우팅 오류:", error);
+          });
+      } else {
+        alert(response.data.message || "로그인 실패. 아이디와 비밀번호를 확인하세요.");
+      }
+    } catch (error) {
+      console.error("로그인 오류:", error);
+      alert("로그인 실패. 아이디와 비밀번호를 확인하세요.");
+    }
+  };
+
+
+
+  // 카카오 로그인 리다이렉트
+  const redirectToKakaoLogin = () => {
+    const kakaoLoginUrl = "https://accounts.kakao.com/login/?continue=https%3A%2F%2Fkauth.kakao.com%2Foauth%2Fauthorize%3Fresponse_type%3Dcode%26client_id%3D0fd06d3411cbcfb4f97b0eb93baedd48%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Foauth2%252Fkakao%26through_account%3Dtrue#login";
+    window.location.href = kakaoLoginUrl;  // Kakao 로그인 페이지로 리다이렉트
+  };
 </script>

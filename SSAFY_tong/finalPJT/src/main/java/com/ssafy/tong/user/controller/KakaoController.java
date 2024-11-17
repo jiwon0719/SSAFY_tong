@@ -7,6 +7,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,11 +19,11 @@ import com.ssafy.tong.user.model.service.UserService;
 
 import jakarta.servlet.http.HttpSession;
 
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/oauth2/kakao")
 public class KakaoController {
 	
-
 	private final UserService userService;
 
     public KakaoController(UserService userService) {
@@ -55,12 +56,15 @@ public class KakaoController {
 
         // 2. Access Token 추출
         if (!tokenResponse.getStatusCode().is2xxSuccessful()) {
+        	System.out.println("access token 추출 완료");
             return ResponseEntity.status(tokenResponse.getStatusCode()).body("Failed to get access token");
         }
 
         String responseBody = tokenResponse.getBody();
         String accessToken = new JSONObject(responseBody).getString("access_token");
-
+        
+        System.out.println(accessToken);
+        
         // 3. 사용자 정보 요청
         httpHeaders.clear();
         httpHeaders.add("Authorization", "Bearer " + accessToken);
@@ -76,6 +80,10 @@ public class KakaoController {
         }
 
         String userInfo = userResponse.getBody();
+        
+        System.out.println(userInfo);
+        
+        
         session.setAttribute("kakaoUserInfo", userInfo);
 
         // 4. 유저 정보 파싱 및 DB 조회
