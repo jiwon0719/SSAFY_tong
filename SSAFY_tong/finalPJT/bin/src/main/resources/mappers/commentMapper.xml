@@ -5,9 +5,10 @@
   
 <mapper namespace="com.ssafy.tong.comment.model.dao.CommentDao">
 	<!-- 전체 조회 -->
-	<select id="selectComment" resultType="Comment">
-		SELECT comment_id, board_id, commenter, content, reg_date
-		  FROM comment;
+	<select id="selectComment" resultType="Comment" parameterType="int">
+		SELECT comment_id, board_id, commenter, content, reg_date, parent_comment_id 
+		  FROM comment
+		 WHERE board_id = #{boardId};
 	</select>
 
 	<!-- 삭제 -->
@@ -20,9 +21,9 @@
 	<!-- 등록 -->
 	<insert id="insertComment" parameterType="Comment">
 		INSERT INTO comment(
-			board_id, commenter, content, reg_date
+			board_id, commenter, content, reg_date, parent_comment_id 
 		) VALUES (
-			#{boardId}, #{commenter}, #{content}, now()
+			#{boardId}, #{commenter}, #{content}, now(),  #{parentCommentId}
 		);
 	</insert>
 </mapper>

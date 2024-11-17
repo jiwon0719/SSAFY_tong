@@ -33,7 +33,8 @@
       
       <!-- 댓글 목록 -->
       <div v-else class="comments-list">
-        <div v-for="comment in comments" :key="comment.commentId" class="comment">
+        <!-- parentCommentId가 null인 최상위 댓글만 먼저 순회 -->
+        <div v-for="comment in rootComments" :key="comment.commentId" class="comment">
           <div class="comment-header">
             <span class="author">{{ comment.commenter }}</span>
             <span class="date">{{ formatDate(comment.regDate) }}</span>
@@ -80,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useBoardStore } from '@/stores/board';
 import { useCommentStore } from '@/stores/comment';
 import { storeToRefs } from 'pinia';
@@ -103,7 +104,6 @@ const replyToId = ref(null);
 const route = useRoute();
 const boardId = route.params.boardId;
 
-
 // 컴포넌트 마운트 시 데이터 로딩
 onMounted(async () => {
   if (boardId) {
@@ -118,6 +118,12 @@ onMounted(async () => {
     }
   }
 });
+
+// 댓글만 필터링
+const rootComments = computed(() => {
+  return comments.value.filter(comment => comment.parentCommentId === null);
+});
+
 
 // 날짜 포맷 함수
 const formatDate = (dateString) => new Date(dateString).toLocaleString();

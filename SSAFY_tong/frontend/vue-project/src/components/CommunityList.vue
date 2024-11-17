@@ -36,7 +36,10 @@
                     <div class="user-info">
                       <div class="user-avatar">  <!-- 😊 --></div>
                       <div class="post-details" >
-                        <p class="username">{{ board.writer }}</p>
+                        <div class="user-header">
+                          <p class="username">{{ board.writer }}</p>
+                          <p class="reg-date">{{ board.regDate }}</p>
+                        </div>
                         <p class="post-text">{{ board.title }}</p>
                         <p class="post-text">{{ board.content }}</p>
                       </div>
@@ -210,10 +213,23 @@
   }
   
   .post-details {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* username 컨테이너 추가 - 사용자명과 날짜를 한 줄에 표시 */
+.user-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* 날짜 스타일 추가 */
+.reg-date {
+  color: #666;
+  font-size: 0.9rem;
+}
   
   .username {
     font-weight: 500;
