@@ -18,30 +18,22 @@ public class JwtUtil {
 	private SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
 	
 	//토큰 생성시 다양한 데이터를 저장할 수 있음 (DTO or Map)
-	public String createToken(String name, String userId) {
+	public String createToken(String name, String userId, Character userType) {
 		//유효기간 
 		Date exp = new Date(System.currentTimeMillis()+ 1000*60*60); //1시간
 		return Jwts.builder().header().add("typ", "JWT").and()
 				.claim("name", name).expiration(exp)
 				.claim("user_id", userId)
+				.claim("user_type", userType)
 				.signWith(secretKey).compact();
 	}
 	
 	
 	//유효성 검증 (실제로 내용물을 확인하기 위함은 아니고요... 
 	//이거 실행했을때 에러나면 유효기간 지난거....
-	public Jws<Claims> vaildate(String token ){
+	public Jws<Claims> validate(String token ){
 		return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 }

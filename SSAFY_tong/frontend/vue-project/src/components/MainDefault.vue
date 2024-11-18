@@ -7,63 +7,147 @@
     </div>
   </template>
   
-  <script>
-  export default {
-    name: 'MainDefault',
-  };
+
+  <script setup>
+  import { onMounted } from 'vue';
+  import { useRouter } from 'vue-router';
+  import axios from 'axios'; 
+  
+  const router = useRouter();
+  
+  // 사용자 정보 가져오는 함수
+  function fetchUserInfo() {
+      const kakaoToken = sessionStorage.getItem('kakao-access-token');
+      const jwtToken = sessionStorage.getItem('access-token');
+  
+      console.log("kakaoToken 입니다", kakaoToken);
+      console.log("jwtToken 입니다", jwtToken);
+
+      //  JWT Token이 있는 경우
+      if (jwtToken ) {
+        axios.get('/api/user/user-info', {
+          headers: {
+            'Authorization': `Bearer ${jwtToken}`,
+            // 'Content-Type': 'application/json',
+          }
+        })
+        .then((response) => {
+          if (response.status === 200) {
+
+            console.log("Response Headers: ", response.headers);  // Content-Type 확인
+            console.log("data: ", response.data);
+
+
+
+            const data = response.data;
+            console.log("data: ", data);
+            console.log("userId: ", data.userId); 
+          } else {
+            console.error("Error: ", response.status); // 상태 코드 확인
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching user info:", error);
+        });
+      }
+
+
+        //Kakao Token이 있는 경우
+        else if (kakaoToken) {
+            axios.get('https://kapi.kakao.com/v2/user/me', {
+                headers: {
+                    'Authorization': `Bearer ${kakaoToken}`,
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then((response) => {
+                // 성공적으로 사용자 정보 조회
+                const data = response.data;
+                const userId = data.id;
+                console.log("카카오로 얻어온 User ID:", userId);
+                // Kakao userId를 활용하거나 상태에 저장 가능
+            })
+            .catch((error) => {
+                console.error("카카오 사용자 정보 조회 실패:", error);
+            });
+        }
+    
+      // 토큰이 둘 다 없는 경우
+      else {
+          console.error("Access token not found. Redirecting to login page...");
+          // router.replace({ path: '/signIn' });
+      }
+  }
+  
+  // onMounted 시 사용자 정보 호출
+  onMounted(() => {
+      // URL에서 accessToken 파라미터 추출
+      const urlParams = new URLSearchParams(window.location.search);
+      const accessToken = urlParams.get('accessToken');
+  
+      // URL에 카카오 accessToken이 존재하면 sessionStorage에 저장
+      if (accessToken) {
+          sessionStorage.setItem('kakao-access-token', accessToken);
+          router.replace({ path: '/main' });
+      }
+  
+      // 사용자 정보 호출
+      fetchUserInfo();
+  });
   </script>
   
+
+  
+
+
+
+
   <style scoped lang="scss">
-  /* 부모 요소 설정 */
-  html, body {
-    height: 100%; /* 부모 요소가 화면을 꽉 채우도록 설정 */
-    margin: 0; /* 기본 여백 제거 */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+  height: calc(100vh - 120px); /* Header(60px) + Footer(60px) 고려 */
+  width: 100%;
+  padding: 30px;
+  box-sizing: border-box;
+
+  .quadrant {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f4f4f4;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
   }
-  
+
+  .quadrant-1 {
+    background-color: #ffcccb;
+  }
+  .quadrant-2 {
+    background-color: #cce7ff;
+  }
+  .quadrant-3 {
+    background-color: #d1ffcc;
+  }
+  .quadrant-4 {
+    background-color: #fff5b0;
+  }
+}
+
+@media screen and (max-width: 768px) {
   .main-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 2개의 열로 나누기 */
-    grid-template-rows: 1fr 1fr; /* 2개의 행으로 나누기 */
-    gap: 20px; /* 각 사분면 사이의 간격 */
-    height: 100vh; /* 화면을 꽉 채우도록 설정 */
-    width: 100%; /* 부모 요소의 너비에 맞게 설정 */
-    padding: 30px; /* 경계와의 간격 */
-    box-sizing: border-box; /* padding이 크기 계산에 포함되도록 설정 */
-  
-    /* 각 사분면 스타일 */
-    .quadrant {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      border: 1px solid #ccc; /* 테두리 */
-      border-radius: 10px; /* 둥근 모서리 */
-      background-color: #f4f4f4; /* 배경 색상 */
-      font-size: 24px; /* 텍스트 크기 */
-      font-weight: bold;
-      color: #333;
-    }
-  
-    /* 각 사분면에 다른 색상 적용 */
-    .quadrant-1 {
-      background-color: #ffcccb; /* 제1사분면 색상 */
-    }
-    .quadrant-2 {
-      background-color: #cce7ff; /* 제2사분면 색상 */
-    }
-    .quadrant-3 {
-      background-color: #d1ffcc; /* 제3사분면 색상 */
-    }
-    .quadrant-4 {
-      background-color: #fff5b0; /* 제4사분면 색상 */
-    }
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
   }
-  
-  /* 작은 화면에서 사분면이 세로로 배치되도록 반응형 처리 */
-  @media screen and (max-width: 768px) {
-    .main-container {
-      grid-template-columns: 1fr; /* 1열로 변경 */
-      grid-template-rows: repeat(4, 1fr); /* 4개의 행으로 변경 */
-    }
-  }
-  </style>
-  
+}
+</style>

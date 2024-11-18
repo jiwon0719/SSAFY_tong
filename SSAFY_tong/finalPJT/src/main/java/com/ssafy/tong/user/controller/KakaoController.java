@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,14 +36,14 @@ public class KakaoController {
     
     
     @GetMapping
-    public ResponseEntity<?> getAccessToken(@RequestParam("code") String code, HttpSession session) {
+    public ResponseEntity<?> getAccessToken(@RequestParam("code") String code) {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded;charset=utf-8");
 
-        // 1. Access Token 요청
+        // Access Token 요청
         StringBuilder params = new StringBuilder();
         params.append("grant_type=authorization_code");
-        params.append("&client_id="+apiKey);
+        params.append("&client_id=").append(apiKey);
         params.append("&redirect_uri=http://localhost:8080/oauth2/kakao");
         params.append("&code=").append(code);
 
@@ -54,20 +55,28 @@ public class KakaoController {
                 String.class
         );
 
-        // 2. Access Token 추출
         if (!tokenResponse.getStatusCode().is2xxSuccessful()) {
-        	System.out.println("access token 추출 완료");
             return ResponseEntity.status(tokenResponse.getStatusCode()).body("Failed to get access token");
         }
 
         String responseBody = tokenResponse.getBody();
         String accessToken = new JSONObject(responseBody).getString("access_token");
+
+        // 메인 페이지로 리다이렉트하며 액세스 토큰 전달
+        String redirectUrl = "http://localhost:5173/main?accessToken=" + accessToken;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", redirectUrl);
+        return ResponseEntity.status(302).headers(headers).build();
+    }
+
+
+    // 새로운 엔드포인트: 사용자 정보 조회
+    @GetMapping("/user-info")
+    public ResponseEntity<?> getUserInfo(@RequestHeader("Authorization") String accessToken) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add("Authorization", accessToken);  // "Bearer " 접두사는 프론트에서 붙여서 보내줌
         
-        System.out.println(accessToken);
-        
-        // 3. 사용자 정보 요청
-        httpHeaders.clear();
-        httpHeaders.add("Authorization", "Bearer " + accessToken);
+        RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> userResponse = restTemplate.exchange(
                 "https://kapi.kakao.com/v2/user/me",
                 HttpMethod.GET,
@@ -80,13 +89,6 @@ public class KakaoController {
         }
 
         String userInfo = userResponse.getBody();
-        
-        System.out.println(userInfo);
-        
-        
-        session.setAttribute("kakaoUserInfo", userInfo);
-
-        // 4. 유저 정보 파싱 및 DB 조회
         JSONObject userJson = new JSONObject(userInfo);
         String kakaoId = String.valueOf(userJson.getLong("id"));
 
@@ -94,21 +96,10 @@ public class KakaoController {
         User user = userService.findUserByUserId(kakaoId);
 
         if (user != null) {
-            // 사용자 정보가 존재할 경우 세션에 로그인 정보 저장
-            session.setAttribute("user", user);
-
-            // 로그인 성공 응답
-            return ResponseEntity.ok().body("User login successful. Redirecting to main page.");
-            
-            // 로그인 후 메인페이지로 이동하는 거 나중에 필요
-            
-            
+            return ResponseEntity.ok().body(user);
         } else {
-            // 사용자 정보가 없을 경우 회원가입 필요
             return ResponseEntity.status(200)
-                    .body("User not found. Redirecting to sign-up page for additional information.");
-            
-            // 회원가입 페이지로 이동하는 로직 나중에 필요
+                    .body("User not found. Redirecting to sign-up page.");
         }
     }
 

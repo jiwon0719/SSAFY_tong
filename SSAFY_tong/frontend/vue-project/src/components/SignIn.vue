@@ -29,8 +29,8 @@
       name="userPassword"
     />
     <span class="toggle-password" @click="togglePasswordVisibility" style="font-size: 28px;">
-      {{ isPasswordVisible ? "🔓" : "🔒" }}
-    </span>
+      {{ isPasswordVisible ? "🔑" : "🔒" }}
+    </span>    
   </div>
   <div class="login-btn">
     <button type="button" @click="login" class="login-button">로그인</button>
@@ -323,81 +323,128 @@
 
 
 
-
-
 <script setup>
-  import { ref, computed } from "vue";
-  import axios from "axios";
-  import { useRouter } from "vue-router";
-  import { useUserStore } from '../stores/user'; 
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import { useRouter } from "vue-router";
+import { useUserStore } from '../stores/user';
+
+// 상태 변수들
+const userId = ref("");
+const userPassword = ref("");
+const isPasswordVisible = ref(false);
+const router = useRouter();
+const userStore = useUserStore();
+
+// 비밀번호 타입 computed 속성
+const passwordType = computed(() => (isPasswordVisible.value ? "text" : "password"));
+
+// 비밀번호 토글 함수
+const togglePasswordVisibility = () => {
+  isPasswordVisible.value = !isPasswordVisible.value;
+};
+
+// 일반 로그인 함수
+const login = async () => {
+  // 아이디와 비밀번호 유효성 검사
+  if (!userId.value || !userPassword.value) {
+    alert("아이디와 비밀번호를 입력해주세요.");
+    return;
+  }
+
+  try {
+    // 로그인 요청
+    const response = await axios.post("http://localhost:8080/api/user/signIn", {
+      userId: userId.value,
+      password: userPassword.value,
+    });
 
 
-
-  ////////////////////////////////////////////////////////////////////////////////////////
-  // 토글로 비밀번호 보이는 유무 설정
-
-  // 상태 변수
-  const userId = ref("");
-  const userPassword = ref("");
-  const isPasswordVisible = ref(false);
-  const router = useRouter();
-  const userStore = useUserStore();  // Pinia store 인스턴스 가져오기
-
-  // 비밀번호 타입
-  const passwordType = computed(() => (isPasswordVisible.value ? "text" : "password"));
-
-  // 비밀번호 토글 함수
-  const togglePasswordVisibility = () => {
-    isPasswordVisible.value = !isPasswordVisible.value;
-  };
-
-
-
-  /////////////////////////////////////////////////////////////////////////////////////////
-  // 로그인 함수
-  const login = async () => {
-    // 아이디와 비밀번호가 입력되지 않은 경우
-    if (!userId.value || !userPassword.value) {
-      alert("아이디와 비밀번호를 입력해주세요.");
-      return;
+    // 서버 응답 확인
+    if (response.data && response.data["access-token"]) {
+      // 로그인 성공
+      alert("로그인 성공!");
+      // JWT 토큰 저장
+      userStore.saveTokenToStorage(response.data["access-token"]);
+      // 메인 페이지로 이동
+      router.push({ name: "main" })
+        .then(() => {
+          console.log("라우팅 완료:", router.currentRoute.value.name);
+        })
+        .catch((error) => {
+          console.error("라우팅 오류:", error);
+        });
+    } else {
+      alert(response.data.message || "로그인 실패. 아이디와 비밀번호를 확인하세요.");
     }
+  } catch (error) {
+    console.error("로그인 오류:", error);
+    alert("로그인 실패. 아이디와 비밀번호를 확인하세요.");
+  }
+};
 
-    try {
-      // 로그인 요청
-      const response = await axios.post("http://localhost:8080/api/user/signIn", {
-        userId: userId.value,
-        password: userPassword.value,
-      });
 
-      // 서버 응답 확인
-      if (response.data && response.data["access-token"]) {
-        // 로그인 성공
-        alert("로그인 성공!");
-        // Pinia store에 access-token 저장
-        userStore.saveTokenToStorage(response.data["access-token"]);
-        
-        // 메인 페이지로 이동
-        router.push({ name: "main" })
-          .then(() => {
-            console.log("라우팅 완료:", router.currentRoute.value.name);
-          })
-          .catch((error) => {
-            console.error("라우팅 오류:", error);
-          });
-      } else {
-        alert(response.data.message || "로그인 실패. 아이디와 비밀번호를 확인하세요.");
+// 카카오 로그인 리다이렉트
+const redirectToKakaoLogin = () => {
+  const KAKAO_CLIENT_ID = '0fd06d3411cbcfb4f97b0eb93baedd48';
+  const REDIRECT_URI = 'http://localhost:8080/oauth2/kakao';
+  
+  // 카카오 인가 코드 요청 URL 생성
+  const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
+  const params = {
+    client_id: KAKAO_CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: 'code',
+  };
+  const query = new URLSearchParams(params).toString();
+  const finalUrl = `${kakaoAuthUrl}?${query}`;
+  
+  // 카카오 로그인 페이지로 리다이렉트
+  window.location.href = finalUrl;
+};
+
+// 카카오 로그인 콜백 처리 함수
+const handleKakaoCallback = async (code) => {
+  try {
+    // 백엔드에 카카오 인가 코드 전송
+    const response = await axios.get(`http://localhost:8080/oauth2/kakao?code=${code}`);
+    
+    if (response.data) {
+      try {
+        // JSON 문자열을 파싱
+        const responseData = typeof response.data === 'string' 
+          ? JSON.parse(response.data) 
+          : response.data;
+
+        // 카카오 액세스 토큰 저장
+        if (responseData.access_token) {
+          // sessionStorage에 카카오 액세스 토큰 저장
+          sessionStorage.setItem('kakao-access-token', responseData.access_token);
+          // userStore를 통한 저장도 함께 수행
+          userStore.saveKakaoTokenToStorage(responseData.access_token);
+          console.log('카카오 액세스 토큰이 저장되었습니다.');
+        }
+
+
+        // 메인 페이지로 리다이렉트
+        router.push({ name: "main" });
+      } catch (parseError) {
+        console.error("응답 데이터 파싱 오류:", parseError);
+        alert("로그인 처리 중 오류가 발생했습니다.");
       }
-    } catch (error) {
-      console.error("로그인 오류:", error);
-      alert("로그인 실패. 아이디와 비밀번호를 확인하세요.");
     }
-  };
+  } catch (error) {
+    console.error("카카오 로그인 처리 오류:", error);
+    alert("카카오 로그인 처리 중 오류가 발생했습니다.");
+    router.push({ name: "login" });
+  }
+};
 
-
-
-  // 카카오 로그인 리다이렉트
-  const redirectToKakaoLogin = () => {
-    const kakaoLoginUrl = "https://accounts.kakao.com/login/?continue=https%3A%2F%2Fkauth.kakao.com%2Foauth%2Fauthorize%3Fresponse_type%3Dcode%26client_id%3D0fd06d3411cbcfb4f97b0eb93baedd48%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8080%252Foauth2%252Fkakao%26through_account%3Dtrue#login";
-    window.location.href = kakaoLoginUrl;  // Kakao 로그인 페이지로 리다이렉트
-  };
+// URL에서 카카오 인가 코드 확인 (컴포넌트 마운트 시)
+onMounted(() => {
+  const code = new URLSearchParams(window.location.search).get('code');
+  if (code) {
+    handleKakaoCallback(code);
+  }
+});
 </script>
