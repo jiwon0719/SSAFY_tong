@@ -1,5 +1,6 @@
 package com.ssafy.tong.calendar.model.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Param;
@@ -22,4 +23,23 @@ public interface CalendarDao {
 	void insertQuest(Quest quest);
 	// 예약 신청
 	void insertReservation(Reservation reservation);
+	
+	
+	List<Quest> selectQuestsByDate(
+		    @Param("userId") String userId,
+		    @Param("year") int year,
+		    @Param("month") int month,
+		    @Param("dayOfMonth") int dayOfMonth
+		);
+	
+	List<Reservation> selectReservationsByDate(
+		    @Param("userId") String userId,
+		    @Param("year") int year,
+		    @Param("month") int month,
+		    @Param("dayOfMonth") int dayOfMonth
+		);
+	
+	// (전문가용) 예약 조회
+	List<Reservation> selectExpertReservations(@Param("expertId") String expertId, 
+											   @Param("date") LocalDate date);
 }

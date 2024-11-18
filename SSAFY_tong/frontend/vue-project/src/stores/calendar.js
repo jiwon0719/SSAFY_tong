@@ -11,7 +11,10 @@ export const useCalendarStore = defineStore('calendar', () => {
   const pickerDate = ref(null)
   const selectedExpertId = ref(null) // 객체 전체 저장하기
   const selectedTime = ref(null)
-  const calendarData = ref([]) // 퀘스트와 예약 정보를 모두 포함
+  const calendarData = ref({
+    quests: [],
+    reservations: []
+  })
   const isLoading = ref(false)
   const matchingExperts = ref([])
 
@@ -23,9 +26,15 @@ export const useCalendarStore = defineStore('calendar', () => {
     '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
   ]
 
-  // computed: 필터링된 예약 목록
+  // computed: 필터링된 예약  / 퀘스트 목록
   const reservations = computed(() => {
-    return calendarData.value.filter(item => item.reservationId)
+    if (!calendarData.value?.reservations) return []
+    return calendarData.value.reservations.filter(item => item.reservationId)
+  })
+  
+  const quests = computed(() => {
+    if (!calendarData.value?.quests) return []
+    return calendarData.value.quests
   })
 
   // 매칭된 전문가 목록 조회
@@ -43,15 +52,18 @@ export const useCalendarStore = defineStore('calendar', () => {
 
   // 특정 날짜의 일정 조회
   const fetchCalendarByDate = async (userId, date) => {
-    if (!date) return
-    
     try {
       const formattedDate = date instanceof Date 
         ? date.toISOString().split('T')[0]
         : date
-      
+        
       const response = await axios.get(`${CALENDAR_API_URL}/${userId}/${formattedDate}`)
-      calendarData.value = response.data
+      // DailyScheduleDTO 구조에 맞춰 저장
+      calendarData.value = {
+        quests: response.data.quests || [],
+        reservations: response.data.reservations || []
+      }
+      return calendarData.value
     } catch (error) {
       console.error('일정 조회 실패:', error)
       throw error

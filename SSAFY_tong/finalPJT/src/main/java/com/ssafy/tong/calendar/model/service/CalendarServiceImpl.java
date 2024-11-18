@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.ssafy.tong.calendar.model.Calendar;
+import com.ssafy.tong.calendar.model.DailyScheduleDTO;
 import com.ssafy.tong.calendar.model.dao.CalendarDao;
 import com.ssafy.tong.quest.model.Quest;
 import com.ssafy.tong.reservation.model.Reservation;
@@ -19,11 +20,15 @@ public class CalendarServiceImpl implements CalendarService {
 	
 	// 일정 조회
 	@Override
-	public List<Calendar> getCalendarByDate(String userId, LocalDate date) {
+	public DailyScheduleDTO getCalendarByDate(String userId, LocalDate date) {
         int year = date.getYear();
         int month = date.getMonthValue();
         int dayOfMonth = date.getDayOfMonth();
-        return calendarDao.selectCalendarByDate(userId, year, month, dayOfMonth);
+        
+        List<Quest> quests = calendarDao.selectQuestsByDate(userId, year, month, dayOfMonth);
+        List<Reservation> reservations = calendarDao.selectReservationsByDate(userId, year, month, dayOfMonth);
+        
+        return new DailyScheduleDTO(quests, reservations);
 	}
 	
 
@@ -64,5 +69,11 @@ public class CalendarServiceImpl implements CalendarService {
         reservation.setCalendarId(calendarId);
         calendarDao.insertReservation(reservation);
     }
+
+	// (전문가용) 예약 조회
+	@Override
+	public List<Reservation> getExpertReservations(String expertId, LocalDate date) {
+		return calendarDao.selectExpertReservations(expertId, date);
+	}
 
 }

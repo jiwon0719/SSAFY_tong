@@ -107,46 +107,82 @@
         <v-col cols="12" sm="6" class="my-2 px-1">
           <!-- 퀘스트 섹션 -->
           <v-card class="mb-4" color="white">
-            <v-card-title class="text-h6" style="color: #E2495B">
-              Quest ({{ store.pickerDate || 'Select a date' }})
-            </v-card-title>
-            <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
-              당신의 트레이너가 정해준 퀘스트를 확인하세요!
-            </v-card-subtitle>
-            <v-card-text>
-              <v-list v-if="quests.length > 0">
-                <v-list-item v-for="quest in quests" :key="quest.questId">
-                  <v-list-item-title>{{ quest.questTitle }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ quest.questDetail }}</v-list-item-subtitle>
-                </v-list-item>
-              </v-list>
-              <div v-else class="text-center pa-4 text-subtitle-1">
-                등록된 퀘스트가 없습니다.
-              </div>
-            </v-card-text>
+          <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B">
+            Quest
+            <span class="text-subtitle-1 ml-2" style="color: rgba(226, 73, 91, 0.7)">
+              {{ store.pickerDate ? new Date(store.pickerDate).toLocaleDateString('ko-KR', {
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric'
+              }) : new Date().toLocaleDateString('ko-KR', {
+                year: 'numeric',
+                month: 'long', 
+                day: 'numeric'
+              }) }}
+            </span>
+          </v-card-title>
+          <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
+            당신의 트레이너가 정해준 퀘스트를 확인하세요!
+          </v-card-subtitle>
+          <v-card-text>
+            <v-list v-if="quests.length > 0">
+              <v-list-item v-for="quest in quests" :key="quest.questId">
+                <v-list-item-title class="d-flex align-center justify-space-between text-subtitle-1 my-2">
+                  <div class="d-flex align-center">
+                    <v-icon color="#E2495B" class="mr-2">mdi-trophy-outline</v-icon>
+                    {{ quest.questTitle }}
+                  </div>
+                  <div class="d-flex align-center">
+                    {{ quest.questDetail }}
+                  </div>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+            <div v-else class="text-center pa-4 text-subtitle-1">
+              등록된 퀘스트가 없습니다.
+            </div>
+          </v-card-text>
           </v-card>
 
           <!-- 예약 일정 섹션 -->
           <v-card color="white">
-            <v-card-title class="text-h6" style="color: #E2495B">
-              Reservation ({{ store.pickerDate || 'Select a date' }})
+            <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B">
+              Reservation 
+              <span class="text-subtitle-1 ml-2" style="color: rgba(226, 73, 91, 0.7)">
+                {{ store.pickerDate ? new Date(store.pickerDate).toLocaleDateString('ko-KR', {
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric'
+                }) : new Date().toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: 'long', 
+                  day: 'numeric'
+                }) }}
+              </span>
             </v-card-title>
             <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
               운동 일정을 확인하세요!
             </v-card-subtitle>
             <v-card-text>
               <v-list v-if="store.reservations.length > 0">
-                <v-list-item v-for="reservation in store.reservations" :key="reservation.reservationId">
-                  <v-list-item-title>
-                    {{ reservation.time }} ({{ reservation.expert_user_id }})
+                <v-list-item v-for="reservation in sortedReservations" :key="reservation.reservationId">
+                  <v-list-item-title class="d-flex align-center justify-space-between text-subtitle-1 my-2">
+                    <div class="d-flex align-center">
+                      <v-icon color="#E2495B" class="mr-2">mdi-clock-outline</v-icon>
+                      {{ reservation.time }}
+                    </div>
+                    <div class="d-flex align-center">
+                      <v-icon color="#E2495B" class="mr-2">mdi-account</v-icon>
+                      {{ reservation.expertUserId }}
+                      <v-chip
+                        :color="getStatusColor(reservation.status)"
+                        size="small"
+                        class="ml-2 white--text"
+                      >
+                        {{ getStatusText(reservation.status) }}
+                      </v-chip>
+                    </div>
                   </v-list-item-title>
-                  <v-chip
-                    :color="reservation.status === 'O' ? '#E2495B' : 'grey'"
-                    size="small"
-                    class="ml-2 white--text"
-                  >
-                    {{ store.getReservationStatus(reservation.status) }}
-                  </v-chip>
                 </v-list-item>
               </v-list>
               <div v-else class="text-center pa-4 text-subtitle-1">
@@ -182,13 +218,18 @@ import { useCalendarStore } from '@/stores/calendar'
 
 // Store
 const store = useCalendarStore()
+const quests = ref([])
+const calendarData = ref({
+  quests: [],
+  reservations: []
+})
+const reservations = ref([])
 
 // Local state
-const showReservationForm = ref(false)
+const showReservationForm = ref(false)  
 const snackbar = ref(false)
 const snackbarText = ref('')
 const snackbarColor = ref('#E2495B')
-const quests = ref([])
 
 // 오늘 날짜 이전은 선택 불가 (예약 폼에서만 사용)
 const minDate = new Date().toISOString().split('T')[0]
@@ -198,100 +239,115 @@ const userId = 'user'
 
 // 이벤트 데이터 (퀘스트와 예약이 있는 날짜)
 const events = computed(() => {
-  const eventDates = []
+  if (!quests.value || !store.reservations) return []
+  
+  const questEvents = quests.value?.map(quest => ({
+    date: quest.pickDate,
+    type: 'quest'
+  })) || []
+  
+  const reservationEvents = store.reservations?.map(reservation => ({
+    date: reservation.pickDate,
+    type: 'reservation'
+  })) || []
 
-  // 퀘스트 날짜 추가
-  quests.value.forEach(quest => {
-    eventDates.push({
-      date: quest.pickDate,
-      type: 'quest'
-    })
-  })
-
-  // 예약 날짜 추가
-  store.reservations.forEach(reservation => {
-    eventDates.push({
-      date: reservation.pickDate,
-      type: 'reservation'
-    })
-  })
-
-  return eventDates
+  return [...questEvents, ...reservationEvents]
 })
 
 // 이벤트 타입에 따른 색상 지정
 const getEventColor = (event) => {
-  return event.type === 'quest' ? '#E2495B' : '#FFB6C1'
+ return event.type === 'quest' ? '#E2495B' : '#FFB6C1'
 }
 
 // 날짜 포맷팅
 const formatDate = (date) => {
-  if (!date) return ''
-  const d = new Date(date)
-  return new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: 'long'
-  }).format(d)
+ if (!date) return ''
+ const d = new Date(date)
+ return new Intl.DateTimeFormat('ko-KR', {
+   year: 'numeric',
+   month: 'long'
+ }).format(d)
 }
 
-// 스낵바 표시 함수
+// 스낵바 표시 함수 
 const showSnackbar = (text, color = '#E2495B') => {
-  snackbarText.value = text
-  snackbarColor.value = color
-  snackbar.value = true
+ snackbarText.value = text
+ snackbarColor.value = color
+ snackbar.value = true
 }
 
 // 예약 처리
 const handleReservation = async () => {
-  try {
-    await store.createReservation(userId)
-    showSnackbar('예약이 신청되었습니다.')
-    showReservationForm.value = false
-  } catch (error) {
-    showSnackbar('예약 신청에 실패했습니다.', 'error')
-  }
+ try {
+   await store.createReservation(userId)
+   showSnackbar('예약이 신청되었습니다.')
+   showReservationForm.value = false
+ } catch (error) {
+   showSnackbar('예약 신청에 실패했습니다.', 'error')
+ }
 }
 
 // 전문가 선택
 const handleExpertSelect = (expert) => {
-  console.log('Expert selected:', expert)  // 디버깅용
-  if (expert) {
-    store.selectedExpertId = expert
-    console.log('Expert set in store:', store.selectedExpertId)  // 디버깅용
-  }
+ if (expert) {
+   store.selectedExpertId = expert
+ }
 }
 
 // Watches
-// 날짜 선택 시 일정 조회
+// 날짜 선택 시 데이터 조회 로직
 watch(() => store.pickerDate, async (newDate) => {
-  if (newDate) {
-    try {
-      const calendarData = await store.fetchCalendarByDate(userId, newDate)
-      // 퀘스트와 예약 데이터 분리
-      quests.value = calendarData.filter(item => item.questId)
-    } catch (error) {
-      showSnackbar('일정 조회에 실패했습니다.', 'error')
-    }
+  if (!newDate) return
+  
+  try {
+    const data = await store.fetchCalendarByDate(userId, newDate)
+    console.log('Calendar data received:', data)
+    calendarData.value = data // store에서 이미 형식화된 데이터를 받음
+    quests.value = data.quests
+    reservations.value = data.reservations
+  } catch (error) {
+    console.error('데이터 조회 실패:', error)
+    showSnackbar('일정 조회에 실패했습니다.', 'error')
   }
 })
 
 // 선택된 전문가 감시
 watch(() => store.selectedExpertId, (newExpert) => {
-  if (newExpert) {
-    console.log('Selected expert changed:', newExpert)
-    // 필요한 경우 추가 로직 구현 (예: 해당 전문가의 가능 시간대 조회 등)
-  }
+ if (newExpert) {
+   console.log('Selected expert changed:', newExpert)
+ }
 }, { deep: true })
 
 // Lifecycle Hooks
 onMounted(async () => {
-  try {
-    await store.fetchMatchingExperts(userId)
-    console.log('Fetched experts:', store.matchingExperts)  // 디버깅용
-  } catch (error) {
-    showSnackbar('전문가 목록 조회에 실패했습니다.', 'error')
-  }
+ try {
+   await store.fetchMatchingExperts(userId)
+ } catch (error) {
+   showSnackbar('전문가 목록 조회에 실패했습니다.', 'error')
+ }
 })
+
+
+const getStatusColor = (status) => {
+  switch(status) {
+    case 'O': return '#E2495B'  // 수락됨
+    case 'R': return '#9E9E9E'  // 거절됨
+    default: return '#FFA726'   // 신청 중
+  }
+}
+
+const getStatusText = (status) => {
+  switch(status) {
+    case 'O': return '예약 확정'
+    case 'R': return '예약 취소'
+    default: return '신청 중'
+  }
+}
+
+const sortedReservations = computed(() => {
+ return [...store.reservations].sort((a, b) => a.time.localeCompare(b.time))
+})
+
 </script>
 
 <style scoped>

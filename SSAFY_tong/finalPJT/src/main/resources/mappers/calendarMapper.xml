@@ -17,6 +17,28 @@
         AND c.month = #{month}
         AND c.date = #{date}
     </select>
+    
+    
+    <select id="selectQuestsByDate" resultType="Quest">
+	    SELECT q.*
+	    FROM calendar c
+	    JOIN quest q ON c.calendar_id = q.calendar_id
+	    WHERE c.user_id = #{userId}
+	    AND c.year = #{year}
+	    AND c.month = #{month}
+	    AND c.date = #{dayOfMonth}
+	</select>
+
+	<select id="selectReservationsByDate" resultType="Reservation">
+	    SELECT r.*
+	    FROM calendar c
+	    JOIN reservation r ON c.calendar_id = r.calendar_id
+	    WHERE c.user_id = #{userId}
+	    AND c.year = #{year}
+	    AND c.month = #{month}
+	    AND c.date = #{dayOfMonth}
+	</select>
+    
 
     <!-- Calendar 생성 -->
     <insert id="insertCalendar" parameterType="com.ssafy.tong.calendar.model.Calendar" 
@@ -37,6 +59,20 @@
         VALUES (#{calendarId}, #{userId}, #{expertUserId}, #{time}, #{status})
     </insert>
 
-
+	<!-- (전문가용) 예약 조회 -->
+	<select id="selectExpertReservations" resultType="Reservation">
+		SELECT r.reservation_id as reservationId,
+		      r.user_id as userId,
+		      r.expert_user_id as expertId,
+		      r.time,
+		      r.status
+		FROM reservation r
+		JOIN calendar c ON r.calendar_id = c.calendar_id 
+		WHERE r.expert_user_id = #{expertId}
+		AND c.year = YEAR(#{date})
+		AND c.month = MONTH(#{date})
+		AND c.date = DAY(#{date})
+		ORDER BY r.time ASC
+   </select>
 
 </mapper>
