@@ -10,7 +10,10 @@ import org.springframework.context.annotation.Configuration;
 		"com.ssafy.tong.reply.model.dao", 
 		"com.ssafy.tong.expert.model.dao",
 		"com.ssafy.tong.user.model.dao", 
-		"com.ssafy.tong.matching.model.dao"
+		"com.ssafy.tong.matching.model.dao", 
+		"com.ssafy.tong.calendar.model.dao", 
+		"com.ssafy.tong.quest.model.dao", 
+		"com.ssafy.tong.reservation.model.dao"
 })
 public class DBConfig {
 	

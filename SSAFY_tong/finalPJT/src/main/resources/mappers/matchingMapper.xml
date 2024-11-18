@@ -12,6 +12,7 @@
 			#{userId}, #{expertUserId}, #{status}, now()); 
 	</insert>
 	
+	<!-- 매칭 상세 조회 -->
 	<select id="selectMatchingsByUserId" parameterType="string" resultType="expertList">
 	SELECT 
 	    e.expert_id as expertId,

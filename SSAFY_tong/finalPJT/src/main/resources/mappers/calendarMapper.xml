@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ssafy.tong.calendar.model.dao.CalendarDao">
+    <!-- 특정 날짜의 일정 조회 -->
+    <select id="selectCalendarByDate" resultType="com.ssafy.tong.calendar.model.Calendar">
+        SELECT c.*, 
+               q.quest_id, q.quest_title, q.quest_detail, q.completion_status,
+               r.reservation_id, r.time, r.status
+        FROM calendar c
+        LEFT JOIN quest q ON c.calendar_id = q.calendar_id
+        LEFT JOIN reservation r ON c.calendar_id = r.calendar_id
+        WHERE c.user_id = #{userId}
+        AND c.year = #{year}
+        AND c.month = #{month}
+        AND c.date = #{date}
+    </select>
+
+    <!-- Calendar 생성 -->
+    <insert id="insertCalendar" parameterType="com.ssafy.tong.calendar.model.Calendar" 
+            useGeneratedKeys="true" keyProperty="calendarId">
+        INSERT INTO calendar (user_id, year, month, date)
+        VALUES (#{userId}, #{year}, #{month}, #{date})
+    </insert>
+
+    <!-- Quest 생성 -->
+    <insert id="insertQuest" parameterType="com.ssafy.tong.quest.model.Quest">
+        INSERT INTO quest (calendar_id, expert_user_id, user_id, quest_title, quest_detail, completion_status)
+        VALUES (#{calendarId}, #{expertUserId}, #{userId}, #{questTitle}, #{questDetail}, #{completionStatus})
+    </insert>
+
+    <!-- Reservation 생성 -->
+    <insert id="insertReservation" parameterType="com.ssafy.tong.reservation.model.Reservation">
+        INSERT INTO reservation (calendar_id, user_id, expert_user_id, time, status)
+        VALUES (#{calendarId}, #{userId}, #{expertUserId}, #{time}, #{status})
+    </insert>
+
+
+
+</mapper>

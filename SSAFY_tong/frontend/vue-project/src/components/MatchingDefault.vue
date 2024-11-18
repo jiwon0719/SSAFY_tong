@@ -201,6 +201,7 @@ export default {
             script.onload = () => {
                 window.kakao.maps.load(() => {
                     initializeMap()
+                    console.log("onload 완료")
                 })
             }
             
