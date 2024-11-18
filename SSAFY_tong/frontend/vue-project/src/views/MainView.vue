@@ -42,6 +42,7 @@ export default {
 .main-content {
   flex-grow: 1;  /* 공간을 다 차지하도록 설정 */
   padding: 20px; /* 여백을 추가 */
+  height: calc(100vh - 120px); /* Header(60px) + Footer(60px) = 120px */
   /* overflow: hidden; 스크롤을 사용하지 않도록 */
   /* min-height: 0; 자식 요소가 넘칠 수 있도록 설정 */
 

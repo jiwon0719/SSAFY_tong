@@ -1,124 +1,127 @@
 package com.ssafy.tong.user.controller;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssafy.tong.jwt.JwtUtil;
 import com.ssafy.tong.user.model.User;
 import com.ssafy.tong.user.model.service.UserService;
 
-import jakarta.servlet.http.HttpSession;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.UnsupportedJwtException;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin
+@CrossOrigin("*") 
 public class UserController {
 
-	private final UserService userService;
+    private final UserService userService;
+    private final JwtUtil jwtUtil;
 
-	public UserController(UserService userService) {
-		this.userService = userService;
-	}
+    public UserController(UserService userService, JwtUtil jwtUtil) {
+        this.userService = userService;
+        this.jwtUtil = jwtUtil;
+    }
 
-	@PostMapping("/signUp")
-	public void signUp(@RequestBody User user, HttpSession session) {
-		// 세션에서 Kakao 사용자 정보 가져오기
-		String kakaoUserInfo = (String) session.getAttribute("kakaoUserInfo");
-		
-		if (kakaoUserInfo != null) {
-			JSONObject userJson = new JSONObject(kakaoUserInfo);
+    // 사용자 목록 전체 가져오기
+    @GetMapping("/users")
+    public ResponseEntity<?> users() {
+        List<User> list = userService.getUserList();
+        if (list == null || list.isEmpty()) {
+            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        }
+        return new ResponseEntity<List<User>>(list, HttpStatus.OK);
+    }
 
-			// Kakao 사용자 정보에서 ID, 이메일 추출
-			String kakaoId = String.valueOf(userJson.getLong("id"));
-			String email = userJson.getJSONObject("kakao_account").optString("email", "");
-			String profileImg = userJson.getJSONObject("properties").getString("profile_image");
+    // 사용자 회원가입
+    @PostMapping("/signUp")
+    public ResponseEntity<String> signUp(@RequestBody User user) {
+//        if (userService.findUserByUserId(user.getUserId())) {  // 사용자 중복 확인
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 사용자입니다.");
+//        }
 
-			// User 객체에 Kakao 사용자 정보 설정
-			user.setUserId(kakaoId); // 카카오 고유 ID를 userId로 사용
-			user.setEmail(email);
-			user.setIsKakaoMember('O'); // 'O'로 설정하여 Kakao 유저임을 표시
-			user.setPassword(""); // 비밀번호는 빈 문자열로 설정
-			user.setUserProfileImgPath(profileImg);
-			
-			// UserService를 통해 회원가입 처리
-			userService.signUp(user);
-			
-			// 세션에 로그인 유저 정보 저장
-			session.setAttribute("user", user);
-		}
+        if (userService.signUp(user)) {
+            return ResponseEntity.status(HttpStatus.CREATED).body("User added successfully");
+        }
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to add user");
+    }
 
-		else {
-			user.setIsKakaoMember('X'); // 'X'로 설정 
-			
-			// UserService를 통해 회원가입 처리
-			userService.signUp(user);
-			
-			// 세션에 로그인 유저 정보 저장
-			session.setAttribute("user", user);
-			
-		}
+    // 사용자 로그인
+    @PostMapping("/signIn")
+    public ResponseEntity<Map<String, Object>> signIn(@RequestBody User user) {
+        Map<String, Object> result = new HashMap<>();
+        HttpStatus status;
 
-		// 나중에 메인 페이지로 리다이렉트
-		// new ModelAndView("redirect:/main");
-	}
+        // 비밀번호 확인을 안전하게 해야함, 예시로 간단한 비교만 사용
+        User loginUser = userService.signIn(user.getUserId(), user.getPassword());
 
-	// 로그인
-	@PostMapping("/signIn")
-	public ResponseEntity<String> signIn(@RequestBody User user, HttpSession session) {
-		User user_signIn = userService.signIn(user.getUserId(), user.getPassword());
+        if (loginUser != null) {
+            String token = jwtUtil.createToken(loginUser.getName(), loginUser.getUserId(), loginUser.getUserType());
+            result.put("message", "로그인 성공. JWT 토큰 발급됨");
+            result.put("access-token", token);
+            status = HttpStatus.ACCEPTED;
+        } else {
+            result.put("message", "로그인 실패");
+            status = HttpStatus.UNAUTHORIZED;
+        }
+        return new ResponseEntity<>(result, status);
+    }
 
-		if (user_signIn != null) {
-			// 로그인 성공 시 세션에 사용자 정보 저장
-			session.setAttribute("user", user_signIn);
-			return ResponseEntity.ok("로그인 성공");
-		} else {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패: 아이디 또는 비밀번호가 잘못되었습니다.");
-		}
-	}
+    // 사용자 정보 가져오기 (JWT 토큰을 이용한 인증)
+    @GetMapping("/user-info")
+    public ResponseEntity<Object> getUserInfo(@RequestHeader("Authorization") String authorizationHeader) {
+    	System.out.println("user-info 불렸따");
+        String token = authorizationHeader.startsWith("Bearer ") ? authorizationHeader.substring(7) : authorizationHeader;
+        
+        try {
+            // JWT 토큰 검증 및 클레임 추출
+            Jws<Claims> claimsJws = jwtUtil.validate(token);
+            Claims claims = claimsJws.getBody();
 
-	// 로그아웃
-	@PostMapping("/signOut")
-	public ResponseEntity<String> signOut(HttpSession session) {
-		// 세션에서 사용자 정보 제거
-		if (session.getAttribute("user") != null) {
-			session.invalidate(); // 세션 무효화
-			return ResponseEntity.ok("로그아웃 성공");
-		}
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("로그인된 사용자가 없습니다.");
-	}
+            // JWT에서 사용자 정보 추출
+            String userId = claims.get("user_id", String.class);
+            String name = claims.get("name", String.class);
 
-	// 비밀번호 변경
-	@PutMapping("/updatePassword")
-	public ResponseEntity<String> updatePassword(@RequestBody Map<String, String> passwordMap, HttpSession session) {
-		// 세션에서 로그인된 사용자 정보 가져오기
-		User loggedInUser = (User) session.getAttribute("user");
+            // 사용자 정보 조회
+            User user = userService.findUserByUserId(userId);
+            if (user == null) {
+                return new ResponseEntity<>(Collections.singletonMap("message", "User not found"), HttpStatus.NOT_FOUND);
+            }
 
-		if (loggedInUser == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 상태가 아닙니다.");
-		}
+            Map<String, Object> response = new HashMap<>();
+            response.put("userId", userId);
+            response.put("name", name);
+            response.put("userDetails", user);
+            
+            System.out.println(userId + "==================================================================================================================================");
+            System.out.println(name);
+            System.out.println(user);
 
-		// 입력받은 새 비밀번호와 확인 비밀번호 가져오기
-		String newPassword = passwordMap.get("newPassword");
-		String confirmPassword = passwordMap.get("confirmPassword");
-
-		// 비밀번호 확인
-		if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword)) {
-			return ResponseEntity.badRequest().body("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
-		}
-
-		// 새로운 비밀번호로 업데이트
-		loggedInUser.setPassword(newPassword); // 새 비밀번호 설정
-		userService.updatePassword(loggedInUser);
-
-		return ResponseEntity.ok("비밀번호가 성공적으로 변경되었습니다.");
-	}
-
+            // JSON 형식으로 응답을 보냄
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)  // 응답 타입을 JSON으로 설정
+                    .body(response);
+        } catch (ExpiredJwtException e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "Token has expired"), HttpStatus.UNAUTHORIZED);
+        } catch (UnsupportedJwtException e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "Unsupported token"), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "Invalid or expired token"), HttpStatus.UNAUTHORIZED);
+        }
+    }
 }

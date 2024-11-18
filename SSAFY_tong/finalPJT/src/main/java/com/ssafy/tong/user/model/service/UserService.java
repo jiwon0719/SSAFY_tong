@@ -1,22 +1,29 @@
 package com.ssafy.tong.user.model.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.ssafy.tong.user.model.User;
 
 public interface UserService {
-	
-	// 회원가입
-	void signUp(User user);
-
-	// 로그인
-	User signIn(String userId, String password);
-	
-	// 비밀번호 변경
-	void updatePassword(User loggedInUser);
-	
-	// 카카오 회원 확인을 위해서
-	User findUserByUserId(String kakaoId);
-
-
+	//전체 사용자 목록 불러오기
+		public List<User> getUserList();
+		//사용자 등록하기
+		public boolean signUp(User user);
+		//로그인 하기
+		public User	signIn(String id, String password);
+		
+		// id 로 조회
+		User findUserByUserId(String userId);
+		
+		
+		
+		void updatePassword(User loggedInUser);
+		
+		
+		
+		
+		
 }
+

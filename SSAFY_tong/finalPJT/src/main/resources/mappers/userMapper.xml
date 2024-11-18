@@ -64,8 +64,28 @@
 		updated_password = NOW()
 		WHERE
 		user_id = #{userId};
-	</update>
-
+	</update> 
+	
+	
+	<!-- 사용자 정보 조회 -->
+	<select id="findByUserId" parameterType="String" resultType="User">
+	    SELECT 
+	        user_id as userId,
+	        user_type as userType,
+	        password,
+	        name,
+	        email,
+	        phone,
+	        birthdate,
+	        address,
+	        updated_password as updatedPassword,
+	        is_kakao_member as isKakaoMember,
+	        user_profile_img_path as userProfileImgPath
+	    FROM user
+	    WHERE user_id = #{userId}
+	</select>
+	
+	
 
 
 

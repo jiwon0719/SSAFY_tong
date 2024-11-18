@@ -34,10 +34,10 @@ const routes = [
     path: '/main',
     name: 'main',
     component: MainView, // Main 페이지
-
     children: [
       {
         path: '',
+        name: 'mainDefault',
         component: MainDefault,
       },
       {
