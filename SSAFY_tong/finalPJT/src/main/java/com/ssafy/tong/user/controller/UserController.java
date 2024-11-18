@@ -50,7 +50,7 @@ public class UserController {
 
     // 사용자 회원가입
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestBody User user) {
+    public ResponseEntity<Object> signUp(@RequestBody User user) {
 //        if (userService.findUserByUserId(user.getUserId())) {  // 사용자 중복 확인
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 사용자입니다.");
 //        }

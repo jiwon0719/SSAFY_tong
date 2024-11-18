@@ -10,13 +10,14 @@ CREATE TABLE `user` (
      `email` VARCHAR(100) NOT NULL,  -- 이메일은 100자
      `phone` VARCHAR(20) NOT NULL,  -- 전화번호는 20자
      `birthdate` VARCHAR(10) NOT NULL,  -- `생일축하합니다~` 기능 - 로그인 시 인터셉터
-     `address` VARCHAR(100) NOT NULL,  -- 주소는 100자
+     `addressZipcode` VARCHAR(100) NOT NULL, -- 우편번호
+     `address` VARCHAR(100) NOT NULL,  -- 도로명 주소
+     `addressDetail` VARCHAR(100) NOT NULL,  -- 상세 주소 like 몇동 몇호
      `updated_password` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 비밀번호 변경시 길이
      `is_kakao_member` CHAR(1) COMMENT 'O : 카카오 유저, X: 일반 유저',  
      `user_profile_img_path` VARCHAR(255), -- user 프로필 이미지 경로 , 후에 default로 기본 이미지 경로 설정
      PRIMARY KEY (`user_id`)
 );
-
 
 -- expert 테이블: 전문가 정보
 CREATE TABLE `expert` (

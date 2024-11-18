@@ -1,16 +1,17 @@
 <template>
     <div class="header">
         <router-link to="/main">
-            <div class="tong">
-                TONG
-            </div>
-        </router-link>    
+        <div class="tong">TONG</div>
+        </router-link>
 
-        <!-- 로그인 버튼을 router-link로 감싸서 로그인 페이지로 이동 -->
-    <router-link to="/signIn" class="login">
-      <svg id="12:2570" class="mdiuser-outline"></svg>
-      <div class="login-1">LOGIN</div>
-    </router-link>
+        <!-- 로그인 상태에 따라 프로필 이미지 또는 로그인 버튼을 표시 -->
+        <div v-if="isLoggedIn">
+            <img :src="profileImage" alt="Profile Image" class="profile-img" />
+        </div>
+        <router-link v-else to="/signIn" class="login">
+            <svg id="12:2570" class="mdiuser-outline"></svg>
+            <div class="login-1">LOGIN</div>
+        </router-link>
 
         <div class="menu">
             <div class="rectangle-38">
@@ -418,4 +419,43 @@
 }
 </style>
 
-<script></script>
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+// 상태 변수 정의
+const isLoggedIn = ref(false);
+const profileImage = ref('');
+
+// 세션 스토리지에서 토큰을 확인하고 프로필 이미지 가져오기
+const checkLoginStatus = () => {
+  const accessToken = sessionStorage.getItem('access-token');
+  const kakaoAccessToken = sessionStorage.getItem('kakao-access-token');
+  const token = accessToken || kakaoAccessToken;
+
+  if (token) {
+    isLoggedIn.value = true;
+    fetchProfileImage(token);
+  }
+};
+
+// 프로필 이미지를 가져오는 함수
+const fetchProfileImage = async (token) => {
+  try {
+    const response = await axios.get('/api/user/profileImg', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    // 서버에서 받은 프로필 이미지 URL을 설정
+    profileImage.value = response.data.profileImage;
+  } catch (error) {
+    console.error('프로필 이미지 가져오기 실패:', error);
+  }
+};
+
+// 컴포넌트가 마운트될 때 로그인 상태 체크
+onMounted(() => {
+  checkLoginStatus();
+});
+</script>

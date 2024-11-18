@@ -1,6 +1,5 @@
 <template>
     <div class="signup">
-    <div class="rectangle-21"></div>
     <div class="frame-2">
       <div class="rectangle-22"></div>
       <router-link to="/main">
@@ -135,10 +134,11 @@
             text-align: center;
 
             transition: transform 0.3s ease;
+            
 
             &:hover {
             transform: scale(1.05);
-        }
+            }
         }
         
         .frame-3 {
@@ -270,7 +270,7 @@
                     left: 0px;
                     width: 57px;
                     height: 22px;
-                    color: #FFFFFF;
+                    color: #000000;
                     white-space: nowrap;
                     font-family: "Jockey One";
                     font-size: 16px;
@@ -304,7 +304,7 @@
                     left: 142px;
                     width: 122px;
                     height: 22px;
-                    color: #FFFFFF;
+                    color: #000000;
                     white-space: nowrap;
                     font-family: "Jockey One";
                     font-size: 16px;
@@ -366,6 +366,7 @@ const login = async () => {
       alert("로그인 성공!");
       // JWT 토큰 저장
       userStore.saveTokenToStorage(response.data["access-token"]);
+      
       // 메인 페이지로 이동
       router.push({ name: "main" })
         .then(() => {
