@@ -16,7 +16,8 @@ export const useBoardStore = defineStore('board', () => {
   const getBoardList = async (categoryId) => {
     try {
       const response = await axios.get(`${REST_API_URL}/${categoryId}`)
-      console.log("게시글 목록 조회 완료")
+      console.log("게시글 목록 조회 응답: ", response.data)
+
       boardList.value = response.data
       return response.data
     } catch (error) {
@@ -39,6 +40,16 @@ export const useBoardStore = defineStore('board', () => {
       const updatedResponse = await axios.get(`${BOARD_API_URL}/${boardId}`)
       currentBoard.value = updatedResponse.data
       
+      // 조회수 증가를 위해 추가한 부분
+      // boardList에서 해당 게시글의 조회수도 업데이트
+      const boardIndex = boardList.value.findIndex(board => board.boardId === boardId)
+      if (boardIndex !== -1) {
+        boardList.value[boardIndex] = {
+          ...boardList.value[boardIndex],
+          viewCount: currentBoard.value.viewCount
+        }
+      }      
+
       console.log("게시글 상세 조회 완료")
       return updatedResponse.data
     } catch (error) {
@@ -53,7 +64,7 @@ export const useBoardStore = defineStore('board', () => {
     try {
       // boardCategory API가 아닌 board API 사용
       const response = await axios.get(`${BOARD_API_URL}/${boardId}/commentCount`);
-      console.log(`게시글 ${boardId}의 댓글 수:`, response.data);
+      // console.log(`게시글 ${boardId}의 댓글 수:`, response.data);
       return response.data;
     } catch (error) {
       console.error(`게시글 ${boardId}의 댓글 수 조회 실패:`, error);

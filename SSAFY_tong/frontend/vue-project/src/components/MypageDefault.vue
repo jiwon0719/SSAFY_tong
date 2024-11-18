@@ -102,6 +102,8 @@
   onMounted(async () => {
     try {
     await matchingStore.getUserMatchings('user');
+   
+
     // 각 expert 객체의 모든 속성 출력
     console.log('매칭 리스트 상세 정보:');
     matchingList.value.forEach((expert, index) => {

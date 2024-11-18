@@ -45,7 +45,7 @@
                       </div>
                       </div>
                       <div class="post-stats">
-                      <span class="view-count">👁️ {{ board.viewCnt }}</span>
+                      <span class="view-count"> 👀 {{ board.viewCnt }}</span>
                       <span class="comment-count">💬 {{ commentCounts[board.boardId] || 0}}</span>
                     </div>
                   </div>
