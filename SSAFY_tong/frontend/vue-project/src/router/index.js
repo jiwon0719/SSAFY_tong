@@ -167,6 +167,7 @@ const router = createRouter({
       return { top: 0 }; // 기본적으로 최상단으로 이동
     }
   }
+  
 });
 
 // 페이지 이동 후 항상 상단으로 스크롤 이동
@@ -174,5 +175,19 @@ router.afterEach(() => {
   window.scrollTo(0, 0); // 페이지 이동 후 항상 최상단으로 스크롤
 });
 
+router.beforeEach(async (to, from, next) => {
+  if (to.path.startsWith('/community/') && to.params.id) {
+    try {
+      const boardId = to.params.id;
+      await boardStore.getBoardDetail(boardId);
+      next();
+    } catch (error) {
+      console.error("게시글 상세 조회 실패:", error);
+      next(false);
+    }
+  } else {
+    next();
+  }
+});
 
 export default router

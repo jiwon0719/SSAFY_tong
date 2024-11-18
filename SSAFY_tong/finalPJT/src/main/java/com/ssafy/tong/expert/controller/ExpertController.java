@@ -216,4 +216,14 @@ public class ExpertController {
 		expertService.modify(expert);
 	}
 	
+	
+	@GetMapping("/{expertId}/userId")
+	public ResponseEntity<String> getExpertUserId(@PathVariable int expertId) {
+	    System.out.println("전문가 ID 조회 요청: " + expertId);
+	    String userId = expertService.findUserIdByExpertId(expertId);
+	    System.out.println("조회된 userId: " + userId);
+	    return ResponseEntity.ok(userId);
+	}
+	
+	
 }

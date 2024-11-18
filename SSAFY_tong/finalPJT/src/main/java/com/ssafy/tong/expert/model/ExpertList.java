@@ -9,6 +9,49 @@ public class ExpertList {
 	private String loacation; // expert
 	private String grade; // expert
 	private String userProfileImgPath; // user
+	private String status;
+	private String createAt;
+	private Integer score;
+    private Integer totalScore;
+    private Integer totalScoreCnt;
+	
+    // 평균 점수 계산 메서드
+    public double getAverageScore() {
+        if (totalScoreCnt == null || totalScoreCnt == 0) return 0.0;
+        return Math.round((double)totalScore / totalScoreCnt * 10) / 10.0;
+    }
+    
+	
+	public Integer getTotalScore() {
+		return totalScore;
+	}
+	public void setTotalScore(Integer totalScore) {
+		this.totalScore = totalScore;
+	}
+	public Integer getTotalScoreCnt() {
+		return totalScoreCnt;
+	}
+	public void setTotalScoreCnt(Integer totalScoreCnt) {
+		this.totalScoreCnt = totalScoreCnt;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String getCreateAt() {
+		return createAt;
+	}
+	public void setCreateAt(String createAt) {
+		this.createAt = createAt;
+	}
+	public Integer getScore() {
+		return score;
+	}
+	public void setScore(Integer score) {
+		this.score = score;
+	}
 	public int getExpertId() {
 		return expertId;
 	}
@@ -48,6 +91,8 @@ public class ExpertList {
 	@Override
 	public String toString() {
 		return "ExpertList [expertId=" + expertId + ", userId=" + userId + ", name=" + name + ", loacation=" + loacation
-				+ ", grade=" + grade + ", userProfileImgPath=" + userProfileImgPath + "]";
+				+ ", grade=" + grade + ", userProfileImgPath=" + userProfileImgPath + ", status=" + status
+				+ ", createAt=" + createAt + ", score=" + score + "]";
 	}
+
 }

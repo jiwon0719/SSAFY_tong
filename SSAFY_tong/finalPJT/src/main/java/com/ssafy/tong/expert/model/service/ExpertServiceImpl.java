@@ -72,5 +72,9 @@ public class ExpertServiceImpl implements ExpertService {
 	public void modify(Expert expert) {
 		expertDao.updateExpert(expert);
 	}
+	@Override
+	public String findUserIdByExpertId(int expertId) {
+		return expertDao.selectUserIdByExpertId(expertId);
+	}
 
 }

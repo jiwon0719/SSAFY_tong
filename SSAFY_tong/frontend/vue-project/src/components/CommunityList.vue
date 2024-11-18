@@ -29,7 +29,7 @@
   
           <!-- 게시물 목록 -->
           <div v-if="store.boardList.length > 0">
-            <div class="posts-container" v-for="board in store.boardList" :key="board.boardId" @click="viewBoardDetail(board.boardId)">
+            <div class="posts-container" v-for="board in store.boardList" :key="board.boardId">
               <router-link :to="`/community/${board.boardId}`" class= "detaillink">
                 <div class="post-item">
                   <div class="post-content">
@@ -45,8 +45,8 @@
                       </div>
                       </div>
                       <div class="post-stats">
-                      <span class="view-count">👁️ 21</span>
-                      <span class="comment-count">💬 3</span>
+                      <span class="view-count"> 👀 {{ board.viewCnt }}</span>
+                      <span class="comment-count">💬 {{ commentCounts[board.boardId] || 0}}</span>
                     </div>
                   </div>
                 </div>
@@ -75,13 +75,49 @@
   <script setup>
   import { useCommunityStore } from '@/stores/community'
   import { useBoardStore } from '@/stores/board';
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, watch } from 'vue';
   import { storeToRefs } from 'pinia';
-  
+  import { useRoute } from 'vue-router';
+
   const store = useCommunityStore(); 
   const boardStore = useBoardStore();
+  const route = useRoute();
   const { selectCategoryId, selectCategoryTitle } = storeToRefs(store);
   
+  // 댓글 수 저장
+  const commentCounts = ref({});
+
+  // 댓글 수를 가져오는 함수
+  const fetchCommentCounts = async () => {
+    for (const board of store.boardList) {
+      const count = await boardStore.getCommentCount(board.boardId);
+      commentCounts.value[board.boardId] = count;
+    }
+  };
+
+  // 데이터를 새로 로드하는 함수
+  const loadData = async () => {
+    if (selectCategoryId.value) {
+      await boardStore.getBoardList(selectCategoryId.value);
+      await fetchCommentCounts();
+    }
+  };
+
+  // 컴포넌트가 마운트될 때 댓글 수 가져오기
+  onMounted(loadData);
+  
+
+  // 라우트 변경을 감지하여 데이터 다시 로드 (수정된 부분)
+  watch(
+    () => route.path,
+    async (newPath, oldPath) => {
+      // 상세페이지에서 목록으로 돌아오는 경우에만 데이터 새로 로드
+      if (newPath === '/community' && oldPath?.startsWith('/community/')) {
+        await loadData();
+      }
+    }
+  );
+
   // 게시글 작성 버튼 클릭 시 호출되는 함수
   const onPostClick = () => {
     console.log("선택된 카테고리 ID:", selectCategoryId.value);
@@ -94,7 +130,6 @@
     await boardStore.getBoardDetail(boardId);
     console.log("게시글 상세 조회 완료 후 currentBoard:", boardStore.currentBoard);  // getBoardDetail 완료 후 값 출력
   }
-  
   </script>
   
   <style scoped>

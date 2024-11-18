@@ -14,13 +14,26 @@ export const useCommentStore = defineStore('comment',() => {
         try {
             loading.value = true;
             const response = await axios.get(`${COMMENT_API_URL}/${boardId}`)
-            console.log("전체 댓글 조회 완료")
-            comments.value = response.data
+            console.log("API 응답 데이터 : ", response.data)
+
+            if(Array.isArray(response.data)) {
+                comments.value = response.data;
+            } else if( response.data && typeof response.data === 'object') {
+                // 응답이 객체인 경우, 실제 댓글 배열이 있는 속성을 찾아 할당
+                comments.value = response.data.comments || response.data.data || [];                
+            } else {
+                comments.value = []; // 적절한 데이터가 없는 경우 빈 배열로 초기화
+            }
+
             console.log("전체 댓글: ", comments.value);
 
-            // 댓글 목록 갱신 후 트리 구조로 변환
-            const commentTree = getCommentTree();
-            return commentTree;
+            // comments.value가 배열인지 확인 후 트리 구조로 변환
+            if (Array.isArray(comments.value)) {
+                const commentTree = getCommentTree();
+                return commentTree;
+            }
+            return []; // 배열이 아닌 경우 빈 배열 반환
+            
         } catch (error) {
             console.error("전체 댓글 조회 실패", error)
             error.value = error.message

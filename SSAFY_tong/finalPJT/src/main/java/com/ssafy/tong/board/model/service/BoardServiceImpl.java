@@ -40,4 +40,15 @@ public class BoardServiceImpl implements BoardService {
 		boardDao.updateBoard(board);
 	}
 
+	// 조회수 증가
+	@Override
+	public void incrementViewCount(int boardId) {
+		boardDao.updateViewCount(boardId);
+	}
+	// 댓글수 조회
+	@Override
+	public int getCommentCount(int boardId) {
+		return boardDao.selectCommentCount(boardId);
+	}
+
 }

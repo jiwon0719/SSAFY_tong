@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 		"com.ssafy.tong.comment.model.dao", 
 		"com.ssafy.tong.reply.model.dao", 
 		"com.ssafy.tong.expert.model.dao",
-		"com.ssafy.tong.user.model.dao"
+		"com.ssafy.tong.user.model.dao", 
+		"com.ssafy.tong.matching.model.dao"
 })
 public class DBConfig {
 	
