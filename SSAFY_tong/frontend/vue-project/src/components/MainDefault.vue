@@ -1,97 +1,43 @@
 <template>
   <div class="main-container">
     <div class="quadrant quadrant-1">
-      <WeatherForecast />
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-weather-partly-cloudy</v-icon>
+        <span>Today's Weather</span>
+      </div>
+      <WeatherForecastMain />
     </div>
-    <div class="quadrant quadrant-2">예약내역</div>
-    <div class="quadrant quadrant-3">게시판</div>
-    <div class="quadrant quadrant-4">채팅</div>
+    <div class="quadrant quadrant-2">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-calendar-check</v-icon>
+        <span>Schedule</span>
+      </div>
+      <ReservationMain />
+    </div>
+    <div class="quadrant quadrant-3">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-forum</v-icon>
+        <span>Community</span>
+      </div>
+      <TopBaordCategoriesMain />
+    </div>
+    <div class="quadrant quadrant-4">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-message-text</v-icon>
+        <span>Messages</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import WeatherForecast from '@/components/WeatherForcast.vue';
-
-const router = useRouter();
-
-// 사용자 정보 가져오는 함수
-function fetchUserInfo() {
-    const kakaoToken = sessionStorage.getItem('kakao-access-token');
-    const jwtToken = sessionStorage.getItem('access-token');
-
-    console.log("kakaoToken 입니다", kakaoToken);
-    console.log("jwtToken 입니다", jwtToken);
-
-    //  JWT Token이 있는 경우
-    if (jwtToken) {
-      axios.get('/api/user/user-info', {
-        headers: {
-          'Authorization': `Bearer ${jwtToken}`,
-        }
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          console.log("Response Headers: ", response.headers);
-          console.log("data: ", response.data);
-
-          const data = response.data;
-          console.log("data: ", data);
-          console.log("userId: ", data.userId);
-        } else {
-          console.error("Error: ", response.status);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching user info:", error);
-      });
-    }
-
-    //Kakao Token이 있는 경우
-    else if (kakaoToken) {
-        axios.get('https://kapi.kakao.com/v2/user/me', {
-            headers: {
-                'Authorization': `Bearer ${kakaoToken}`,
-                'Content-Type': 'application/json',
-            }
-        })
-        .then((response) => {
-            const data = response.data;
-            const userId = data.id;
-            console.log("카카오로 얻어온 User ID:", userId);
-        })
-        .catch((error) => {
-            console.error("카카오 사용자 정보 조회 실패:", error);
-        });
-    }
-
-    // 토큰이 둘 다 없는 경우
-    else {
-        console.error("Access token not found. Redirecting to login page...");
-    }
-}
-
-// onMounted 시 사용자 정보 호출
-onMounted(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('accessToken');
-
-    if (accessToken) {
-        sessionStorage.setItem('kakao-access-token', accessToken);
-        router.replace({ path: '/main' });
-    }
-
-    fetchUserInfo();
-});
+import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
+import ReservationMain from './ReservationMain.vue'
+import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
 </script>
 
-<style scoped lang="scss">
-html, body {
-  height: 100%;
-  margin: 0;
-}
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
 .main-container {
   display: grid;
@@ -102,33 +48,36 @@ html, body {
   width: 100%;
   padding: 30px;
   box-sizing: border-box;
+  font-family: 'Noto Sans KR', sans-serif;
+}
 
-  .quadrant {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f4f4f4;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-    padding: 20px;
-    overflow: auto;
-  }
+.quadrant {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
 
-  .quadrant-1 {
-    background-color: #ffcccb;
-  }
-  .quadrant-2 {
-    background-color: #cce7ff;
-  }
-  .quadrant-3 {
-    background-color: #d1ffcc;
-  }
-  .quadrant-4 {
-    background-color: #fff5b0;
-  }
+.quadrant:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.quadrant-header {
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
 }
 
 @media screen and (max-width: 768px) {

@@ -63,7 +63,7 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
       console.log('Formatted Date:', formattedDate.value)
       
       const params = {
-        expertId: 'expert2', 
+        expertId: 'expert', 
         date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       }
       console.log('Request Params:', params)
@@ -152,7 +152,7 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
       console.log("Formmated Date for Quests: ", formattedDate.value)
 
       const params = {
-        expertId: 'expert2', 
+        expertId: 'expert', 
         date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       }
       console.log("Quest Request Params: ", params)

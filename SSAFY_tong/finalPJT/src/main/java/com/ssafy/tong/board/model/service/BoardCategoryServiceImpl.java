@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ssafy.tong.board.model.Board;
 import com.ssafy.tong.board.model.BoardCategory;
+import com.ssafy.tong.board.model.CategoryViewResponse;
 import com.ssafy.tong.board.model.dao.BoardCategoryDao;
 @Service
 public class BoardCategoryServiceImpl implements BoardCategoryService {
@@ -38,6 +39,11 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 	@Override
 	public void modify(BoardCategory boardCategory) {
 		boardCategoryDao.updateBoardCategory(boardCategory);
+	}
+	// 핫게
+	@Override
+	public List<CategoryViewResponse> findTopViewedCategories() {
+		return boardCategoryDao.selectTopViewedCategories();
 	}
 
 }
