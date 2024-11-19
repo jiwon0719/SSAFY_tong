@@ -745,8 +745,8 @@
 </style>
 
 <script>
-    import CalendarDefault from '@/components/CalendarDefault.vue';
-    import CalendarReservation from '@/components/CalendarDefaultReservation.vue';
+    import CalendarDefault from '@/components/tmp/CalendarDefault.vue';
+    import CalendarReservation from '@/components/tmp/CalendarDefaultReservation.vue';
     
 
 export default {

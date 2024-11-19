@@ -107,7 +107,7 @@ const replyToId = ref(null);
 // 라우트 파라미터로 전달된 boardId 받기
 const route = useRoute();
 const boardId = route.params.boardId;
-
+const isFirstMount = ref(true); // mount 한번 되는지 확인해보기(조회수 중복 증가 떄문에)
 
 // 목록으로 돌아가기
 // 돌아가기 전에 데이터 새로 로드
@@ -117,22 +117,23 @@ const goToList = async () => {
       // store의 boardList를 직접 업데이트
       const response = await axios.get(`${REST_API_URL}/${selectCategoryId.value}`);
       communityStore.boardList = response.data;
-      router.push('/community');
+      router.push(`/community/${route.params.categoryId}`);
     } else {
-      router.push('/community');
+      router.push(`/community/${route.params.categoryId}`);
     }
   } catch(error) {
     console.log("데이터 로드 중 오류 발생:", error)
-    router.push('/community');
+    router.push(`/community/${route.params.categoryId}`);
   } 
 };
 
 
 // 컴포넌트 마운트 시 데이터 로딩
 onMounted(async () => {
-  if (boardId) {
+  if (boardId && isFirstMount.value) {
     try {
-      console.log(boardId); // 게시글 번호 출력
+      isFirstMount.value = false;
+      // console.log(boardId); // 게시글 번호 출력
       // 게시글 상세 로드 
       await boardStore.getBoardDetail(boardId);
       // 댓글 및 대댓글 로드

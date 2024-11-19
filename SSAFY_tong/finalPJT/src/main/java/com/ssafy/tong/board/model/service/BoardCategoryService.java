@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ssafy.tong.board.model.Board;
 import com.ssafy.tong.board.model.BoardCategory;
+import com.ssafy.tong.board.model.CategoryViewResponse;
 
 public interface BoardCategoryService {
 	// 전체 조회
@@ -16,6 +17,8 @@ public interface BoardCategoryService {
 	void regist(BoardCategory boardCategory);
 	// 수정
 	void modify(BoardCategory boardCategory);
+	// 핫게
+	List<CategoryViewResponse> findTopViewedCategories();
 
 
 }

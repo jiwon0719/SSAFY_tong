@@ -27,16 +27,16 @@
       <br>
 
       <!-- 일반 게시판 -->
-      <router-link to="/community">
-      <div class="board-section" v-for="category in store.categoryList" :key="category.categoryId"  @click="fetchCategoryPosts(category.categoryId, category.category)">
-        <div class="info-board">
+      <div class="board-section" v-for="category in store.categoryList" :key="category.categoryId">
+        <router-link :to="`/community/${category.categoryId}`">
+          <div class="info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
             <span>📝 {{ category.category }}</span>
           </div>
           <div class="board-item">
             <span class="board-desc">{{ category.description }}</span>
           </div>
-        </div>
-      </router-link>
+        </router-link>
+      </div>
     </aside>  
 
     <!-- 오른쪽 메인 컨텐츠 영역 -->
@@ -49,21 +49,50 @@
 </template>
 
 <script setup>
-
 import { useCommunityStore } from '@/stores/community'
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-const store = useCommunityStore(); 
+const store = useCommunityStore();
+const route = useRoute();
+const router = useRouter();
 
 onMounted(() => {
     store.getcategoryList();
-})
+    
+    // 현재 라우트의 categoryId가 있다면 해당 카테고리의 게시글을 가져옴
+    if (route.params.categoryId) {
+        const category = store.categoryList.find(
+            cat => cat.categoryId === route.params.categoryId
+        );
+        if (category) {
+            fetchCategoryPosts(category.categoryId, category.category);
+        }
+    } else {
+      // URL에 카테고리ID 없으면 자유게시판(1)로 이동
+      router.push('/community/1');
+    }
+});
 
-// 선택한 카테고리의 게시글을 가져오는 메서드
+// 라우트 파라미터 변경 감지
+watch(
+    () => route.params.categoryId,
+    (newCategoryId) => {
+        if (newCategoryId) {
+            const category = store.categoryList.find(
+                cat => cat.categoryId === newCategoryId
+            );
+            if (category) {
+                fetchCategoryPosts(category.categoryId, category.category);
+            }
+        }
+    },
+    { immediate: true } // 즉시 실행 옵션 추가
+);
+
 const fetchCategoryPosts = (categoryId, categoryTitle) => {
-  store.fetchPostsByCategory(categoryId, categoryTitle); // Pinia 스토어의 fetchPostsByCategory 호출
+    store.fetchPostsByCategory(categoryId, categoryTitle);
 };
-
 </script>
 
 <style scoped>

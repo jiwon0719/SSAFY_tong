@@ -15,9 +15,9 @@ import ChattingRoom from '@/components/ChattingRoom.vue'
 import UpdateUserInfo from '@/components/UpdateUserInfo.vue'
 import CalendarView from '@/views/CalendarView.vue'
 import CalendarExpertView from '@/views/CalendarExpertView.vue'
-import CalendarDefault from '@/components/CalendarDefault.vue'
-import CalendarDefaultReservation from '@/components/CalendarDefaultReservation.vue'
-import CalendarDefaultCalendar from '@/components/CalendarDefaultCalendar.vue'
+import CalendarDefault from '@/components/tmp/CalendarDefault.vue'
+import CalendarDefaultReservation from '@/components/tmp/CalendarDefaultReservation.vue'
+import CalendarDefaultCalendar from '@/components/tmp/CalendarDefaultCalendar.vue'
 import { compile } from 'vue'
 import MatchingView from '@/views/MatchingView.vue'
 import MatchingDefault from '@/components/MatchingDefault.vue'
@@ -103,12 +103,12 @@ const routes = [
 
         children: [
           {
-            path: '',
+            path: ':categoryId',
             name: 'communityList',
             component: CommunityList,
           },
           {
-            path: ':boardId',
+            path: ':categoryId/:boardId',
             name: 'communityDetail',
             component: CommunityDetail,
           },

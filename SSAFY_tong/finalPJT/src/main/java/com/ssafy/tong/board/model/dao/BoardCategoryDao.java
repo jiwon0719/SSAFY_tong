@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.ssafy.tong.board.model.Board;
 import com.ssafy.tong.board.model.BoardCategory;
+import com.ssafy.tong.board.model.CategoryViewResponse;
 
 public interface BoardCategoryDao {
 	// 전체 조회
@@ -16,4 +17,6 @@ public interface BoardCategoryDao {
 	void insertBoardCategory(BoardCategory boardCategory);
 	// 수정
 	void updateBoardCategory(BoardCategory boardCategory);
+	// 핫게
+	List<CategoryViewResponse> selectTopViewedCategories();
 }
