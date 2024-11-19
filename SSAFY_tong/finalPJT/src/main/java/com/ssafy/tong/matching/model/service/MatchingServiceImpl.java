@@ -3,6 +3,7 @@ package com.ssafy.tong.matching.model.service;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import com.ssafy.tong.expert.model.ExpertList;
+import com.ssafy.tong.expert.model.UserList;
 import com.ssafy.tong.matching.model.Matching;
 import com.ssafy.tong.matching.model.dao.MatchingDao;
 
@@ -32,10 +33,16 @@ public class MatchingServiceImpl implements MatchingService {
         return matchingDao.selectMatchingsByUserId(userId);
     }
 
+    @Override
+    public List<UserList> getExpertMatchingList(String expertId) {
+    	return matchingDao.selectMatchingsByExpertId(expertId);
+    }
+
     // 점수 업데이트
 	@Override
 	public void updateScore(int expertId, String userId, int score) {
 		matchingDao.updateScore(expertId, userId, score);
 	}
+
 
 }

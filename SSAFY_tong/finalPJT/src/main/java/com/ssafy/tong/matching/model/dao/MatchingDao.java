@@ -3,6 +3,7 @@ package com.ssafy.tong.matching.model.dao;
 import java.util.List;
 
 import com.ssafy.tong.expert.model.ExpertList;
+import com.ssafy.tong.expert.model.UserList;
 import com.ssafy.tong.matching.model.Matching;
 
 public interface MatchingDao {
@@ -12,6 +13,7 @@ public interface MatchingDao {
 	boolean checkExistingMatching(String userId, String expertUserId);
 	// 상세 조회
 	List<ExpertList> selectMatchingsByUserId(String userId);
+	List<UserList> selectMatchingsByExpertId(String expertId);
 	// 점수 업데이트 
 	int updateScore(int expertId, String userId, int score);
 

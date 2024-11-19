@@ -14,6 +14,7 @@ import ChatList from '@/components/ChatList.vue'
 import ChattingRoom from '@/components/ChattingRoom.vue'
 import UpdateUserInfo from '@/components/UpdateUserInfo.vue'
 import CalendarView from '@/views/CalendarView.vue'
+import CalendarExpertView from '@/views/CalendarExpertView.vue'
 import CalendarDefault from '@/components/CalendarDefault.vue'
 import CalendarDefaultReservation from '@/components/CalendarDefaultReservation.vue'
 import CalendarDefaultCalendar from '@/components/CalendarDefaultCalendar.vue'
@@ -61,6 +62,11 @@ const routes = [
             component: CalendarDefaultReservation,
           },
         ]
+      },
+      {
+        path: '/calendar/expert',
+        name: 'calendarExpert',
+        component: CalendarExpertView,
       },
       {
         path: '/mypage',
