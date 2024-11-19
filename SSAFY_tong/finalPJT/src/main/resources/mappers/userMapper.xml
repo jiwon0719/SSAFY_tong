@@ -92,8 +92,12 @@
 	</select>
 	
 	
-
-
+	<select id="getProfileImageByUserId" parameterType="String" resultType="String">
+	    SELECT userProfileImgPath 
+	    FROM `user` 
+	    WHERE user_id = #{userId}
+	</select>
+		
 
 
 </mapper>

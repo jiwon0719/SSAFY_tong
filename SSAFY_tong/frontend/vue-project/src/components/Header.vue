@@ -4,10 +4,39 @@
         <div class="tong">TONG</div>
         </router-link>
 
-        <!-- 로그인 상태에 따라 프로필 이미지 또는 로그인 버튼을 표시 -->
-        <div v-if="isLoggedIn">
-            <img :src="profileImage" alt="Profile Image" class="profile-img" />
+
+        <!-- 프로필 섹션 -->
+      <div class="profile-section" v-if="isLoggedIn">
+        <div @click="togglePanel" class="profile-wrapper">
+          <img 
+            :src="profileImage" 
+            alt="Profile" 
+            class="profile-img"
+          />
         </div>
+  
+        <!-- 프로필 패널 -->
+        <div 
+          v-if="isPanelOpen"
+          class="profile-panel"
+        >
+          <button 
+            @click="goToMyPage"
+            class="panel-button mypage-btn"
+          >
+            마이페이지
+          </button>
+          <button 
+            @click="handleLogout"
+            class="panel-button logout-btn"
+          >
+            로그아웃
+          </button>
+        </div>
+      </div>
+
+    
+
         <router-link v-else to="/signIn" class="login">
             <svg id="12:2570" class="mdiuser-outline"></svg>
             <div class="login-1">LOGIN</div>
@@ -82,82 +111,180 @@
 
 <style lang="scss">
 .header {
-    position: fixed; /* absolute에서 fixed로 변경 */
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 10vh;
-    background: #fff; /* 배경색 추가 */
-    z-index: 1000; /* 다른 요소들 위에 표시되도록 */
-    .tong {
-        position: absolute;
-        top: 4px;
-        left: 83px;
-        width: 118px;
-        height: 84px;
-        white-space: nowrap;
-        color: #E2495B;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 10vh;
+  background: #fff;
+  z-index: 1000;
+
+  .tong {
+    position: absolute;
+    top: 4px;
+    left: 83px;
+    width: 118px;
+    height: 84px;
+    white-space: nowrap;
+    color: #E2495B;
+    font-family: "Jockey One";
+    font-size: 60px;
+    line-height: 84px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  .profile-section {
+    position: absolute;
+    top: 20px;
+    right: 40px;
+    
+    .profile-wrapper {
+      cursor: pointer;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
+
+    .profile-img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    //   border: 2px solid #DC606F;
+    }
+
+    .profile-panel {
+      position: absolute;
+      top: 130px;
+      right: 0;
+      width: 200px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid rgba(220, 96, 111, 0.2);
+      animation: slideDown 0.2s ease-out;
+
+      .panel-button {
+        width: 100%;
+        padding: 8px;
+        border: none;
+        border-radius: 6px;
         font-family: "Jockey One";
-        font-size: 60px;
-        line-height: 84px;
-        font-weight: 400;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
+        font-size: 14px;
         cursor: pointer;
-        transition: transform 0.3s ease;
-
-        &:hover {
-            transform: scale(1.05);
-        }
-    }
-    .login {
-        position: absolute;
-        top: 31px;
-        left: 90%;
-        width: 155px;
-        height: 42px;
-        border-radius: 10px;
-        overflow: hidden;
-        background: #DC606F;
-
-
-        &:hover {
-            background: #E2495B;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
+        transition: all 0.2s ease;
+        text-align: center;
         
-        .mdiuser-outline {
-            position: absolute;
-            top: 9px;
-            left: 7px;
-            width: 24px;
-            height: 24px;
+        &.mypage-btn {
+          background: #DC606F;
+          color: white;
+
+          &:hover {
+            background: #E2495B;
+            transform: translateY(-1px);
+          }
         }
-        .login-1 {
-            position: absolute;
-            top: 11px;
-            left: 48px;
-            width: 60px;
-            height: 20px;
-            color: #FFFFFF;
-            font-family: "Jockey One";
-            font-size: 16px;
-            line-height: 22px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
+
+        &.logout-btn {
+          background: #f8f8f8;
+          color: #DC606F;
+          border: 1px solid #DC606F;
+
+          &:hover {
+            background: #fff1f1;
+            transform: translateY(-1px);
+          }
         }
+      }
     }
+  }
+
+  .login {
+    position: absolute;
+    top: 31px;
+    right: 40px;
+    width: 155px;
+    height: 42px;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #DC606F;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #E2495B;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .mdiuser-outline {
+      position: absolute;
+      top: 9px;
+      left: 7px;
+      width: 24px;
+      height: 24px;
+    }
+    
+    .login-1 {
+      position: absolute;
+      top: 11px;
+      left: 48px;
+      width: 60px;
+      height: 20px;
+      color: #FFFFFF;
+      font-family: "Jockey One";
+      font-size: 16px;
+      line-height: 22px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+  }
+
+  .menu {
+    position: absolute;
+    right: 840px;
+    top: 0;
+    width: 739px;
+    height: 108px;
+    overflow: hidden;
+    // ... [기존 메뉴 스타일 유지]
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
     /* menu 부분의 position 설정 수정 */
     .menu {
         position: absolute; /* relative에서 absolute로 변경 */
-        right: 200px; /* left 값 대신 right 값으로 변경 */
+        right: 840px; /* left 값 대신 right 값으로 변경 */
         top: 0;
         width: 739px;
         height: 108px;
@@ -416,45 +543,45 @@
             }
         }
     }
-}
+
 </style>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { computed, onMounted, ref } from 'vue';
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 
-// 상태 변수 정의
-const isLoggedIn = ref(false);
-const profileImage = ref('');
+const userStore = useUserStore();
+const router = useRouter();
+const isPanelOpen = ref(false);
 
-// 세션 스토리지에서 토큰을 확인하고 프로필 이미지 가져오기
-const checkLoginStatus = () => {
-  const accessToken = sessionStorage.getItem('access-token');
-  const kakaoAccessToken = sessionStorage.getItem('kakao-access-token');
-  const token = accessToken || kakaoAccessToken;
+const defaultImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAAAIVBMVEXl77rY5aDl8Lnd6Kja5qXg67He6azZ5aLj7bbj7rXa5qhY6pxuAAACr0lEQVR4nO3b25LqIBCFYUM4+v4PvHPQUcdoYMTd3an/u7C8zCpoaAOeTgAAAAAAAAAAAAAAAAAAAIAoJ/0AvUxBSghxEUKWfpzPlDj6YUjDMH8kP0a7eXJcYtxJyWYcN0X5nWXJE6Wf7A9CusyvpzTnIv1sjVzcynGNE6Qfr827LMam2ttxsTY2YbNYHtNY2EvLbpYpjZFVwJ33swzDKP2YdfYK5sJE2eSKSbYMjYWqqZpkRoYmj7Vh9FeN21+Wf+jvOSvLf6a+D8i+Poz6eVazYV557fOsoWQGr7wLaKl//e1mQ/0T5r8KhwpzpJppGRmvPsyR9pnS0gFo32dcddNsoDdrWZu1l0xLp6m+ZE4NQ6N/YOrfAVgYmGO9nTm5qqHx2cLbmcqNU/kec7M/0dS3ZXd2d079++VNHt/OtBRt1MvqfVdjK8tpPml+2Qmo7/w3lK2plqZhMbOO3XE5jE8HzimaOTL7LYfo1+sZ66ePwfRVmlJCjOf5pkkMxUQ3tmseDmd5TADgUJYV2a3fTC/O0+PnksNq+naJYy2Uc2Xa+L2fO8u5mUlpvRjovbFOwP20ZK9+z6RxSiT9mBVyeR/k9qtmDEX3dMvhvHll9tUA6R2feXbVBrnm8Sp/qrnpl2VrlIXGOC78KcoSJyhbq1uuzDzTdae+5fBvQ9J0IvD0B4b2OGpeP32eRU+alhsmr+l4Ndgni4qTNJc7ZZnSiC/Q7rN17IH4OUfLXZldwmXz2Wb5m/AN1F7VfyE60WrP/GuNkita54ERrZoPW7INggeELTfl6ghede7RlD2Sa9Hq/11ST2w967vJrKS2Gte//uXaTde1lbkQK5ruu8zsUGGkVoAvLGZiYb6xMsuF+cJiJtZr5jh+gVgL4PqTigIAAAAAAAAAAAAAAAAAAMT9Ay89GMi5B4sKAAAAAElFTkSuQmCC';
 
-  if (token) {
-    isLoggedIn.value = true;
-    fetchProfileImage(token);
+const profileImage = computed(() => userStore.kakaoUserInfo?.profileImage || defaultImage);
+const isLoggedIn = computed(() => userStore.isAuthenticated);
+
+const checkLoginStatus = async () => {
+  userStore.loadTokenFromStorage();
+  if (isLoggedIn.value) {
+    await userStore.fetchUserInfo();
   }
 };
 
-// 프로필 이미지를 가져오는 함수
-const fetchProfileImage = async (token) => {
-  try {
-    const response = await axios.get('/api/user/profileImg', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    // 서버에서 받은 프로필 이미지 URL을 설정
-    profileImage.value = response.data.profileImage;
-  } catch (error) {
-    console.error('프로필 이미지 가져오기 실패:', error);
-  }
+const togglePanel = () => {
+  isPanelOpen.value = !isPanelOpen.value;
 };
 
-// 컴포넌트가 마운트될 때 로그인 상태 체크
+const goToMyPage = () => {
+  router.push('/mypage');
+  isPanelOpen.value = false;
+};
+
+const handleLogout = () => {
+  userStore.clearToken();
+  isPanelOpen.value = false;
+  router.push('/');
+};
+
 onMounted(() => {
   checkLoginStatus();
 });

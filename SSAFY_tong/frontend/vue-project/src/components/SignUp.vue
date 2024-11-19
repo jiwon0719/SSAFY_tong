@@ -1,22 +1,23 @@
-
-
 <template>
   <div class="signup-form">
     <router-link to="/main">
         <div class="tong" style="text-decoration: none;">TONG</div>
     </router-link>
       
-      <div>
-      <label>아이디</label>
-      <input 
-        v-model="userId" 
-        placeholder="영문, 숫자 조합 4-20자" 
-        :class="{ 'invalid': userId && !isUserIdValid }"
-      />
-      <div v-if="userId && !isUserIdValid" class="invalid-feedback">
-        아이디는 영문과 숫자를 조합하여 4-20자로 입력해주세요.
-      </div>
-    </div>
+    <div v-if="!userStore.getKakaoUserInfo">
+  <label>아이디</label>
+  <input  
+    v-model="userId" 
+    placeholder="영문, 숫자 조합 4-20자" 
+    :class="{ 'invalid': userId && !isUserIdValid }"
+  />
+</div>
+
+<!-- 사용자 정보가 있으면 화면에 보이지 않음 -->
+<div v-if="userStore.getKakaoUserInfo" style="display:none">
+  <!-- 내부적으로는 사용됨 -->
+  <input v-model="userId" type="hidden"/>
+</div>
 
     <div>
       <label>비밀번호</label>
@@ -44,33 +45,46 @@
       </div>
     </div>
 
-    <!-- 나머지 템플릿 코드는 동일 -->
-    <div>
-      <label>이름</label>
-      <input v-model="name" placeholder="이름을 입력하세요" />
-    </div>
+    <!-- 이름 필드 -->
+<div>
+  <label>이름</label>
+  <input 
+    v-model="name" 
+    placeholder="이름을 입력하세요"
+    :disabled="!!userStore.getKakaoUserInfo"
+  />
+</div>
 
-    <div class="email-input">
-    <label sy>이메일</label>
-    <input v-model="email" placeholder="이메일 입력" />
-    <span>@</span>
 
-    <!-- 이메일 도메인 선택 -->
-    <select v-model="emailDomain" @change="handleDomainChange">
-      <option value="gmail.com">gmail.com</option>
-      <option value="naver.com">naver.com</option>
-      <option value="daum.net">daum.net</option>
-      <option value="ssafy.com">ssafy.com</option>
-      <option value="text">직접입력</option>
-    </select>
-
-    <!-- '직접입력' 선택시, 도메인 입력 필드 표시 -->
-    <input 
-      v-if="emailDomain === 'text'" 
-      v-model="customDomain" 
-      placeholder="직접 입력한 도메인" 
-    />
-  </div>
+ 
+<!-- 이메일 입력 필드 -->
+<div class="email-input">
+  <label>이메일</label>
+  <input 
+    v-model="email" 
+    placeholder="이메일 입력"
+    :disabled="!!userStore.getKakaoUserInfo"
+  />
+  <span>@</span>
+  <select 
+    v-model="emailDomain" 
+    @change="handleDomainChange"
+    :disabled="!!userStore.getKakaoUserInfo"
+  >
+    <option value="gmail.com">gmail.com</option>
+    <option value="naver.com">naver.com</option>
+    <option value="daum.net">daum.net</option>
+    <option value="ssafy.com">ssafy.com</option>
+    <option value="text">직접입력</option>
+  </select>
+  
+  <input 
+    v-if="emailDomain === 'text'" 
+    v-model="customDomain" 
+    placeholder="직접 입력한 도메인"
+    :disabled="!!userStore.getKakaoUserInfo"
+  />
+</div>
 
     <div class="phone-input">
       <label>전화번호</label>
@@ -287,9 +301,10 @@ button:hover {
 import { ref, computed, onMounted} from 'vue';
 import axios from 'axios';
 import { useRouter } from "vue-router";
+import { useUserStore } from '@/stores/user'; // UserStore import 추가
 
 const router = useRouter();
-
+const userStore = useUserStore(); // UserStore 인스턴스 생성
 
 const userId = ref('');
 const password = ref('');
@@ -297,18 +312,68 @@ const passwordConfirm = ref('');
 const name = ref('');
 const email = ref('');
 const emailDomain = ref('gmail.com');
+const customDomain = ref('');
 const address = ref('');
 const zipcode = ref('');
 const addressDetail = ref('');
-const userType = ref('basic');
+const userType = ref('U');
 const birthdate = ref('');
 const phoneFirst = ref('010');
 const phoneMiddle = ref('');
 const phoneLast = ref('');
+const userProfileImgPath = ref('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAAAHlBMVEX5vfHwpeb6vPLyrerwp+f4ufD0sOz2tO7yqun2tu5u9qVmAAACfElEQVR4nO3aC5KjMAxF0eA/+9/wAElmOh0CImNKEnXPCnhlWbaxbzcAAAAAAAAAAAAAAAAAAABAWZhpf0QPIddaYpnUMftOlGtsaXhILdas/UVfy7ENv7TiM04u6XeUJU51WGz1bVT+xvE2OKF8ijJPHl+Ds5nFWZqdLHMa7U+UqztZJm7SjKtt7JWXLhA+9rGXNNqfKbM3YR6K9ndKZEGRuSk04cC4GJosmjHL0NhfbARt+SGN2t+6J0RxGPt1Jq+yYYjW60yyYD6Z72f1SmHWT2TrzG83CWOVeP33EOZIA7hUmGZ9C3CpdebQDsB6mEvtzY7smq3Pf/lB08V5Rl5n9qvsYv8ALvV35hZEQ+NgxiwkDS25KLKZoNDst+Wn/Y5WnBTZLMTteeMpy3w3u5Em+coyjc3Hs0BqfubLUxjXByf5vDwPtb3FSdHTdeaLPJafeVIro9coizzWEltrMfp/PLMIl3nWBAAwJdxCnlbNu3FeM30uN/eV/22bOW0Fpp2An0QhzG9mt45maWil5pv5SFOQIvt1nmLJposujMIk9zjTMc3s1vPTcWzLdCjQ/uxVh0blZxx7J8/8XZQljrXD53jgjumdrSu08etheQyOnZkTjrxkWGfmFq1DFjOP0LtksTI2R54xbKYxMG/kF7J79O8F83/15FdRO0yfCfOgXGhHXpfsU77n7Fhkg3ZH6zswyj2g64wZdIemZyu7U3y33Wu9/Eexzo68LhVSq7MjD+Wk1C6ie/eymdqkkT/6k1ObNGeEUds7nxJGqQOcMf/VOsClwvRf/zXDnNCZ1XpzLi32p/d8K5xAKwsAAAAAAAAAAAAAAAAAAFD2B3vkGDsXKoABAAAAAElFTkSuQmCC');
+
+onMounted(async () => {
+  loadDaumPostcodeScript();
+  
+  // 카카오 토큰 확인
+  const kakaoToken = userStore.kakaoToken;
+  console.log("kakaoToken:", kakaoToken);
+
+  if (kakaoToken) {
+    // 카카오 유저 정보 가져오기
+    await userStore.fetchUserInfo();
+    const kakaoUserInfo = userStore.getKakaoUserInfo;
+    console.log("kakaoUserInfo after fetch:", kakaoUserInfo);
+    
+    if (kakaoUserInfo) {
+
+      console.log("kakaoUserInfo :",kakaoUserInfo);
+
+      // 아이디 설정 (카카오 ID 사용)
+      userId.value = kakaoUserInfo.kakaoId+'a!';
+
+      console.log(userId.value);
+      
+      // 이름 설정 (카카오 닉네임 사용)
+      name.value = kakaoUserInfo.nickname;
+      
+      // 이메일 처리
+      if (kakaoUserInfo.email) {
+        const [emailId, domain] = kakaoUserInfo.email.split('@');
+        email.value = emailId;
+        
+        // 도메인 처리
+        const knownDomains = ['ssafy.com', 'naver.com', 'daum.net', 'gmail.com'];
+        if (knownDomains.includes(domain)) {
+          emailDomain.value = domain;
+        } else {
+          emailDomain.value = 'text';
+          customDomain.value = domain;
+        }
+      }
+      
+      // 프로필 이미지 설정
+      if (kakaoUserInfo.profileImage) {
+        userProfileImgPath.value = kakaoUserInfo.profileImage;
+      }
+    }
+  }
+});
 
 // 유효성 검사를 위한 computed 속성들
 const isUserIdValid = computed(() => {
-  const regex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d]{4,20}$/;
+  const regex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|-]{4,20}$/;
   return regex.test(userId.value);
 });
 
@@ -400,19 +465,23 @@ const registerUser = async () => {
     return;
   }
 
+
+
+  
   const userData = {
-  userId: userId.value,
-  password: password.value,
-  name: name.value,
-  email: `${email.value}@${emailDomain.value}`,
-  phone: `${phoneFirst.value}${phoneMiddle.value}${phoneLast.value}`,
-  addressZipcode: `${zipcode.value}`,
-  address: `${address.value}`,
-  addressDetail: `${addressDetail.value}`,
-  userType: userType.value,
-  birthdate: birthdate.value,
-  userProfileImgPath: '/testpath', // Adjust this value as needed
-};
+    userId: userId.value,
+    password: password.value,
+    name: name.value,
+    email: `${email.value}@${emailDomain.value === 'text' ? customDomain.value : emailDomain.value}`,
+    phone: `${phoneFirst.value}${phoneMiddle.value}${phoneLast.value}`,
+    addressZipcode: zipcode.value,
+    address: address.value,
+    addressDetail: addressDetail.value,
+    userType: userType.value,
+    birthdate: birthdate.value,
+    userProfileImgPath: userProfileImgPath.value,
+  };
+
 
 try {
   // POST 요청을 보내서 회원가입 진행
@@ -437,8 +506,4 @@ try {
 }
 };
 
-
-onMounted(() => {
-  loadDaumPostcodeScript();
-});
 </script>

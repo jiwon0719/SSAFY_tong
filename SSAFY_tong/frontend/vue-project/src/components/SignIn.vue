@@ -359,6 +359,7 @@ const login = async () => {
       password: userPassword.value,
     });
 
+    console.log(response);
 
     // 서버 응답 확인
     if (response.data && response.data["access-token"]) {
@@ -406,10 +407,15 @@ const redirectToKakaoLogin = () => {
 
 // 카카오 로그인 콜백 처리 함수
 const handleKakaoCallback = async (code) => {
+
+  console.log("handleKakaoCallback 호출 되었습니다.")
+
   try {
     // 백엔드에 카카오 인가 코드 전송
     const response = await axios.get(`http://localhost:8080/oauth2/kakao?code=${code}`);
     
+    console.log("response 출력 ", response)
+
     if (response.data) {
       try {
         // JSON 문자열을 파싱

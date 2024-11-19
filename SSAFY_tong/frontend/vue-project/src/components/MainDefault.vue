@@ -8,93 +8,62 @@
   </template>
   
 
-  <script setup>
-  import { onMounted } from 'vue';
-  import { useRouter } from 'vue-router';
-  import axios from 'axios'; 
-  
-  const router = useRouter();
-  
-  // 사용자 정보 가져오는 함수
-  function fetchUserInfo() {
-      const kakaoToken = sessionStorage.getItem('kakao-access-token');
-      const jwtToken = sessionStorage.getItem('access-token');
-  
-      console.log("kakaoToken 입니다", kakaoToken);
-      console.log("jwtToken 입니다", jwtToken);
-
-      //  JWT Token이 있는 경우
-      if (jwtToken ) {
-        axios.get('/api/user/user-info', {
-          headers: {
-            'Authorization': `Bearer ${jwtToken}`,
-            // 'Content-Type': 'application/json',
-          }
-        })
-        .then((response) => {
-          if (response.status === 200) {
-
-            console.log("Response Headers: ", response.headers);  // Content-Type 확인
-            console.log("data: ", response.data);
 
 
+ <script setup>
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 
-            const data = response.data;
-            console.log("data: ", data);
-            console.log("userId: ", data.userId); 
-          } else {
-            console.error("Error: ", response.status); // 상태 코드 확인
-          }
-        })
-        .catch((error) => {
-          console.error("Error fetching user info:", error);
-        });
-      }
+// store와 router 인스턴스를 가져옵니다
+const userStore = useUserStore();
+const router = useRouter();
 
+// accessToken을 URL에서 가져와서 저장하는 함수
+const storeAccessTokenFromUrl = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const accessToken = urlParams.get('accessToken');
 
-        //Kakao Token이 있는 경우
-        else if (kakaoToken) {
-            axios.get('https://kapi.kakao.com/v2/user/me', {
-                headers: {
-                    'Authorization': `Bearer ${kakaoToken}`,
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then((response) => {
-                // 성공적으로 사용자 정보 조회
-                const data = response.data;
-                const userId = data.id;
-                console.log("카카오로 얻어온 User ID:", userId);
-                // Kakao userId를 활용하거나 상태에 저장 가능
-            })
-            .catch((error) => {
-                console.error("카카오 사용자 정보 조회 실패:", error);
-            });
-        }
-    
-      // 토큰이 둘 다 없는 경우
-      else {
-          console.error("Access token not found. Redirecting to login page...");
-          // router.replace({ path: '/signIn' });
-      }
+  if (accessToken) {
+    // localStorage에 accessToken 저장
+    localStorage.setItem('kakao-access-token', accessToken);
+    // userStore에 토큰 저장 (로그인 상태로 처리)
+    userStore.saveKakaoTokenToStorage(accessToken);
+    console.log("accessToken이 저장되었습니다:", accessToken);
   }
-  
-  // onMounted 시 사용자 정보 호출
-  onMounted(() => {
-      // URL에서 accessToken 파라미터 추출
-      const urlParams = new URLSearchParams(window.location.search);
-      const accessToken = urlParams.get('accessToken');
-  
-      // URL에 카카오 accessToken이 존재하면 sessionStorage에 저장
-      if (accessToken) {
-          sessionStorage.setItem('kakao-access-token', accessToken);
-          router.replace({ path: '/main' });
-      }
-  
-      // 사용자 정보 호출
-      fetchUserInfo();
-  });
-  </script>
+};
+
+// 메인 페이지 초기화 함수
+const initializeMainPage = async () => {
+  // URL에서 카카오 토큰을 받아서 저장
+  storeAccessTokenFromUrl();
+
+  // 토큰 로드 및 유저 정보 확인
+  userStore.loadTokenFromStorage();
+
+  // 유저가 인증되지 않은 경우, 로그인 페이지로 이동
+  if (!userStore.isAuthenticated) {
+    router.push('/signIn');
+    return;
+  }
+
+  // 유저 정보 확인
+  await userStore.fetchUserInfo();
+
+
+  console.log('!userStore.getUserId : ', !userStore.getUserId);
+
+  // 유저 ID가 없으면 회원가입 페이지로 이동
+  if (!userStore.getUserId) {
+    router.push('/signUp');
+  }
+};
+
+// 컴포넌트가 마운트될 때 초기화 함수 실행
+onMounted(() => {
+  initializeMainPage();
+});
+</script>
   
 
   
