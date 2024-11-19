@@ -30,6 +30,7 @@
   </div>
 </template>
 
+
 <script setup>
 import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
 import ReservationMain from './ReservationMain.vue'
@@ -45,51 +46,52 @@ const router = useRouter();
 
 // accessToken을 URL에서 가져와서 저장하는 함수
 const storeAccessTokenFromUrl = () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const accessToken = urlParams.get('accessToken');
+const urlParams = new URLSearchParams(window.location.search);
+const accessToken = urlParams.get('accessToken');
 
-  if (accessToken) {
-    // localStorage에 accessToken 저장
-    localStorage.setItem('kakao-access-token', accessToken);
-    // userStore에 토큰 저장 (로그인 상태로 처리)
-    userStore.saveKakaoTokenToStorage(accessToken);
-    console.log("accessToken이 저장되었습니다:", accessToken);
-  }
+if (accessToken) {
+  // localStorage에 accessToken 저장
+  localStorage.setItem('kakao-access-token', accessToken);
+  // userStore에 토큰 저장 (로그인 상태로 처리)
+  userStore.saveKakaoTokenToStorage(accessToken);
+  console.log("accessToken이 저장되었습니다:", accessToken);
+}
 };
 
 // 메인 페이지 초기화 함수
 const initializeMainPage = async () => {
-  // URL에서 카카오 토큰을 받아서 저장
-  storeAccessTokenFromUrl();
+// URL에서 카카오 토큰을 받아서 저장
+storeAccessTokenFromUrl();
 
-  // 토큰 로드 및 유저 정보 확인
-  userStore.loadTokenFromStorage();
+// 토큰 로드 및 유저 정보 확인
+userStore.loadTokenFromStorage();
 
-  // 유저가 인증되지 않은 경우, 로그인 페이지로 이동
-  if (!userStore.isAuthenticated) {
-    router.push('/signIn');
-    return;
-  }
+// 유저가 인증되지 않은 경우, 로그인 페이지로 이동
+if (!userStore.isAuthenticated) {
+  router.push('/signIn');
+  return;
+}
 
-  // 유저 정보 확인
-  await userStore.fetchUserInfo();
+// 유저 정보 확인
+await userStore.fetchUserInfo();
 
 
-  console.log('!userStore.getUserId : ', !userStore.getUserId);
+console.log('!userStore.getUserId : ', !userStore.getUserId);
 
-  // 유저 ID가 없으면 회원가입 페이지로 이동
-  if (!userStore.getUserId) {
-    router.push('/signUp');
-  }
+// 유저 ID가 없으면 회원가입 페이지로 이동
+if (!userStore.getUserId) {
+  router.push('/signUp');
+}
 };
 
 // 컴포넌트가 마운트될 때 초기화 함수 실행
 onMounted(() => {
-  initializeMainPage();
+initializeMainPage();
 });
 
-
 </script>
+
+
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
@@ -136,9 +138,9 @@ onMounted(() => {
 }
 
 @media screen and (max-width: 768px) {
-  .main-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, 1fr);
-  }
+.main-container {
+  grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
+}
 }
 </style>

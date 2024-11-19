@@ -5,13 +5,26 @@
     </router-link>
       
     <div v-if="!userStore.getKakaoUserInfo">
-  <label>아이디</label>
-  <input  
-    v-model="userId" 
-    placeholder="영문, 숫자 조합 4-20자" 
-    :class="{ 'invalid': userId && !isUserIdValid }"
-  />
+  <div class="id-input-container">
+    <label>아이디</label>
+    <div class="id-input-wrapper">
+      <input  
+        v-model="userId" 
+        placeholder="영문, 숫자 조합 4-20자" 
+        :class="{ 'invalid': userId && !isUserIdValid }"
+        class="id-input"
+        @input="isIdChecked = false"  
+      />
+      <button 
+        @click="checkUserIdDuplicate" 
+        class="duplicate-check-btn"
+      >
+        {{ isIdChecked ? '확인완료' : '중복검사' }}
+      </button>
+    </div>
+  </div>
 </div>
+
 
 <!-- 사용자 정보가 있으면 화면에 보이지 않음 -->
 <div v-if="userStore.getKakaoUserInfo" style="display:none">
@@ -167,6 +180,53 @@ a {
     text-decoration: none;
 }
 
+
+.id-input-container {
+  position: relative;
+}
+
+.id-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.id-input {
+  display: flex;
+  align-items: center; /* 수직 중앙 정렬 */
+  gap: 10px;
+}
+
+.duplicate-check-btn {
+  width: auto; /* Allow button to size to content */
+  padding: 10px;
+  margin-top: -15px;
+  flex-shrink: 0; /* Prevent button from shrinking */
+
+  background: linear-gradient(to right, #dc606f 0%, #e2495b 100%);
+    background-size: 200% auto; /* 배경 크기 조정 */
+    transition: all 0.3s ease, background-position 0.5s ease;
+
+    &:hover {
+    background-position: right center; /* 배경이 오른쪽으로 이동 */
+    background-image: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 51%, #fbc2eb 100%);
+  }
+
+}
+
+/* Responsive adjustments */
+@media (max-width: 500px) {
+  .id-input-wrapper {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .duplicate-check-btn {
+    width: 100%;
+  }
+}
+
+
 /* 추가된 유효성 검사 관련 스타일 */
 .invalid {
   border-color: #dc3545 !important;
@@ -220,11 +280,21 @@ button {
   cursor: pointer;
   transition: background-color 0.3s;
   margin-top: 10px;
-}
 
+
+  background: linear-gradient(to right, #dc606f 0%, #e2495b 100%);
+    background-size: 200% auto; /* 배경 크기 조정 */
+    transition: all 0.3s ease, background-position 0.5s ease;
+
+    &:hover {
+    background-position: right center; /* 배경이 오른쪽으로 이동 */
+    background-image: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 51%, #fbc2eb 100%);
+    }
+}
+/* 
 button:hover {
   background-color: #ff001e;
-}
+} */
 
 .email-input {
   display: flex;
@@ -307,6 +377,7 @@ const router = useRouter();
 const userStore = useUserStore(); // UserStore 인스턴스 생성
 
 const userId = ref('');
+const isIdChecked = ref(false);  // 아이디 중복 확인 상태 추가
 const password = ref('');
 const passwordConfirm = ref('');
 const name = ref('');
@@ -329,6 +400,7 @@ onMounted(async () => {
   // 카카오 토큰 확인
   const kakaoToken = userStore.kakaoToken;
   console.log("kakaoToken:", kakaoToken);
+  console.log("Initial kakaoUserInfo:", userStore.getKakaoUserInfo); 
 
   if (kakaoToken) {
     // 카카오 유저 정보 가져오기
@@ -341,7 +413,7 @@ onMounted(async () => {
       console.log("kakaoUserInfo :",kakaoUserInfo);
 
       // 아이디 설정 (카카오 ID 사용)
-      userId.value = kakaoUserInfo.kakaoId+'a!';
+      userId.value = kakaoUserInfo.kakaoId;
 
       console.log(userId.value);
       
@@ -371,11 +443,24 @@ onMounted(async () => {
   }
 });
 
-// 유효성 검사를 위한 computed 속성들
+// 아이디 유효성 검사 (computed)
 const isUserIdValid = computed(() => {
   const regex = /^(?=.*[a-zA-Z])(?=.*\d)[a-zA-Z\d!@#$%^&*()_+={}\[\]:;"'<>,.?/\\|-]{4,20}$/;
-  return regex.test(userId.value);
+  const result = regex.test(userId.value);
+
+  // 개발 환경에서만 출력할 수 있도록 조건 추가
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Validation check:', {
+      userId: userId.value,
+      isValid: result,
+      regexUsed: regex.toString()
+    });
+  }
+
+  return result;
 });
+
+
 
 const passwordError = computed(() => {
   if (!password.value) return '비밀번호를 입력해주세요.';
@@ -435,6 +520,8 @@ const openPostcode = () => {
   }).open();
 };
 
+
+// 회원가입
 const registerUser = async () => {
   // 유효성 검사
   if (!isUserIdValid.value) {
@@ -467,7 +554,6 @@ const registerUser = async () => {
 
 
 
-  
   const userData = {
     userId: userId.value,
     password: password.value,
@@ -505,5 +591,30 @@ try {
   alert('회원가입 중 오류가 발생했습니다.');
 }
 };
+
+
+// 아이디 중복검사 체크
+const checkUserIdDuplicate = async () => {
+  // 1. 유효성 검사
+  if (!isUserIdValid.value) {
+    alert('아이디 형식이 유효하지 않습니다. 올바른 형식을 입력해주세요.');
+    return;
+  }
+
+  // 2. 중복 검사 (서버 요청 등)
+  try {
+    const response = await axios.get(`/api/check-user-id?userId=${userId.value}`);
+    if (response.data.isDuplicate) {
+      alert('이미 사용 중인 아이디입니다.');
+    } else {
+      alert('사용 가능한 아이디입니다.');
+    }
+  } catch (error) {
+    console.error('아이디 중복 검사 중 오류 발생:', error);
+    alert('아이디 중복 검사에 실패했습니다.');
+  }
+};
+
+
 
 </script>

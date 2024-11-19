@@ -38,8 +38,10 @@
     
 
         <router-link v-else to="/signIn" class="login">
+          <div class="login_container">
             <svg id="12:2570" class="mdiuser-outline"></svg>
             <div class="login-1">LOGIN</div>
+          </div>
         </router-link>
 
         <div class="menu">
@@ -215,6 +217,7 @@
     }
   }
 
+
   .login {
     position: absolute;
     top: 31px;
@@ -226,8 +229,12 @@
     background: #DC606F;
     transition: all 0.3s ease;
 
+    
+
     &:hover {
-      background: #E2495B;
+      background-position: right center; 
+      background-image: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 51%, #fbc2eb 100%);
+      // background: #E2495B;
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
@@ -550,6 +557,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -576,10 +584,29 @@ const goToMyPage = () => {
   isPanelOpen.value = false;
 };
 
-const handleLogout = () => {
+const handleLogout = async () => {
+  const kakaoAccessToken = sessionStorage.getItem('kakao-access-token');
+
+  // Step 1: 모든 토큰 제거
   userStore.clearToken();
+  
+  // Step 2: 카카오 로그아웃 처리
+  if (kakaoAccessToken) {
+    try {
+      await axios.get('http://localhost:8080/oauth2/kakao/unlink', {
+        headers: {
+          Authorization: `Bearer ${kakaoAccessToken}`,
+        },
+      });
+      console.log('카카오 로그아웃 성공');
+    } catch (error) {
+      console.error('카카오 로그아웃 실패:', error);
+    }
+  }
+
+  // Step 3: 리다이렉트
   isPanelOpen.value = false;
-  router.push('/');
+  router.push('/main');
 };
 
 onMounted(() => {

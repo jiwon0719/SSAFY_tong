@@ -113,13 +113,17 @@ public class KakaoController {
 
             // 사용자 정보 조회
             // 회원가입시 아이디 보안을 위해 js에서 까다롭게 해서 그냥 숫자인 kakaoId 값은 제대로 구현되지 못한다. 그래서 a! 추가시켰다 
-            User user = userService.findUserByUserId(kakaoId+"a!");
+            kakaoId = kakaoId+"a!";
+            System.out.println(kakaoId);
+            User user = userService.findUserByUserId(kakaoId);
             
+            System.out.println("user : "+ user);
             
             if (user == null) {
+            	System.out.println("user==null 케이스");
             	// 데이터베이스에 해당 사용자가 없으면 카카오 정보를 반환
                 KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(kakaoId, nickname, email, profileImage);
-                return new ResponseEntity<>(kakaoUserInfo, HttpStatus.valueOf(250)); 
+                return new ResponseEntity<>(kakaoUserInfo, HttpStatus.valueOf(201)); 
             } else {
                 // 사용자가 있으면 정상 처리
                 return ResponseEntity.ok().body(new KakaoUserInfo(kakaoId, nickname, email, profileImage));
@@ -127,6 +131,75 @@ public class KakaoController {
         } catch (Exception e) {
         	System.out.println("비정상반환");
             return new ResponseEntity<>(Collections.singletonMap("message", "Error retrieving user info"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    
+    // 카카오 로그아웃
+    @GetMapping("/kakao-logout")
+    public ResponseEntity<Object> logout(@RequestHeader("Authorization") String authorization) {
+        try {
+            // 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", authorization);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            // 카카오 API 호출 (로그아웃)
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> logoutResponse = restTemplate.exchange(
+                    "https://kapi.kakao.com/v1/user/logout",
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            // 요청 실패 시 처리
+            if (!logoutResponse.getStatusCode().is2xxSuccessful()) {
+                return new ResponseEntity<>(Collections.singletonMap("message", "Failed to log out"), HttpStatus.UNAUTHORIZED);
+            }
+
+            // 응답 처리
+            String responseBody = logoutResponse.getBody();
+            JSONObject responseJson = new JSONObject(responseBody);
+            long userId = responseJson.getLong("id"); // 로그아웃된 사용자 ID
+
+            return ResponseEntity.ok(Collections.singletonMap("message", "User logged out successfully, UserId: " + userId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "Error during logout"), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    
+    @GetMapping("/unlink")
+    public ResponseEntity<Object> unlink(@RequestHeader("Authorization") String authorization) {
+        try {
+            // 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", authorization);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            // 카카오 API 호출 (연결 끊기)
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<String> unlinkResponse = restTemplate.exchange(
+                    "https://kapi.kakao.com/v1/user/unlink",
+                    HttpMethod.POST,
+                    entity,
+                    String.class
+            );
+
+            // 요청 실패 시 처리
+            if (!unlinkResponse.getStatusCode().is2xxSuccessful()) {
+                return new ResponseEntity<>(Collections.singletonMap("message", "Failed to unlink account"), HttpStatus.UNAUTHORIZED);
+            }
+
+            // 응답 처리
+            String responseBody = unlinkResponse.getBody();
+            JSONObject responseJson = new JSONObject(responseBody);
+            long userId = responseJson.getLong("id"); // 연결이 해제된 사용자 ID
+
+            return ResponseEntity.ok(Collections.singletonMap("message", "User unlinked successfully, UserId: " + userId));
+        } catch (Exception e) {
+            return new ResponseEntity<>(Collections.singletonMap("message", "Error during unlinking"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

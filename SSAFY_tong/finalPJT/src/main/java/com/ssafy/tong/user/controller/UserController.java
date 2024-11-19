@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.tong.jwt.JwtUtil;
@@ -155,6 +156,34 @@ public class UserController {
         return new ResponseEntity<>(result, status);
     }
     
+    
+ // 사용자 아이디 중복 검사
+    @GetMapping("/checkUserIdDuplicate")
+    public ResponseEntity<Map<String, Object>> checkUserIdDuplicate(@RequestParam String userId) {
+        Map<String, Object> result = new HashMap<>();
+
+        try {
+            // userId로 사용자 정보 조회
+            User isDuplicate = userService.findUserByUserId(userId); 
+
+            // 중복 여부 확인
+            if (isDuplicate != null) {
+                result.put("duplicate", true); // 중복됨
+                result.put("message", "아이디가 이미 존재합니다.");
+            } else {
+                result.put("duplicate", false); // 중복되지 않음
+                result.put("message", "사용 가능한 아이디입니다.");
+            }
+
+            return ResponseEntity.ok(result); // HTTP 200 상태코드와 결과 반환
+        } catch (Exception e) {
+            // 예외 발생 시 처리
+            result.put("message", "중복 검사 중 오류가 발생했습니다.");
+            return new ResponseEntity<>(result, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
     
     
 }
