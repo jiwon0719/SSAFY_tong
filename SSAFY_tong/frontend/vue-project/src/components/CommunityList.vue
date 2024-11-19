@@ -30,7 +30,7 @@
           <!-- 게시물 목록 -->
           <div v-if="store.boardList.length > 0">
             <div class="posts-container" v-for="board in store.boardList" :key="board.boardId">
-              <router-link :to="`/community/${board.boardId}`" class= "detaillink">
+              <router-link :to="`/community/${route.params.categoryId}/${board.boardId}`" class= "detaillink" @click="viewBoardDetail(board.boardId)">
                 <div class="post-item">
                   <div class="post-content">
                     <div class="user-info">

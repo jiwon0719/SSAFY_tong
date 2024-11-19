@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.tong.board.model.Board;
 import com.ssafy.tong.board.model.BoardCategory;
+import com.ssafy.tong.board.model.CategoryViewResponse;
 import com.ssafy.tong.board.model.service.BoardCategoryService;
 
 @RestController
@@ -78,4 +79,11 @@ public class BoardCategoryController {
 		boardCategory.setCategoryId(categoryId);
 		boardCategoryService.modify(boardCategory);
 	}
+	
+	// 핫 게시판 선정(TOP3)
+	@GetMapping("/top-viewed")
+	public ResponseEntity<List<CategoryViewResponse>> getTopViewedCategories() {
+		return ResponseEntity.ok(boardCategoryService.findTopViewedCategories());
+	}
+	
 }

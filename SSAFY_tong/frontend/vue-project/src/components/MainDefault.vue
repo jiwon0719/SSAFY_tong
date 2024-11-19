@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
     <div class="main-container">
       <div class="quadrant quadrant-1">  
         <WeatherForecast />
@@ -66,17 +67,51 @@ const initializeMainPage = async () => {
 onMounted(() => {
   initializeMainPage();
 });
+=======
+  <div class="main-container">
+    <div class="quadrant quadrant-1">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-weather-partly-cloudy</v-icon>
+        <span>Today's Weather</span>
+      </div>
+      <WeatherForecastMain />
+    </div>
+    <div class="quadrant quadrant-2">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-calendar-check</v-icon>
+        <span>Schedule</span>
+      </div>
+      <ReservationMain />
+    </div>
+    <div class="quadrant quadrant-3">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-forum</v-icon>
+        <span>Community</span>
+      </div>
+      <TopBaordCategoriesMain />
+    </div>
+    <div class="quadrant quadrant-4">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-message-text</v-icon>
+        <span>Messages</span>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
+import ReservationMain from './ReservationMain.vue'
+import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
+>>>>>>> fcbe507b679ba83beebfc16967228d19c84d2686
 </script>
   
 
 
 
 
-<style scoped lang="scss">
-html, body {
-  height: 100%;
-  margin: 0;
-}
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
 .main-container {
   display: grid;
@@ -87,7 +122,10 @@ html, body {
   width: 100%;
   padding: 30px;
   box-sizing: border-box;
+  font-family: 'Noto Sans KR', sans-serif;
+}
 
+<<<<<<< HEAD
   .quadrant {
     display: flex;
     justify-content: center;
@@ -99,19 +137,35 @@ html, body {
     font-weight: bold;
     color: #333;
   }
+=======
+.quadrant {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 0;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+>>>>>>> fcbe507b679ba83beebfc16967228d19c84d2686
 
-  .quadrant-1 {
-    background-color: #ffcccb;
-  }
-  .quadrant-2 {
-    background-color: #cce7ff;
-  }
-  .quadrant-3 {
-    background-color: #d1ffcc;
-  }
-  .quadrant-4 {
-    background-color: #fff5b0;
-  }
+.quadrant:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.quadrant-header {
+  padding: 16px 24px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  background-color: #fafafa;
+  display: flex;
+  align-items: center;
 }
 
 @media screen and (max-width: 768px) {

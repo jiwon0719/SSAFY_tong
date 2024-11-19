@@ -28,15 +28,25 @@ export const useCalendarStore = defineStore('calendar', () => {
   ]
 
   // computed: 필터링된 예약  / 퀘스트 목록
+  // const reservations = computed(() => {
+  //   if (!calendarData.value?.reservations) return []
+  //   return calendarData.value.reservations.filter(item => item.reservationId)
+  // })
+  
+  // const quests = computed(() => {
+  //   if (!calendarData.value?.quests) return []
+  //   return calendarData.value.quests
+  // })
   const reservations = computed(() => {
-    if (!calendarData.value?.reservations) return []
-    return calendarData.value.reservations.filter(item => item.reservationId)
+    return calendarData.value?.reservations || []
   })
   
   const quests = computed(() => {
-    if (!calendarData.value?.quests) return []
-    return calendarData.value.quests
+    return calendarData.value?.quests || []
   })
+
+
+
 
   // 매칭된 전문가 목록 조회
   const fetchMatchingExperts = async (userId) => {
@@ -54,22 +64,36 @@ export const useCalendarStore = defineStore('calendar', () => {
   // 특정 날짜의 일정 조회
   const fetchCalendarByDate = async (userId, date) => {
     try {
-      const formattedDate = date instanceof Date 
-        ? date.toISOString().split('T')[0]
-        : date
-        
-      const response = await axios.get(`${CALENDAR_API_URL}/${userId}/${formattedDate}`)
-      // DailyScheduleDTO 구조에 맞춰 저장
-      calendarData.value = {
-        quests: response.data.quests || [],
-        reservations: response.data.reservations || []
+      let formattedDate
+      if (date instanceof Date) {
+        formattedDate = date.toISOString().split('T')[0]
+      } else if (typeof date === 'string') {
+        // 문자열이 이미 'YYYY-MM-DD' 형식인지 확인
+        // 날짜 파싱
+        // 자바스크립트는 Date 객체에서 월이 0부터 시작함!
+        const [year, month, day] = date.split('-')
+        const newDate = new Date(year, month - 1, day)
+        formattedDate = newDate.toISOString().split('T')[0]
       }
+      
+      console.log('Fetching calendar for:', userId, formattedDate)
+      const response = await axios.get(`${CALENDAR_API_URL}/${userId}/${formattedDate}`)
+      console.log('API Response:', response.data)
+  
+      calendarData.value = {
+        quests: Array.isArray(response.data.quests) ? response.data.quests : [],
+        reservations: Array.isArray(response.data.reservations) ? response.data.reservations : []
+      }
+      
       return calendarData.value
     } catch (error) {
       console.error('일정 조회 실패:', error)
       throw error
     }
   }
+
+
+
 
   // 예약 생성
   const createReservation = async (userId) => {
