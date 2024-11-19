@@ -50,7 +50,7 @@
                                 회원가입
                             </div>
                     </router-link>
-                    <div class="text--with-kakao">
+                    <div class="text--with-kakao" @click="redirectToKakaoLogin" style="z-index: 1; position: relative;">
                         회원가입 with KAKAO
                     </div>
                 </div>
@@ -202,11 +202,20 @@
     width: 463px;
     height: 79px;
     border-radius: 10px;
-    background: rgba(226, 73, 91, 0.9);
+    // background: rgba(226, 73, 91, 0.9);
     border: 1px solid rgba(226, 73, 91, 0);
     display: flex;
     align-items: center;
     justify-content: center;
+    background: linear-gradient(to right, #dc606f 0%, #e2495b 100%);
+    background-size: 200% auto; /* 배경 크기 조정 */
+    transition: all 0.3s ease, background-position 0.5s ease;
+
+    &:hover {
+      transform: translateY(-1px); /* 살짝 위로 이동하는 효과 */
+    background-position: right center; /* 배경이 오른쪽으로 이동 */
+    background-image: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 51%, #fbc2eb 100%);
+  }
 }
 
 .login-button {
@@ -241,14 +250,24 @@
 }
 
 .kakao-login-large-narrow-1 {
-    position: absolute;
-    top: 418px;
-    left: 107px;
-    width: 463px;
-    height: 76px;
-    border-radius: 10px;
-    object-fit: cover;
+  position: absolute;
+  top: 418px;
+  left: 107px;
+  width: 463px;
+  height: 76px;
+  border-radius: 10px;
+  object-fit: cover;
+  transition: all 0.5s ease;
+
 }
+
+.kakao-login-large-narrow-1:hover {
+  // background-position: right center; /* hover 시 배경 이동 */
+  transform: translateY(-1px); /* 살짝 위로 이동하는 효과 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* 약간의 그림자 효과 */
+  cursor: pointer;
+}
+
 
 
         .frame-5 {
@@ -314,6 +333,7 @@
                     align-items: center;
                     justify-content: center;
                     text-align: center;
+
                 }
             }
         }

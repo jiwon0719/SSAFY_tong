@@ -38,8 +38,10 @@
     
 
         <router-link v-else to="/signIn" class="login">
+          <div class="login_container">
             <svg id="12:2570" class="mdiuser-outline"></svg>
             <div class="login-1">LOGIN</div>
+          </div>
         </router-link>
 
         <div class="menu">
@@ -215,6 +217,7 @@
     }
   }
 
+
   .login {
     position: absolute;
     top: 31px;
@@ -226,8 +229,12 @@
     background: #DC606F;
     transition: all 0.3s ease;
 
+    
+
     &:hover {
-      background: #E2495B;
+      background-position: right center; 
+      background-image: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 51%, #fbc2eb 100%);
+      // background: #E2495B;
       transform: translateY(-2px);
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }

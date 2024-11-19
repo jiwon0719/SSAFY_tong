@@ -4,7 +4,8 @@
         <div class="tong" style="text-decoration: none;">TONG</div>
     </router-link>
       
-    <div class="id-input-container">
+    <div v-if="!userStore.getKakaoUserInfo">
+  <div class="id-input-container">
     <label>아이디</label>
     <div class="id-input-wrapper">
       <input  
@@ -22,6 +23,8 @@
       </button>
     </div>
   </div>
+</div>
+
 
 <!-- 사용자 정보가 있으면 화면에 보이지 않음 -->
 <div v-if="userStore.getKakaoUserInfo" style="display:none">
@@ -200,6 +203,15 @@ a {
   margin-top: -15px;
   flex-shrink: 0; /* Prevent button from shrinking */
 
+  background: linear-gradient(to right, #dc606f 0%, #e2495b 100%);
+    background-size: 200% auto; /* 배경 크기 조정 */
+    transition: all 0.3s ease, background-position 0.5s ease;
+
+    &:hover {
+    background-position: right center; /* 배경이 오른쪽으로 이동 */
+    background-image: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 51%, #fbc2eb 100%);
+  }
+
 }
 
 /* Responsive adjustments */
@@ -268,11 +280,21 @@ button {
   cursor: pointer;
   transition: background-color 0.3s;
   margin-top: 10px;
-}
 
+
+  background: linear-gradient(to right, #dc606f 0%, #e2495b 100%);
+    background-size: 200% auto; /* 배경 크기 조정 */
+    transition: all 0.3s ease, background-position 0.5s ease;
+
+    &:hover {
+    background-position: right center; /* 배경이 오른쪽으로 이동 */
+    background-image: linear-gradient(to right, #fbc2eb 0%, #a6c1ee 51%, #fbc2eb 100%);
+    }
+}
+/* 
 button:hover {
   background-color: #ff001e;
-}
+} */
 
 .email-input {
   display: flex;
