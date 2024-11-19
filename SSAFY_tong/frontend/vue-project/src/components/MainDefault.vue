@@ -1,6 +1,8 @@
 <template>
     <div class="main-container">
-      <div class="quadrant quadrant-1">날씨</div>
+      <div class="quadrant quadrant-1">  
+        <WeatherForecast />
+      </div>
       <div class="quadrant quadrant-2">예약내역</div>
       <div class="quadrant quadrant-3">게시판</div>
       <div class="quadrant quadrant-4">..</div>
@@ -14,6 +16,7 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+import WeatherForecast from '@/components/WeatherForcast.vue';
 
 // store와 router 인스턴스를 가져옵니다
 const userStore = useUserStore();
@@ -66,12 +69,10 @@ onMounted(() => {
 </script>
   
 
-  
 
 
 
-
-  <style scoped lang="scss">
+<style scoped lang="scss">
 html, body {
   height: 100%;
   margin: 0;

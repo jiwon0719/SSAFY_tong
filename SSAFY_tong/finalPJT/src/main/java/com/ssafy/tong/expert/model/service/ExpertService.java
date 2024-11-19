@@ -26,5 +26,7 @@ public interface ExpertService {
 	void regist(Expert expert);
 	// 수정
 	void modify(Expert expert);
+	
+	String findUserIdByExpertId(int expertId);
 
 }

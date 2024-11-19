@@ -36,7 +36,7 @@ import com.ssafy.tong.expert.model.service.ExpertService;
 
 @RestController
 @RequestMapping("/api/expert")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin
 // 전문가
 // 본인 PR 자기소개 페이지
 public class ExpertController {
@@ -215,5 +215,15 @@ public class ExpertController {
 		expert.setExpertId(expertId);
 		expertService.modify(expert);
 	}
+	
+	
+	@GetMapping("/{expertId}/userId")
+	public ResponseEntity<String> getExpertUserId(@PathVariable int expertId) {
+	    System.out.println("전문가 ID 조회 요청: " + expertId);
+	    String userId = expertService.findUserIdByExpertId(expertId);
+	    System.out.println("조회된 userId: " + userId);
+	    return ResponseEntity.ok(userId);
+	}
+	
 	
 }

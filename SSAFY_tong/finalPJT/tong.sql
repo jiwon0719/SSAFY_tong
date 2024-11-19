@@ -14,10 +14,11 @@ CREATE TABLE `user` (
      `address` VARCHAR(100) NOT NULL,  -- 도로명 주소
      `addressDetail` VARCHAR(100) NOT NULL,  -- 상세 주소 like 몇동 몇호
      `updated_password` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,  -- 비밀번호 변경시 길이
-     `is_kakao_member` CHAR(1) COMMENT 'O : 카카오 유저, X: 일반 유저',  
+     `is_kakao_member` CHAR(1) default 'X' COMMENT 'O : 카카오 유저, X: 일반 유저',  
      `user_profile_img_path` VARCHAR(255), -- user 프로필 이미지 경로 , 후에 default로 기본 이미지 경로 설정
      PRIMARY KEY (`user_id`)
 );
+
 
 -- expert 테이블: 전문가 정보
 CREATE TABLE `expert` (
@@ -108,6 +109,7 @@ CREATE TABLE `board_category_hold` (
     FOREIGN KEY (`category_id`) REFERENCES `board_category`(`category_id`) ON DELETE CASCADE
 );
 
+
 -- board 테이블: 게시글
 CREATE TABLE `board` (
     `board_id` INT NOT NULL AUTO_INCREMENT,  
@@ -141,42 +143,95 @@ CREATE TABLE `comment` (
 CREATE TABLE `calendar` (
     `calendar_id` INT NOT NULL AUTO_INCREMENT,  
     `user_id` VARCHAR(50) NOT NULL,  -- user_id는 50자
-    `year` TINYINT NOT NULL,  -- 연도
-    `month` TINYINT NOT NULL,  -- 월
-    `date` TINYINT NOT NULL,  -- 일
+    `year` INT NOT NULL,  -- 연도
+    `month` INT NOT NULL,  -- 월
+    `date` INT NOT NULL,  -- 일
     PRIMARY KEY (`calendar_id`),
     FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
 );
+ALTER TABLE calendar
+MODIFY COLUMN year INT NOT NULL,
+MODIFY COLUMN month INT NOT NULL,
+MODIFY COLUMN date INT NOT NULL;
 
 -- quest 테이블: 유저와 전문가 간의 퀘스트
 CREATE TABLE `quest` (
     `quest_id` INT NOT NULL AUTO_INCREMENT,  
     `calendar_id` INT NOT NULL,  
-    `expert_id` INT NOT NULL,  
+    `expert_user_id` INT NOT NULL,  
     `user_id` VARCHAR(50) NOT NULL,  
     `quest_title` VARCHAR(50) NOT NULL,  -- 퀘스트 제목은 50자
     `quest_detail` VARCHAR(100) NOT NULL,  -- 퀘스트 상세 내용은 100자
     `completion_status` char(1) DEFAULT 'X',  -- 퀘스트 중 : X , 퀘스트 완료 : O
     PRIMARY KEY (`quest_id`),
     FOREIGN KEY (`calendar_id`) REFERENCES `calendar`(`calendar_id`) ON DELETE CASCADE,
-    FOREIGN KEY (`expert_id`) REFERENCES `expert`(`expert_id`) ON DELETE CASCADE,
+    FOREIGN KEY (`expert_user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
 );
+SHOW CREATE TABLE quest;
+-- 2. FK 제약조건들 삭제 (이름은 SHOW CREATE TABLE로 확인한 실제 이름을 사용해야 합니다)
+ALTER TABLE quest
+DROP FOREIGN KEY quest_ibfk_1,  -- calendar_id의 FK
+DROP FOREIGN KEY quest_ibfk_2,  -- expert_user_id의 FK
+DROP FOREIGN KEY quest_ibfk_3;  -- user_id의 FK
+-- 3. 테이블 삭제
+DROP TABLE quest;
+
+-- 4. 테이블 다시 생성
+CREATE TABLE `quest` (
+    `quest_id` INT NOT NULL AUTO_INCREMENT,  
+    `calendar_id` INT NOT NULL,  
+    `expert_user_id` VARCHAR(50) NOT NULL,  
+    `user_id` VARCHAR(50) NOT NULL,  
+    `quest_title` VARCHAR(50) NOT NULL,  
+    `quest_detail` VARCHAR(100) NOT NULL,  
+    `completion_status` CHAR(1) DEFAULT 'X',  
+    PRIMARY KEY (`quest_id`),
+    FOREIGN KEY (`calendar_id`) REFERENCES `calendar`(`calendar_id`) ON DELETE CASCADE,
+    FOREIGN KEY (`expert_user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
+);
+select * from quest;
+
 
 -- reservation 테이블: 예약 정보
 CREATE TABLE `reservation` (
     `reservation_id` INT NOT NULL AUTO_INCREMENT,  
     `calendar_id` INT NOT NULL,  
     `user_id` VARCHAR(50) NOT NULL,  
-    `expert_id` INT NOT NULL,  
+    `expert_user_id` INT NOT NULL,  
     `time` VARCHAR(50) NOT NULL, 
     `status` char(1) DEFAULT 'X',  -- 예약 중 : X , 예약 완료 : O
     PRIMARY KEY (`reservation_id`),
     FOREIGN KEY (`calendar_id`) REFERENCES `calendar`(`calendar_id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE,
-    FOREIGN KEY (`expert_id`) REFERENCES `expert`(`expert_id`) ON DELETE CASCADE
+    FOREIGN KEY (`expert_user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
 );
+-- 1. 먼저 FK 제약조건 확인
+SHOW CREATE TABLE reservation;
 
+-- 2. FK 제약조건 제거
+ALTER TABLE reservation
+DROP FOREIGN KEY reservation_ibfk_1,  -- calendar_id의 FK
+DROP FOREIGN KEY reservation_ibfk_2,  -- user_id의 FK
+DROP FOREIGN KEY reservation_ibfk_3;  -- expert_user_id의 FK
+
+-- 3. 테이블 삭제
+DROP TABLE reservation;
+
+-- 4. 테이블 재생성 (expert_user_id를 VARCHAR(50)으로 수정)
+CREATE TABLE `reservation` (
+    `reservation_id` INT NOT NULL AUTO_INCREMENT,  
+    `calendar_id` INT NOT NULL,  
+    `user_id` VARCHAR(50) NOT NULL,  
+    `expert_user_id` VARCHAR(50) NOT NULL,  -- INT에서 VARCHAR(50)로 변경
+    `time` VARCHAR(50) NOT NULL, 
+    `status` CHAR(1) DEFAULT 'X',  
+    PRIMARY KEY (`reservation_id`),
+    FOREIGN KEY (`calendar_id`) REFERENCES `calendar`(`calendar_id`) ON DELETE CASCADE,
+    FOREIGN KEY (`user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE,
+    FOREIGN KEY (`expert_user_id`) REFERENCES `user`(`user_id`) ON DELETE CASCADE
+);
 
 
 -- -----------------------------------------------------
@@ -189,23 +244,17 @@ insert into user(
 insert into user(
 	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
     values(
-    "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X");     
-select * from user;
-
-
-DELETE FROM user WHERE name = '유승호';
-
-
--- admin 계정 추가
-insert into user(
-	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
-    values(
-    "admin", "A", "admin", "admin", "admin@tong.com", "000-0000-0000", "00000000", "대전시", "X"); 
+    "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X"); 
 -- expert 계정 추가
 insert into user(
 	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
     values(
-    "expert", "E", "expert", "expert", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X");     
+    "expert2", "E", "expert2", "expert2", "expert@tong.com", "000-0000-0000", "00000000", "대전시", "X"); 
+-- user 계정 추가
+insert into user(
+	user_id, user_type, password, name, email, phone, birthdate, address, is_kakao_member)
+    values(
+    "user", "U", "user", "user", "user@tong.com", "000-0000-0000", "00000000", "대전시", "X"); 
 select * from user;
 
 -- board_category 데이터 주가
@@ -240,18 +289,24 @@ VALUES
 (3, '열 번째 마음게시판 게시글', 'admin', '이것은 열 번째 테스트 게시글입니다.', 0, NOW());
 
 select * from board;
--- 
-select * from user;
-select * from expert;
-select * from expert_image;
-select * from expert_career;
 select * from comment;
+select * from matching;
+select * from user;
+
+-- matching 추가
+insert into matching(
+	user_id, expert_user_id, status, created_at)
+    values(
+    "user", "expert2", "O", now()); 
+
+select * from expert;
+select * from matching;
+select * from user;
 
 
--- 외래키 일시적으로 체크 해재: 테이블 안 필드 삭제 용이
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE expert;
-SET FOREIGN_KEY_CHECKS = 1;
+
+INSERT INTO expert (user_id, location, introduction, price, price_detail, grade, company_name, latitude, longitude) 
+VALUES ('expert2', '서울시 강남구', '안녕하세요 전문가입니다.', 50000, '기본 상담 30분', '직급', '매장명', 37.123456, 127.123456);
 
 
-delete from expert_image;
+

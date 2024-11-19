@@ -27,5 +27,7 @@ public interface ExpertDao {
 	void insertExportCareer(ExpertCareer expertCareer);
 	// 수정
 	void updateExpert(Expert expert);
+	
+	String selectUserIdByExpertId(int expertId);
 
 }

@@ -15,5 +15,9 @@ public interface BoardDao {
 	void insertBoard(Board board);
 	// 수정
 	void updateBoard(Board board);
+	// 조회수 증가
+	void updateViewCount(int boardId);
+	// 댓글수 조회
+	int selectCommentCount(int boardId);
 
 }

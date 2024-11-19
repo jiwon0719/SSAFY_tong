@@ -79,4 +79,27 @@ public class BoardController {
 		board.setBoardId(boardId);
 		boardService.modify(board);
 	}
+	
+    // 조회수 증가
+	@PostMapping("/{boardId}/incrementView")
+	public ResponseEntity<Void> incrementViewCount(@PathVariable int boardId) {
+	    try {
+	        boardService.incrementViewCount(boardId);
+	        return ResponseEntity.ok().build();
+	    } catch (Exception e) {
+	        return ResponseEntity.internalServerError().build();
+	    }
+	}
+	
+    // 댓글 수 조회
+	@GetMapping("/{boardId}/commentCount")
+	public ResponseEntity<Integer> getCommentCount(@PathVariable int boardId) {
+	    try {
+	        int count = boardService.getCommentCount(boardId);
+	        return ResponseEntity.ok(count);
+	    } catch (Exception e) {
+	        return ResponseEntity.internalServerError().build();
+	    }
+	}
+	
 }

@@ -20,7 +20,7 @@
     <div class="post-actions">
       <button class="btn">수정</button>
       <button class="btn">삭제</button>
-      <button class="btn" @click="$router.push('/community')">목록으로</button>
+      <button class="btn" @click="goToList">목록으로</button>
     </div>
 
     <!-- 댓글 섹션 -->
@@ -84,16 +84,20 @@
 import { ref, onMounted, computed } from 'vue';
 import { useBoardStore } from '@/stores/board';
 import { useCommentStore } from '@/stores/comment';
+import { useCommunityStore } from '@/stores/community';
 import { storeToRefs } from 'pinia';
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 // Pinia 스토어 참조
 const boardStore = useBoardStore();
 const commentStore = useCommentStore();
+const communityStore = useCommunityStore();
+const router = useRouter();
 
 // 게시글 데이터와 댓글 데이터
 const { currentBoard } = storeToRefs(boardStore);
-const { comments } = storeToRefs(commentStore);
+const { comments = ref([]) } = storeToRefs(commentStore);
+const { selectCategoryId } = storeToRefs(communityStore);
 
 // 댓글 상태
 const newComment = ref('');
@@ -103,6 +107,26 @@ const replyToId = ref(null);
 // 라우트 파라미터로 전달된 boardId 받기
 const route = useRoute();
 const boardId = route.params.boardId;
+
+
+// 목록으로 돌아가기
+// 돌아가기 전에 데이터 새로 로드
+const goToList = async () => {
+  try {
+    if(selectCategoryId.value) {
+      // store의 boardList를 직접 업데이트
+      const response = await axios.get(`${REST_API_URL}/${selectCategoryId.value}`);
+      communityStore.boardList = response.data;
+      router.push('/community');
+    } else {
+      router.push('/community');
+    }
+  } catch(error) {
+    console.log("데이터 로드 중 오류 발생:", error)
+    router.push('/community');
+  } 
+};
+
 
 // 컴포넌트 마운트 시 데이터 로딩
 onMounted(async () => {
@@ -121,7 +145,9 @@ onMounted(async () => {
 
 // 댓글만 필터링
 const rootComments = computed(() => {
-  return comments.value.filter(comment => comment.parentCommentId === null);
+  return Array.isArray(comments.value) 
+    ? comments.value.filter(comment => comment.parentCommentId === null)
+    : [];
 });
 
 
