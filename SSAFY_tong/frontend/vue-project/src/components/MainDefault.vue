@@ -1,23 +1,43 @@
 <template>
-<<<<<<< HEAD
-    <div class="main-container">
-      <div class="quadrant quadrant-1">  
-        <WeatherForecast />
+  <div class="main-container">
+    <div class="quadrant quadrant-1">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-weather-partly-cloudy</v-icon>
+        <span>Today's Weather</span>
       </div>
-      <div class="quadrant quadrant-2">예약내역</div>
-      <div class="quadrant quadrant-3">게시판</div>
-      <div class="quadrant quadrant-4">..</div>
+      <WeatherForecastMain />
     </div>
-  </template>
-  
+    <div class="quadrant quadrant-2">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-calendar-check</v-icon>
+        <span>Schedule</span>
+      </div>
+      <ReservationMain />
+    </div>
+    <div class="quadrant quadrant-3">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-forum</v-icon>
+        <span>Community</span>
+      </div>
+      <TopBaordCategoriesMain />
+    </div>
+    <div class="quadrant quadrant-4">
+      <div class="quadrant-header">
+        <v-icon color="#333" class="mr-2">mdi-message-text</v-icon>
+        <span>Messages</span>
+      </div>
+    </div>
+  </div>
+</template>
 
+<script setup>
+import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
+import ReservationMain from './ReservationMain.vue'
+import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
 
-
- <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import WeatherForecast from '@/components/WeatherForcast.vue';
 
 // store와 router 인스턴스를 가져옵니다
 const userStore = useUserStore();
@@ -67,48 +87,9 @@ const initializeMainPage = async () => {
 onMounted(() => {
   initializeMainPage();
 });
-=======
-  <div class="main-container">
-    <div class="quadrant quadrant-1">
-      <div class="quadrant-header">
-        <v-icon color="#333" class="mr-2">mdi-weather-partly-cloudy</v-icon>
-        <span>Today's Weather</span>
-      </div>
-      <WeatherForecastMain />
-    </div>
-    <div class="quadrant quadrant-2">
-      <div class="quadrant-header">
-        <v-icon color="#333" class="mr-2">mdi-calendar-check</v-icon>
-        <span>Schedule</span>
-      </div>
-      <ReservationMain />
-    </div>
-    <div class="quadrant quadrant-3">
-      <div class="quadrant-header">
-        <v-icon color="#333" class="mr-2">mdi-forum</v-icon>
-        <span>Community</span>
-      </div>
-      <TopBaordCategoriesMain />
-    </div>
-    <div class="quadrant quadrant-4">
-      <div class="quadrant-header">
-        <v-icon color="#333" class="mr-2">mdi-message-text</v-icon>
-        <span>Messages</span>
-      </div>
-    </div>
-  </div>
-</template>
 
-<script setup>
-import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
-import ReservationMain from './ReservationMain.vue'
-import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
->>>>>>> fcbe507b679ba83beebfc16967228d19c84d2686
+
 </script>
-  
-
-
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
@@ -125,19 +106,6 @@ import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
   font-family: 'Noto Sans KR', sans-serif;
 }
 
-<<<<<<< HEAD
-  .quadrant {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #f4f4f4;
-    font-size: 24px;
-    font-weight: bold;
-    color: #333;
-  }
-=======
 .quadrant {
   position: relative;
   width: 100%;
@@ -150,7 +118,6 @@ import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
->>>>>>> fcbe507b679ba83beebfc16967228d19c84d2686
 
 .quadrant:hover {
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
