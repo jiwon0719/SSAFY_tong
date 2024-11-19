@@ -61,4 +61,9 @@ public class UserServiceImpl implements UserService {
 	public void updatePassword(User loggedInUser) {
 		userDao.updatePassword(loggedInUser);
 	}
+
+	@Override
+	public String getProfileImageByUserId(String userId) {
+		return userDao.getProfileImageByUserId(userId);
+	}
 }

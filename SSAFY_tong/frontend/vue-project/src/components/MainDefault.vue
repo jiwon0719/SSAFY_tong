@@ -1,91 +1,76 @@
 <template>
-  <div class="main-container">
-    <div class="quadrant quadrant-1">
-      <WeatherForecast />
+    <div class="main-container">
+      <div class="quadrant quadrant-1">  
+        <WeatherForecast />
+      </div>
+      <div class="quadrant quadrant-2">예약내역</div>
+      <div class="quadrant quadrant-3">게시판</div>
+      <div class="quadrant quadrant-4">..</div>
     </div>
-    <div class="quadrant quadrant-2">예약내역</div>
-    <div class="quadrant quadrant-3">게시판</div>
-    <div class="quadrant quadrant-4">채팅</div>
-  </div>
-</template>
+  </template>
+  
 
-<script setup>
+
+
+ <script setup>
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { useUserStore } from '@/stores/user';
 import WeatherForecast from '@/components/WeatherForcast.vue';
 
+// store와 router 인스턴스를 가져옵니다
+const userStore = useUserStore();
 const router = useRouter();
 
-// 사용자 정보 가져오는 함수
-function fetchUserInfo() {
-    const kakaoToken = sessionStorage.getItem('kakao-access-token');
-    const jwtToken = sessionStorage.getItem('access-token');
+// accessToken을 URL에서 가져와서 저장하는 함수
+const storeAccessTokenFromUrl = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const accessToken = urlParams.get('accessToken');
 
-    console.log("kakaoToken 입니다", kakaoToken);
-    console.log("jwtToken 입니다", jwtToken);
+  if (accessToken) {
+    // localStorage에 accessToken 저장
+    localStorage.setItem('kakao-access-token', accessToken);
+    // userStore에 토큰 저장 (로그인 상태로 처리)
+    userStore.saveKakaoTokenToStorage(accessToken);
+    console.log("accessToken이 저장되었습니다:", accessToken);
+  }
+};
 
-    //  JWT Token이 있는 경우
-    if (jwtToken) {
-      axios.get('/api/user/user-info', {
-        headers: {
-          'Authorization': `Bearer ${jwtToken}`,
-        }
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          console.log("Response Headers: ", response.headers);
-          console.log("data: ", response.data);
+// 메인 페이지 초기화 함수
+const initializeMainPage = async () => {
+  // URL에서 카카오 토큰을 받아서 저장
+  storeAccessTokenFromUrl();
 
-          const data = response.data;
-          console.log("data: ", data);
-          console.log("userId: ", data.userId);
-        } else {
-          console.error("Error: ", response.status);
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching user info:", error);
-      });
-    }
+  // 토큰 로드 및 유저 정보 확인
+  userStore.loadTokenFromStorage();
 
-    //Kakao Token이 있는 경우
-    else if (kakaoToken) {
-        axios.get('https://kapi.kakao.com/v2/user/me', {
-            headers: {
-                'Authorization': `Bearer ${kakaoToken}`,
-                'Content-Type': 'application/json',
-            }
-        })
-        .then((response) => {
-            const data = response.data;
-            const userId = data.id;
-            console.log("카카오로 얻어온 User ID:", userId);
-        })
-        .catch((error) => {
-            console.error("카카오 사용자 정보 조회 실패:", error);
-        });
-    }
+  // 유저가 인증되지 않은 경우, 로그인 페이지로 이동
+  if (!userStore.isAuthenticated) {
+    router.push('/signIn');
+    return;
+  }
 
-    // 토큰이 둘 다 없는 경우
-    else {
-        console.error("Access token not found. Redirecting to login page...");
-    }
-}
+  // 유저 정보 확인
+  await userStore.fetchUserInfo();
 
-// onMounted 시 사용자 정보 호출
+
+  console.log('!userStore.getUserId : ', !userStore.getUserId);
+
+  // 유저 ID가 없으면 회원가입 페이지로 이동
+  if (!userStore.getUserId) {
+    router.push('/signUp');
+  }
+};
+
+// 컴포넌트가 마운트될 때 초기화 함수 실행
 onMounted(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const accessToken = urlParams.get('accessToken');
-
-    if (accessToken) {
-        sessionStorage.setItem('kakao-access-token', accessToken);
-        router.replace({ path: '/main' });
-    }
-
-    fetchUserInfo();
+  initializeMainPage();
 });
 </script>
+  
+
+
+
 
 <style scoped lang="scss">
 html, body {
@@ -98,7 +83,7 @@ html, body {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 20px;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 120px); /* Header(60px) + Footer(60px) 고려 */
   width: 100%;
   padding: 30px;
   box-sizing: border-box;
@@ -113,8 +98,6 @@ html, body {
     font-size: 24px;
     font-weight: bold;
     color: #333;
-    padding: 20px;
-    overflow: auto;
   }
 
   .quadrant-1 {

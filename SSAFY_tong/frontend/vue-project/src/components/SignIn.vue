@@ -1,6 +1,5 @@
 <template>
     <div class="signup">
-    <div class="rectangle-21"></div>
     <div class="frame-2">
       <div class="rectangle-22"></div>
       <router-link to="/main">
@@ -135,10 +134,11 @@
             text-align: center;
 
             transition: transform 0.3s ease;
+            
 
             &:hover {
             transform: scale(1.05);
-        }
+            }
         }
         
         .frame-3 {
@@ -270,7 +270,7 @@
                     left: 0px;
                     width: 57px;
                     height: 22px;
-                    color: #FFFFFF;
+                    color: #000000;
                     white-space: nowrap;
                     font-family: "Jockey One";
                     font-size: 16px;
@@ -304,7 +304,7 @@
                     left: 142px;
                     width: 122px;
                     height: 22px;
-                    color: #FFFFFF;
+                    color: #000000;
                     white-space: nowrap;
                     font-family: "Jockey One";
                     font-size: 16px;
@@ -359,6 +359,7 @@ const login = async () => {
       password: userPassword.value,
     });
 
+    console.log(response);
 
     // 서버 응답 확인
     if (response.data && response.data["access-token"]) {
@@ -366,6 +367,7 @@ const login = async () => {
       alert("로그인 성공!");
       // JWT 토큰 저장
       userStore.saveTokenToStorage(response.data["access-token"]);
+      
       // 메인 페이지로 이동
       router.push({ name: "main" })
         .then(() => {
@@ -405,10 +407,15 @@ const redirectToKakaoLogin = () => {
 
 // 카카오 로그인 콜백 처리 함수
 const handleKakaoCallback = async (code) => {
+
+  console.log("handleKakaoCallback 호출 되었습니다.")
+
   try {
     // 백엔드에 카카오 인가 코드 전송
     const response = await axios.get(`http://localhost:8080/oauth2/kakao?code=${code}`);
     
+    console.log("response 출력 ", response)
+
     if (response.data) {
       try {
         // JSON 문자열을 파싱

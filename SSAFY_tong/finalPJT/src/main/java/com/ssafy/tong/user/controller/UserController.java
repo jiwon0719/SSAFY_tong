@@ -10,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -50,7 +51,7 @@ public class UserController {
 
     // 사용자 회원가입
     @PostMapping("/signUp")
-    public ResponseEntity<String> signUp(@RequestBody User user) {
+    public ResponseEntity<Object> signUp(@RequestBody User user) {
 //        if (userService.findUserByUserId(user.getUserId())) {  // 사용자 중복 확인
 //            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("이미 존재하는 사용자입니다.");
 //        }
@@ -124,4 +125,36 @@ public class UserController {
             return new ResponseEntity<>(Collections.singletonMap("message", "Invalid or expired token"), HttpStatus.UNAUTHORIZED);
         }
     }
+    
+    
+    
+    // 사용자 프로필 이미지 가져오기
+    @GetMapping("/profileImg/{userId}")
+    public ResponseEntity<Map<String, Object>> getProfileImage(@PathVariable String userId) {
+        Map<String, Object> result = new HashMap<>();
+        HttpStatus status;
+
+        try {
+            // userId로 사용자 정보를 조회
+            String profileImage = userService.getProfileImageByUserId(userId);
+
+            if (profileImage != null) {
+                result.put("profileImage", profileImage);
+                result.put("message", "프로필 이미지 가져오기 성공");
+                status = HttpStatus.OK;
+            } else {
+                result.put("message", "프로필 이미지가 없습니다.");
+                status = HttpStatus.NOT_FOUND;
+            }
+        } catch (Exception e) {
+            result.put("message", "서버 에러 발생");
+            result.put("error", e.getMessage());
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        return new ResponseEntity<>(result, status);
+    }
+    
+    
+    
 }

@@ -12,10 +12,12 @@ public class User {
 	private String email; // 이메일
 	private String phone; // 전화번호
 	private String birthdate; // 생일
+	private String addressZipcode; // 우편 주소
 	private String address; // 주소
+	private String addressDetail; // 주소
 	private Date updatedPassword; // 비밀번호 변경 날짜
 	private char isKakaoMember; // 카카오 유저 여부 ('O': 카카오 유저, 'X': 일반 유저)
-	private String user_profile_img_path; // user 프로필 이미지 경로
+	private String userProfileImgPath; // user 프로필 이미지 경로
 	public String getUserId() {
 		return userId;
 	}
@@ -58,11 +60,23 @@ public class User {
 	public void setBirthdate(String birthdate) {
 		this.birthdate = birthdate;
 	}
+	public String getAddressZipcode() {
+		return addressZipcode;
+	}
+	public void setAddressZipcode(String addressZipcode) {
+		this.addressZipcode = addressZipcode;
+	}
 	public String getAddress() {
 		return address;
 	}
 	public void setAddress(String address) {
 		this.address = address;
+	}
+	public String getAddressDetail() {
+		return addressDetail;
+	}
+	public void setAddressDetail(String addressDetail) {
+		this.addressDetail = addressDetail;
 	}
 	public Date getUpdatedPassword() {
 		return updatedPassword;
@@ -76,18 +90,19 @@ public class User {
 	public void setIsKakaoMember(char isKakaoMember) {
 		this.isKakaoMember = isKakaoMember;
 	}
-	public String getUserProfileImgPath() {
-		return user_profile_img_path;
+	public String getUser_profile_img_path() {
+		return userProfileImgPath;
 	}
-	public void setUserProfileImgPath(String user_profile_img_path) {
-		this.user_profile_img_path = user_profile_img_path;
+	public void setUser_profile_img_path(String userProfileImgPath) {
+		this.userProfileImgPath = userProfileImgPath;
 	}
 	@Override
 	public String toString() {
 		return "User [userId=" + userId + ", userType=" + userType + ", password=" + password + ", name=" + name
-				+ ", email=" + email + ", phone=" + phone + ", birthdate=" + birthdate + ", address=" + address
-				+ ", updatedPassword=" + updatedPassword + ", isKakaoMember=" + isKakaoMember
-				+ ", user_profile_img_path=" + user_profile_img_path + "]";
+				+ ", email=" + email + ", phone=" + phone + ", birthdate=" + birthdate + ", addressZipcode="
+				+ addressZipcode + ", address=" + address + ", addressDetail=" + addressDetail + ", updatedPassword="
+				+ updatedPassword + ", isKakaoMember=" + isKakaoMember + ", user_profile_img_path="
+				+ userProfileImgPath + "]";
 	}
 	
 	

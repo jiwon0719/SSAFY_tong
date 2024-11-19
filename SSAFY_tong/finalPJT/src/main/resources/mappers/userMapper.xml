@@ -13,10 +13,12 @@
 		`email`,
 		`phone`,
 		`birthdate`,
+		`addressZipcode`,
 		`address`,
+		`addressDetail`,
 		`updated_password`,
 		`is_kakao_member`,
-		`user_profile_img_path`
+		`userProfileImgPath`
 		)
 		VALUES (
 		#{userId},
@@ -26,7 +28,9 @@
 		#{email},
 		#{phone},
 		#{birthdate},
+		#{addressZipcode},
 		#{address},
+		#{addressDetail},
 		now(),
 		#{isKakaoMember},
 		#{userProfileImgPath}
@@ -45,11 +49,13 @@
 		email,
 		phone,
 		birthdate,
+		addressZipcode,
 		address,
+		addressDetail,
 		updated_password AS updatedPassword,
 		is_kakao_member
 		AS isKakaoMember,
-		user_profile_img_path AS userProfileImgPath
+		userProfileImgPath
 		FROM
 		`user`
 		WHERE user_id = #{userId}
@@ -86,8 +92,12 @@
 	</select>
 	
 	
-
-
+	<select id="getProfileImageByUserId" parameterType="String" resultType="String">
+	    SELECT userProfileImgPath 
+	    FROM `user` 
+	    WHERE user_id = #{userId}
+	</select>
+		
 
 
 </mapper>

@@ -22,6 +22,10 @@ public interface UserService {
 		void updatePassword(User loggedInUser);
 		
 		
+		// 아이디로 -> 프로필 이미지 가져오기
+		public String getProfileImageByUserId(String userId);
+		
+		
 		
 		
 		

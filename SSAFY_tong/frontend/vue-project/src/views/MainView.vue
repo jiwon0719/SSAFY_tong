@@ -9,28 +9,26 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 import Header from '@/components/Header.vue';
 import Footer from '@/components/Footer.vue';
 
-export default {
-  name: 'MainLayout',
-  components: {
-    Header,
-    Footer
-  },
-  computed: {
-    showHeader() {
-      // 현재 페이지의 `meta` 정보를 기반으로 헤더를 표시할지 결정
-      return this.$route.meta.layout !== 'none';
-    },
-    showFooter() {
-      // 현재 페이지의 `meta` 정보를 기반으로 풋터를 표시할지 결정
-      return this.$route.meta.layout !== 'none';
-    }
-  }
-};
+const router = useRouter();
+const showHeader = ref(true);  // 헤더 표시 여부
+const showFooter = ref(true);  // 풋터 표시 여부
+
+onMounted(() => {
+  // 로그인 후 리디렉션 처리
+  router.push({ name: 'mainDefault' }).catch((err) => {
+    console.error('라우팅 오류:', err);
+  });
+});
 </script>
+
+
 
 <style scoped>
 .layout {

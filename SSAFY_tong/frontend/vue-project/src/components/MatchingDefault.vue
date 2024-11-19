@@ -146,7 +146,11 @@ export default {
 
         // 카카오맵 초기화
         const initializeMap = () => {
-            if (!mapContainer.value) return
+            if (!mapContainer.value) {
+                console.error('mapContainer가 없습니다.');
+                return
+            }
+            console.log('카카오맵 초기화 중...');
             
             const options = {
                 center: new window.kakao.maps.LatLng(36.355339, 127.297577),
@@ -155,9 +159,11 @@ export default {
             
             // 지도 인스턴스 생성
             mapInstance.value = new window.kakao.maps.Map(mapContainer.value, options)
+            console.log('지도 인스턴스 생성 완료');
             
             // 전문가 마커 추가
             if (experts.value?.length) {
+                console.log('전문가 마커 추가 시작...');
                 experts.value.forEach(expert => {
                     if (expert.latitude && expert.longitude) {
                         const markerPosition = new window.kakao.maps.LatLng(
@@ -169,6 +175,7 @@ export default {
                             position: markerPosition,
                             map: mapInstance.value
                         })
+                        console.log(`마커 추가: ${expert.name} - ${expert.latitude}, ${expert.longitude}`);
                         
                         // 인포윈도우 생성
                         const infowindow = new window.kakao.maps.InfoWindow({
@@ -187,35 +194,52 @@ export default {
                         })
                     }
                 })
+            } else {
+                console.warn('전문가 정보가 없습니다.');
             }
         }
 
         // 카카오맵 스크립트 로드
         const loadKakaoMap = () => {
             const script = document.createElement('script')
-            const apiKey = import.meta.env.VITE_KAKAO_MAP_KEY
+            const { VITE_KAKAO_MAP_KEY } = import.meta.env;
             
-            script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`
+            if (!VITE_KAKAO_MAP_KEY) {
+                console.error('카카오맵 API 키가 설정되지 않았습니다.');
+                return;
+            }
+            
+            console.log('카카오맵 스크립트 로드 중...');
+            console.log(`카카오맵 URL: https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false`);
+
+            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false`;
             script.async = true
+            document.head.appendChild(script);
             
             script.onload = () => {
+                console.log('카카오맵 스크립트 로딩 완료');
                 window.kakao.maps.load(() => {
                     initializeMap()
                     console.log("onload 완료")
                 })
             }
             
-            document.head.appendChild(script)
+            script.onerror = () => {
+                console.error('카카오맵 스크립트 로딩 실패');
+            }
         }
 
         onMounted(async () => {
+            console.log('전문가 데이터 로딩 시작...');
             await expertStore.fetchExperts()
+            console.log('전문가 데이터 로딩 완료');
             loadKakaoMap()
         })
 
         onBeforeUnmount(() => {
             if (mapInstance.value) {
                 mapInstance.value = null
+                console.log('맵 인스턴스 정리됨');
             }
         })
 
@@ -229,11 +253,13 @@ export default {
     
     methods: {
         navigateToExpertForm() {
+            console.log('전문가 등록 폼으로 이동');
             this.$router.push('/matching/regist')
         }
     }
 }
 </script>
+
 
 
 <style lang="scss">
@@ -277,10 +303,11 @@ export default {
     flex: 1;
     height: 100%;
     position: relative;
+    
 
     #kakao-map {
       width: 100%;
-      height: 100%;
+      height: 80%;
       position: absolute;
       top: 0;
       left: 0;
