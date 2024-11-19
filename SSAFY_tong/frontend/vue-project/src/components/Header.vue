@@ -550,6 +550,7 @@
 import { computed, onMounted, ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -576,10 +577,29 @@ const goToMyPage = () => {
   isPanelOpen.value = false;
 };
 
-const handleLogout = () => {
+const handleLogout = async () => {
+  const kakaoAccessToken = sessionStorage.getItem('kakao-access-token');
+
+  // Step 1: 모든 토큰 제거
   userStore.clearToken();
+  
+  // Step 2: 카카오 로그아웃 처리
+  if (kakaoAccessToken) {
+    try {
+      await axios.get('http://localhost:8080/oauth2/kakao/unlink', {
+        headers: {
+          Authorization: `Bearer ${kakaoAccessToken}`,
+        },
+      });
+      console.log('카카오 로그아웃 성공');
+    } catch (error) {
+      console.error('카카오 로그아웃 실패:', error);
+    }
+  }
+
+  // Step 3: 리다이렉트
   isPanelOpen.value = false;
-  router.push('/');
+  router.push('/main');
 };
 
 onMounted(() => {

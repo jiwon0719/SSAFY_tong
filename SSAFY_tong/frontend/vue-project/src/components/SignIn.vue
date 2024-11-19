@@ -388,13 +388,13 @@ const login = async () => {
 
 // 카카오 로그인 리다이렉트
 const redirectToKakaoLogin = () => {
-  const KAKAO_CLIENT_ID = '0fd06d3411cbcfb4f97b0eb93baedd48';
+  const { VITE_KAKAO_CLIENT_ID } = import.meta.env;
   const REDIRECT_URI = 'http://localhost:8080/oauth2/kakao';
   
   // 카카오 인가 코드 요청 URL 생성
   const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
   const params = {
-    client_id: KAKAO_CLIENT_ID,
+    client_id: VITE_KAKAO_CLIENT_ID,
     redirect_uri: REDIRECT_URI,
     response_type: 'code',
   };

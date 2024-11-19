@@ -39,6 +39,7 @@ export const useUserStore = defineStore('user', {
       this.kakaoToken = null;
       this.userId = null;
       this.profileImage = null; // 로그아웃 시 프로필 이미지 초기화
+      this.kakaoUserInfo = null;
       sessionStorage.removeItem('access-token');
       sessionStorage.removeItem('kakao-access-token');
     },
@@ -63,12 +64,12 @@ export const useUserStore = defineStore('user', {
           console.log('kakaoResponse.data:', kakaoResponse.data);
 
           if (kakaoResponse.status === 200) {
-            userId = kakaoResponse.data.kakaoId + 'a!';
-            console.log('kakaoResponse.data.userId +a! :', userId);
+            userId = kakaoResponse.data.kakaoId;
+            console.log('kakaoResponse.data.userId :', userId);
 
             // 카카오 사용자 정보 저장
             this.setKakaoUserInfo({
-              kakaoId: kakaoResponse.data.kakaoId + 'a!',
+              kakaoId: kakaoResponse.data.kakaoId ,
               nickname: kakaoResponse.data.nickname,
               email: kakaoResponse.data.email,
               profileImage: kakaoResponse.data.profileImage,
@@ -79,9 +80,9 @@ export const useUserStore = defineStore('user', {
 
             // 프로필 이미지 설정
             this.setProfileImage(kakaoResponse.data.profileImage);
-          } else if (kakaoResponse.status === 250) {
+          } else if (kakaoResponse.status === 201) {
             this.setKakaoUserInfo({
-              kakaoId: kakaoResponse.data.kakaoId + 'a!',
+              kakaoId: kakaoResponse.data.kakaoId,
               nickname: kakaoResponse.data.nickname,
               email: kakaoResponse.data.email,
               profileImage: kakaoResponse.data.profileImage,
