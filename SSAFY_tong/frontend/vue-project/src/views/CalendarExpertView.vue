@@ -200,7 +200,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useExpertCalendarStore } from '@/stores/expertCalendar'
 
 const store = useExpertCalendarStore()
-const expertId = 'expert2'
+const expertId = 'expert'
 
 // 색상 상수 정의
 const STATUS_COLORS = {

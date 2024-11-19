@@ -42,4 +42,20 @@
 		   SET category=#{category}, description = #{description}
 		 WHERE category_id = #{categoryId};
 	</update>  
+	
+	<!-- 핫게 -->
+	<select id="selectTopViewedCategories" resultType="CategoryViewResponse">
+		SELECT 
+		    bc.category_id as categoryId,
+		    bc.category,
+		    bc.description,
+		    SUM(b.view_cnt) as totalViews
+		FROM board_category bc 
+		LEFT JOIN board b ON bc.category_id = b.category_id
+		GROUP BY bc.category_id, bc.category, bc.description
+		ORDER BY SUM(b.view_cnt) DESC
+		LIMIT 3
+	</select>
+	
+	
 </mapper>
