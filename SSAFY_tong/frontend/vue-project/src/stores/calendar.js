@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useMatchingStore } from './matching'
 
 const CALENDAR_API_URL = 'http://localhost:8080/api/calendar'
+const QUEST_API_URL = 'http://localhost:8080/api/quest'
 
 export const useCalendarStore = defineStore('calendar', () => {
   // 상태 정의
@@ -135,7 +136,30 @@ export const useCalendarStore = defineStore('calendar', () => {
     }).format(d)
   }
 
-  
+  // 퀘스트 상태 업데이트
+  const updateQuestStatus = async(questId, newStatus) => {
+    isLoading.value = true
+    try {
+      await axios.patch(`${QUEST_API_URL}/${questId}`, null, {
+        params: { status: newStatus}
+      })
+
+      // 현재 선택된 날짜의 일정 새로고침 
+      if(pickerDate.value) {
+        // 로그인 유저로 바꾸기
+        await fetchCalendarByDate('user', pickerDate.value)
+      }
+
+      return true
+    } catch (error) {
+      console.log('퀘스트 상태 업데이트 실패 : ', error)
+      throw new Error(error.response?.data?.message || '퀘스트 상태 업데이트에 실패했습니다.')
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+
   return {
     // 상태
     pickerDate,
@@ -146,6 +170,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     matchingExperts,
     availableTimes,
     reservations,
+    quests, 
     
     // 메서드
     fetchMatchingExperts,
@@ -153,6 +178,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     createReservation,
     getReservationStatus,
     resetForm,
-    formatDate
+    formatDate, 
+    updateQuestStatus, 
   }
 })

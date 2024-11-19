@@ -17,6 +17,7 @@
               :event-color="getEventColor"
               locale="ko-KR"
               full-width
+              color="#E2495B"
             >
               <template v-slot:header="{ date }">
                 <div class="text-subtitle-1" style="color: #E2495B">{{ formatDate(date) }}</div>
@@ -44,6 +45,7 @@
               :event-color="getEventColor"
               locale="ko-KR"
               full-width
+              color="#E2495B"
             >
               <template v-slot:header="{ date }">
                 <div class="text-subtitle-1" style="color: #E2495B">{{ formatDate(date) }}</div>
@@ -107,41 +109,69 @@
         <v-col cols="12" sm="6" class="my-2 px-1">
           <!-- 퀘스트 섹션 -->
           <v-card class="mb-4" color="white">
-          <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B">
-            Quest
-            <span class="text-subtitle-1 ml-2" style="color: rgba(226, 73, 91, 0.7)">
-              {{ store.pickerDate ? new Date(store.pickerDate).toLocaleDateString('ko-KR', {
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric'
-              }) : new Date().toLocaleDateString('ko-KR', {
-                year: 'numeric',
-                month: 'long', 
-                day: 'numeric'
-              }) }}
-            </span>
-          </v-card-title>
-          <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
-            당신의 트레이너가 정해준 퀘스트를 확인하세요!
-          </v-card-subtitle>
-          <v-card-text>
-            <v-list v-if="quests.length > 0">
-              <v-list-item v-for="quest in quests" :key="quest.questId">
-                <v-list-item-title class="d-flex align-center justify-space-between text-subtitle-1 my-2">
-                  <div class="d-flex align-center">
-                    <v-icon color="#E2495B" class="mr-2">mdi-trophy-outline</v-icon>
-                    {{ quest.questTitle }}
-                  </div>
-                  <div class="d-flex align-center">
-                    {{ quest.questDetail }}
-                  </div>
-                </v-list-item-title>
-              </v-list-item>
-            </v-list>
-            <div v-else class="text-center pa-4 text-subtitle-1">
-              등록된 퀘스트가 없습니다.
-            </div>
-          </v-card-text>
+            <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B">
+              Quest
+              <span class="text-subtitle-1 ml-2" style="color: rgba(226, 73, 91, 0.7)">
+                {{ store.pickerDate ? new Date(store.pickerDate).toLocaleDateString('ko-KR', {
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric'
+                }) : new Date().toLocaleDateString('ko-KR', {
+                  year: 'numeric',
+                  month: 'long', 
+                  day: 'numeric'
+                }) }}
+              </span>
+            </v-card-title>
+            <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
+              당신의 트레이너가 정해준 퀘스트를 확인하세요!
+            </v-card-subtitle>
+            <v-card-text>
+              <v-list v-if="quests.length > 0">
+                <v-list-item v-for="quest in quests" :key="quest.questId">
+                  <v-list-item-title class="d-flex align-center justify-space-between text-subtitle-1 my-2">
+                    <div class="d-flex align-center">
+                      <v-icon color="#E2495B" class="mr-2">mdi-trophy-outline</v-icon>
+                      {{ quest.questTitle }}
+                    </div>
+                    <div class="d-flex align-center">
+                      <span class="mr-2">{{ quest.questDetail }}</span>
+                      <!-- 상태 칩 -->
+                      <v-chip
+                        :color="getQuestStatusColor(quest.completionStatus)"
+                        size="small"
+                        class="mr-2 white--text"
+                      >
+                        {{ getQuestStatusText(quest.completionStatus) }}
+                      </v-chip>
+                      <!-- 상태가 'X'(도전중)일 때만 버튼 표시 -->
+                      <div v-if="quest.completionStatus === 'X'" class="d-flex">
+                        <v-btn
+                          size="small"
+                          color="success"
+                          class="mr-1"
+                          @click="updateQuestStatus(quest.questId, 'O')"
+                          variant="tonal"
+                        >
+                          성공
+                        </v-btn>
+                        <v-btn
+                          size="small"
+                          color="error"
+                          @click="updateQuestStatus(quest.questId, 'F')"
+                          variant="tonal"
+                        >
+                          실패
+                        </v-btn>
+                      </div>
+                    </div>
+                  </v-list-item-title>
+                </v-list-item>
+              </v-list>
+              <div v-else class="text-center pa-4 text-subtitle-1">
+                등록된 퀘스트가 없습니다.
+              </div>
+            </v-card-text>
           </v-card>
 
           <!-- 예약 일정 섹션 -->
@@ -348,6 +378,46 @@ const sortedReservations = computed(() => {
  return [...store.reservations].sort((a, b) => a.time.localeCompare(b.time))
 })
 
+
+// 퀘스트 상태 관련 함수
+const getQuestStatusColor = (completionStatus) => {
+  switch(completionStatus) {
+    case 'O': return 'success'    // 성공
+    case 'F': return 'error'      // 실패
+    default: return 'warning'     // 도전중 (X)
+  }
+}
+
+const getQuestStatusText = (completionStatus) => {
+  switch(completionStatus) {
+    case 'O': return '성공'
+    case 'F': return '실패'
+    default: return '도전중'
+  }
+}
+
+// 퀘스트 상태 업데이트 함수
+const updateQuestStatus = async (questId, newStatus) => {
+  try {
+    // API 호출 - 실제 구현 시 store에 추가
+    await store.updateQuestStatus(questId, newStatus)
+    
+    // 로컬 상태 업데이트
+    const questIndex = quests.value.findIndex(q => q.questId === questId)
+    if (questIndex !== -1) {
+      quests.value[questIndex] = {
+        ...quests.value[questIndex],
+        completionStatus: newStatus
+      }
+    }
+    
+    showSnackbar('퀘스트 상태가 업데이트되었습니다.', 'success')
+  } catch (error) {
+    console.error('퀘스트 상태 업데이트 실패:', error)
+    showSnackbar('퀘스트 상태 업데이트에 실패했습니다.', 'error')
+  }
+}
+
 </script>
 
 <style scoped>
@@ -365,13 +435,25 @@ const sortedReservations = computed(() => {
     color: #E2495B;
   }
 
-  .v-btn--active {
+  /* 날짜 버튼 기본 스타일 */
+  .v-date-picker-month button {
+    color: #666;
+  }
+
+  /* 선택된 날짜 스타일 */
+  .v-date-picker-month button.v-btn--selected {
     background-color: #E2495B !important;
     color: white !important;
   }
 
-  .v-btn:not(.v-btn--active) {
-    color: #666;
+  /* hover 상태 */
+  .v-date-picker-month button:hover {
+    background-color: rgba(226, 73, 91, 0.1) !important;
+  }
+
+  /* 오늘 날짜 스타일 */
+  .v-date-picker-month button.v-btn--today {
+    border: 1px solid #E2495B;
   }
 
   .v-date-picker-table {

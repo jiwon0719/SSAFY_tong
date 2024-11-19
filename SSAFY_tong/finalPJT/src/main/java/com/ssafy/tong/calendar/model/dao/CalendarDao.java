@@ -40,6 +40,20 @@ public interface CalendarDao {
 		);
 	
 	// (전문가용) 예약 조회
-	List<Reservation> selectExpertReservations(@Param("expertId") String expertId, 
-											   @Param("date") LocalDate date);
+	List<Reservation> selectExpertReservations(
+			@Param("expertId") String expertId, 
+			@Param("date") LocalDate date);
+	
+	// 해당 날짜 calendar 이미 존재하는지 확인
+	Calendar selectCalendarByDateAndUser(
+			@Param("userId") String userId,
+            @Param("year") int year,
+            @Param("month") int month,
+            @Param("date") int date);
+	// 퀘스트 업데이트
+	void updateQuestStatus(int questId, String status);
+	// 퀘스트 조회
+	List<Quest> selectExpertQuests(
+			@Param("expertId") String expertId, 
+			@Param("date") LocalDate date);
 }

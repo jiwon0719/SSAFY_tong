@@ -11,8 +11,6 @@ public class Quest {
 	private String questDetail;
 	private char completionStatus;
 	private LocalDate pickDate;
-	
-	
 
 	public String getExpertUserId() {
 		return expertUserId;

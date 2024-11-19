@@ -34,6 +34,21 @@
 	         e.total_score, e.total_score_cnt
 	</select>
 
+	<select id="selectMatchingsByExpertId" parameterType="string" resultType="userList">
+	    SELECT 
+	        u.user_id as userId,
+	        u.name as name,
+	        u.user_profile_img_path as userProfileImgPath,
+	        MAX(m.status) as status,
+	        MAX(m.created_at) as createAt,
+	        MAX(m.score) as score
+	    FROM matching m
+	    JOIN user u ON m.user_id = u.user_id
+	    WHERE m.expert_user_id = #{expertId}
+	    GROUP BY u.user_id, u.name, u.user_profile_img_path
+	</select>
+
+
 	<!-- 매칭 상태 확인 -->
 	<select id="checkExistingMatching" resultType="boolean">
 	SELECT EXISTS (

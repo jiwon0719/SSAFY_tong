@@ -19,6 +19,18 @@
     </select>
     
     
+    <!-- 특정 날짜의 Calendar 조회 -->
+	<select id="selectCalendarByDateAndUser" resultType="com.ssafy.tong.calendar.model.Calendar">
+	    SELECT calendar_id, user_id, year, month, date
+	    FROM calendar 
+	    WHERE user_id = #{param1}
+	    AND year = #{param2}
+	    AND month = #{param3}
+	    AND date = #{param4}
+	    LIMIT 1
+	</select>
+    
+       
     <select id="selectQuestsByDate" resultType="Quest">
 	    SELECT q.*
 	    FROM calendar c
@@ -74,5 +86,38 @@
 		AND c.date = DAY(#{date})
 		ORDER BY r.time ASC
    </select>
+   
+   
+       <!-- 퀘스트 상태 업데이트 -->
+    <update id="updateQuestStatus">
+        UPDATE quest 
+        SET completion_status = #{status}
+        WHERE quest_id = #{questId}
+    </update>
+
+    <!-- 전문가가 부여한 퀘스트 조회 -->
+    <select id="selectExpertQuests" resultType="Quest">
+        SELECT q.quest_id,
+               q.expert_user_id,
+               q.user_id,
+               q.quest_title,
+               q.quest_detail,
+               q.completion_status
+        FROM quest q
+        JOIN calendar c ON q.calendar_id = c.calendar_id
+        WHERE q.expert_user_id = #{expertId}
+        AND c.year = YEAR(#{date})
+        AND c.month = MONTH(#{date})
+        AND c.date = DAY(#{date})
+        ORDER BY q.quest_id DESC
+    </select>
+   
+   
+   
+   
+   
+   
+   
+   
 
 </mapper>

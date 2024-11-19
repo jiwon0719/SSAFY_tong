@@ -17,5 +17,9 @@ public interface CalendarService {
 	void createQuest(Quest questDTO);
 	// 예약 신청
 	void createReservation(Reservation reservationDTO);
+	// 퀘스트 상태 업데이트 
+	void updateQuestStatus(int questId, String status);
+	// 퀘스트 조회
+	List<Quest> getExpertQuests(String expertId, LocalDate date);
 
 }

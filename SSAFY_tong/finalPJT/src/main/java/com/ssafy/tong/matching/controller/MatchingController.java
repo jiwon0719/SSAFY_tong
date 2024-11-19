@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.ssafy.tong.expert.model.ExpertList;
+import com.ssafy.tong.expert.model.UserList;
 import com.ssafy.tong.matching.model.Matching;
 import com.ssafy.tong.matching.model.service.MatchingService;
 
@@ -54,9 +55,27 @@ public class MatchingController {
             return ResponseEntity.ok(list);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("매칭 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
+                    .body("((전문가) 매칭 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
+    
+    // 전문가별 유저 매칭 현황 조회(UserList 정보 포함)
+    @GetMapping("/expert/{expertId}")
+    public ResponseEntity<Object> getExpertMatchings(@PathVariable String expertId) {
+        try {
+            List<UserList> list = matchingService.getExpertMatchingList(expertId);
+            if (list == null || list.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            }
+            return ResponseEntity.ok(list);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("(유저) 매칭 목록 조회 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }   
+    
+    
+    
     
     // 점수 업데이트
     @PutMapping("/{expertId}/score")

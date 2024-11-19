@@ -35,45 +35,87 @@ public class CalendarServiceImpl implements CalendarService {
 	// 퀘스트 생성
 	@Override
 	public void createQuest(Quest quest) {
-        // 1. Calendar 엔트리 생성
-        LocalDate pickedDate = quest.getPickDate();
-        Calendar calendar = new Calendar();
-        calendar.setUserId(quest.getUserId());
-        calendar.setYear(pickedDate.getYear());
-        calendar.setMonth(pickedDate.getMonthValue());
-        calendar.setDate(pickedDate.getDayOfMonth());
-        
-        // 1. 캘린더 생성
-        int calendarId = calendarDao.insertCalendar(calendar);
-        
-        // 2. Quest 생성
-        quest.setCalendarId(calendarId);
-        calendarDao.insertQuest(quest);
+	    // 1. 해당 날짜의 Calendar가 이미 존재하는지 확인
+	    LocalDate pickedDate = quest.getPickDate();
+	    Calendar existingCalendar = calendarDao.selectCalendarByDateAndUser(
+	            quest.getUserId(),
+	            pickedDate.getYear(),
+	            pickedDate.getMonthValue(),
+	            pickedDate.getDayOfMonth()
+	    );
+
+	    int calendarId;
+
+	    if (existingCalendar != null) {
+	        // 이미 존재하는 Calendar 사용
+	        calendarId = existingCalendar.getCalendarId();
+	    } else {
+	        // 새로운 Calendar 생성
+	        Calendar newCalendar = new Calendar();
+	        newCalendar.setUserId(quest.getUserId());
+	        newCalendar.setYear(pickedDate.getYear());
+	        newCalendar.setMonth(pickedDate.getMonthValue());
+	        newCalendar.setDate(pickedDate.getDayOfMonth());
+
+	        calendarId = calendarDao.insertCalendar(newCalendar);
+	    }
+
+	    // 2. Quest 생성
+	    quest.setCalendarId(calendarId);
+	    calendarDao.insertQuest(quest);
 	}
 	
 	
 	// 예약 신청
 	@Override
 	public void createReservation(Reservation reservation) {
-        // 1. Calendar 엔트리 생성
-        LocalDate pickedDate = reservation.getPickDate();
-        Calendar calendar = new Calendar();
-        calendar.setUserId(reservation.getUserId());
-        calendar.setYear(pickedDate.getYear());  // 전체 연도 사용
-        calendar.setMonth(pickedDate.getMonthValue());
-        calendar.setDate(pickedDate.getDayOfMonth());
-        
-        int calendarId = calendarDao.insertCalendar(calendar);
-        
-        // 2. Reservation 생성
-        reservation.setCalendarId(calendarId);
-        calendarDao.insertReservation(reservation);
-    }
+	    // 1. 해당 날짜의 Calendar가 이미 존재하는지 확인
+	    LocalDate pickedDate = reservation.getPickDate();
+	    Calendar existingCalendar = calendarDao.selectCalendarByDateAndUser(
+	        reservation.getUserId(),
+	        pickedDate.getYear(),
+	        pickedDate.getMonthValue(),
+	        pickedDate.getDayOfMonth()
+	    );
+
+	    int calendarId;
+	    
+	    if (existingCalendar != null) {
+	        // 이미 존재하는 Calendar 사용
+	        calendarId = existingCalendar.getCalendarId();
+	    } else {
+	        // 새로운 Calendar 생성
+	        Calendar newCalendar = new Calendar();
+	        newCalendar.setUserId(reservation.getUserId());
+	        newCalendar.setYear(pickedDate.getYear());
+	        newCalendar.setMonth(pickedDate.getMonthValue());
+	        newCalendar.setDate(pickedDate.getDayOfMonth());
+	        
+	        calendarId = calendarDao.insertCalendar(newCalendar);
+	    }
+
+	    // 2. Reservation 생성
+	    reservation.setCalendarId(calendarId);
+	    calendarDao.insertReservation(reservation);
+	}
 
 	// (전문가용) 예약 조회
 	@Override
 	public List<Reservation> getExpertReservations(String expertId, LocalDate date) {
 		return calendarDao.selectExpertReservations(expertId, date);
+	}
+	
+	
+	// 퀘스트 업데이트 
+	@Override
+	public void updateQuestStatus(int questId, String status) {
+		calendarDao.updateQuestStatus(questId, status);
+	}
+
+	// 퀘스트 조회
+	@Override
+	public List<Quest> getExpertQuests(String expertId, LocalDate date) {
+		return calendarDao.selectExpertQuests(expertId, date);
 	}
 
 }

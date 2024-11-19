@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,6 +54,26 @@ public class CalendarController {
         List<Reservation> reservations = calendarService.getExpertReservations(expertId, date);
         return ResponseEntity.ok(reservations);
     }    
+    
+    
+    // 퀘스트 상태 업데이트(일반회원용)
+    @PutMapping("/quest/{questId}")
+    public ResponseEntity<Void> updateQuestStatus(
+    		@PathVariable int questId,
+    		@RequestParam String status) {
+    	calendarService.updateQuestStatus(questId, status);
+    	return ResponseEntity.ok().build();
+    }
+    
+    
+    // 퀘스트 조회
+    @GetMapping("/expert/quests")
+    public ResponseEntity<List<Quest>> getExpertQuest(
+    		@RequestParam String expertId, 
+    		@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate date) {
+    	List<Quest> quests = calendarService.getExpertQuests(expertId, date);
+    	return ResponseEntity.ok(quests);
+    }
     
     
     

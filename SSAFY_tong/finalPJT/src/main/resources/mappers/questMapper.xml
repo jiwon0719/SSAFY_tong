@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.ssafy.tong.quest.model.dao.QuestDao">
+    <select id="getQuest" parameterType="int" resultType="Quest">
+        SELECT * 
+        FROM quest 
+        WHERE quest_id = #{questId}
+    </select>
+
+    <update id="updateStatus" parameterType="map">
+        UPDATE quest 
+        SET completion_status = #{status}
+        WHERE quest_id = #{questId}
+    </update>
+</mapper>

@@ -36,7 +36,7 @@ import com.ssafy.tong.expert.model.service.ExpertService;
 
 @RestController
 @RequestMapping("/api/expert")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin
 // 전문가
 // 본인 PR 자기소개 페이지
 public class ExpertController {
