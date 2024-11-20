@@ -183,25 +183,6 @@ const router = createRouter({
   
 });
 
-// // 마이페이지 이동(일반회원, 전문가회원 구분하여 라우트)
-// router.beforeEach(async (to, from, next) => {
-//   const userStore = useUserStore();
-
-//   if(to.matched.some(record => record.meta.requiresAuth)) {
-//     if(!userStore.isAuthenticated) { // 로그인 안되어 있으면 로그인페이지로 이동
-//       next({ name: 'signIn'});
-//       return;
-//     }
-
-//     if(!userStore.userType) { // 유저 타입 로드안되었다면
-//       await userStore.fetchUserInfo();
-//     }
-//     next();
-//   } else {
-//     next();
-//   }
-// });
-
 
 // 페이지 이동 후 항상 상단으로 스크롤 이동
 router.afterEach(() => {
