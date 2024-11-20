@@ -21,7 +21,7 @@
               <select class="post-count-select">
                 <option>10개씩 보기▼</option>
               </select>
-              <router-link to="/communityBoardRegist">
+              <router-link to="/community/board-regist">
                   <button class="write-post-btn" @click="onPostClick">게시물 작성</button>
               </router-link>
             </div>

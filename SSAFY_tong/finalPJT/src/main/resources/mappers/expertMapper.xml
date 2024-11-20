@@ -4,16 +4,19 @@
   "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.ssafy.tong.expert.model.dao.ExpertDao">
-	<!-- 전체 조회 -->
-	<select id="selectExpert" resultType="Expert">
-		SELECT expert_id, user_id, location, introduction, price, price_detail, grade, total_score, total_score_cnt, company_name, latitude, longitude
-		  FROM expert;
+	
+	<!-- 전체 조회 : ExpertList(user + expert 조인) -->
+	<select id="selectExpertList" resultType="ExpertList">
+		SELECT e.expert_id, e.user_id, u.name, e.address, e.grade, u.userProfileImgPath
+		FROM expert e
+		JOIN user u ON e.user_id = u.user_id
 	</select>
+
 	
 	<!-- 상세 조회 -->
 	<!-- 기본 정보 조회 -->
 	<select id="selectExpertByPK" resultType="Expert" parameterType="int">
-		SELECT expert_id, user_id, location, introduction, price, price_detail, grade, total_score, total_score_cnt, company_name, latitude, longitude
+		SELECT expert_id, user_id, addressZipcode, address, addressDetail, introduction, price, price_detail, grade, total_score, total_score_cnt, company_name
 		  FROM expert
 		 WHERE expert_id = #{expertId};
 	</select>
@@ -41,9 +44,9 @@
 	<!-- 등록 -->
 	<insert id="insertExport" parameterType="Expert" useGeneratedKeys="true" keyProperty="expertId">
 		INSERT INTO expert(
-			user_id, location, introduction, price, price_detail, grade, company_name, latitude, longitude
+			user_id, addressZipcode, address, addressDetail, introduction, price, price_detail, grade, company_name
 		) VALUES (
-			#{userId}, #{location}, #{introduction}, #{price}, #{priceDetail}, #{grade}, #{companyName}, #{latitude}, #{longitude}
+			#{userId}, #{addressZipcode},#{address}, #{addressDetail}, #{introduction}, #{price}, #{priceDetail}, #{grade}, #{companyName}
 		);
 	</insert>
 	
@@ -73,20 +76,16 @@
 		 WHERE expert_id = #{expertId};
 	</update>
 	
-	
-	<!-- ExpertList : user + expert 조인 -->
-	<select id="selectExpertList" resultType="ExpertList">
-		SELECT e.expert_id, e.user_id, u.name, e.location, e.grade, u.user_profile_img_path
-		FROM expert e
-		JOIN user u ON e.user_id = u.user_id
+	<select id="selectUserIdByExpertId" parameterType="int" resultType="string">
+	    SELECT user_id
+	    FROM expert
+	    WHERE expert_id = #{expertId}
 	</select>
+
 	
-	
-<select id="selectUserIdByExpertId" parameterType="int" resultType="string">
-    SELECT user_id
-    FROM expert
-    WHERE expert_id = #{expertId}
-</select>
-	
-	
+	<!-- 전체 조회(사용X) -->
+	<select id="selectExpert" resultType="Expert">
+		SELECT expert_id, user_id, addressZipcode, address, addressDetail, introduction, price, price_detail, grade, total_score, total_score_cnt, company_name
+		  FROM expert;
+	</select>
 </mapper>

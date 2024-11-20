@@ -37,8 +37,9 @@
         <div class="info-section">
           <h3>Information</h3>
           <div class="content">
-            <p>🏠 {{ expertDetail?.location }}</p>
-            <p>{{ expertDetail?.introduction }}</p>
+            <p> 🦾 {{ expertDetail?.companyName }} </p>
+            <p>🏠위치 : {{ expertDetail?.address }}</p>
+            <p>🎓설명 : {{ expertDetail?.introduction }}</p>
           </div>
         </div>
 
@@ -77,14 +78,18 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useExpertStore } from '@/stores/expert';
 import { useMatchingStore } from '@/stores/matching';
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
 const route = useRoute();
 const router = useRouter();
 const expertStore = useExpertStore();
 const matchingStore = useMatchingStore();
+const userStore = useUserStore();
+
 
 const { expertDetail, expertCareers, expertImages, loading, error, averageScore } = storeToRefs(expertStore);
+const { userId } = storeToRefs(userStore);
 
 // 캐러셀 관련 상태 및 로직
 const currentIndex = ref(0);
@@ -121,7 +126,7 @@ const resetAutoSlide = () => {
 const handleJoinRequest = async () => {
   try {
     const matchingData = {
-      userId: 'user', // 실제 구현시 로그인 정보에서 가져오기
+      userId: userId,
       expertId: expertDetail.value.expertId
     }
     
@@ -141,6 +146,11 @@ onMounted(async () => {
   if(!expertId) {
     console.error('Expert ID is missing')
     return;
+  }
+
+  // userId없으면 사용자 정보 가져옴
+  if(!userId.value) {
+    await userStore.fetchUserInfo()
   }
 
   await expertStore.fetchExpertDetail(expertId);

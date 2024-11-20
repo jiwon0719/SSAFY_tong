@@ -245,15 +245,21 @@
 <script setup>
 import { ref, watch, computed, onMounted } from 'vue'
 import { useCalendarStore } from '@/stores/calendar'
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
 
 // Store
 const store = useCalendarStore()
+const userStore = useUserStore()
 const quests = ref([])
 const calendarData = ref({
   quests: [],
   reservations: []
 })
 const reservations = ref([])
+
+// 반응형 데이터
+const { userId } = storeToRefs(userStore);
 
 // Local state
 const showReservationForm = ref(false)  
@@ -265,7 +271,7 @@ const snackbarColor = ref('#E2495B')
 const minDate = new Date().toISOString().split('T')[0]
 
 // 현재 로그인한 사용자 ID (실제로는 auth store 등에서 가져와야 함)
-const userId = 'user'
+// const userId = 'user'
 
 // 이벤트 데이터 (퀘스트와 예약이 있는 날짜)
 const events = computed(() => {
@@ -309,7 +315,7 @@ const showSnackbar = (text, color = '#E2495B') => {
 // 예약 처리
 const handleReservation = async () => {
  try {
-   await store.createReservation(userId)
+   await store.createReservation(userId.value)
    showSnackbar('예약이 신청되었습니다.')
    showReservationForm.value = false
  } catch (error) {
@@ -330,7 +336,7 @@ watch(() => store.pickerDate, async (newDate) => {
   if (!newDate) return
   
   try {
-    const data = await store.fetchCalendarByDate(userId, newDate)
+    const data = await store.fetchCalendarByDate(userId.value, newDate)
     console.log('Calendar data received:', data)
     calendarData.value = data // store에서 이미 형식화된 데이터를 받음
     quests.value = data.quests
@@ -351,7 +357,7 @@ watch(() => store.selectedExpertId, (newExpert) => {
 // Lifecycle Hooks
 onMounted(async () => {
  try {
-   await store.fetchMatchingExperts(userId)
+   await store.fetchMatchingExperts(userId.value)
  } catch (error) {
    showSnackbar('전문가 목록 조회에 실패했습니다.', 'error')
  }

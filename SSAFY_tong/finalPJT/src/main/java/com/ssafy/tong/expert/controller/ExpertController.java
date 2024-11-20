@@ -50,8 +50,17 @@ public class ExpertController {
 	public ResponseEntity<List<ExpertList>> list() {
 	    try {
 	        List<ExpertList> experts = expertService.list();
+//	        for(ExpertList expert : experts) {
+//	        	System.out.println(expert);
+//	        }
+	        
+	        if (experts == null) {
+	            return ResponseEntity.noContent().build();
+	        }
 	        return ResponseEntity.ok(experts);
 	    } catch (Exception e) {
+	        System.out.println("에러 발생: " + e.getMessage());
+	        e.printStackTrace();
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 	    }
 	}
@@ -95,9 +104,7 @@ public class ExpertController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
-    /////////////////////////////////////////////////////
-	
-	
+    /////////////////////////////////////////////////////	
 	// 상세 조회
 	// 기본 정보 조회
 	@GetMapping("{expert_id}")
@@ -115,6 +122,7 @@ public class ExpertController {
             }
         }
 		
+//        System.out.println(expert);
 		return ResponseEntity.status(HttpStatus.OK).body(expert);
 	}
 	
@@ -131,6 +139,7 @@ public class ExpertController {
 	// 이미지 정보 조회
     @GetMapping("{expert_id}/images")
     public ResponseEntity<List<ExpertImage>> getImages(@PathVariable("expert_id") int expertId) {
+    	System.out.println("전문가 상세: 이미지 정보 조회 시작");
         List<ExpertImage> images = expertService.getExpertImages(expertId);
         if(images == null || images.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -138,6 +147,8 @@ public class ExpertController {
         return ResponseEntity.status(HttpStatus.OK).body(images);
     }
 	
+    ///////////////////////////////////////////////////////
+  
     
     
 	// 삭제

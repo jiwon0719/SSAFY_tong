@@ -20,6 +20,10 @@
           v-if="isPanelOpen"
           class="profile-panel"
         >
+          <p>안녕하세요!</p>
+          <p>{{ userName }}님</p>
+          <p>{{ userId }}</p>
+          <p>{{ userType }}</p>
           <button 
             @click="goToMyPage"
             class="panel-button mypage-btn"
@@ -175,12 +179,34 @@
       background: white;
       border-radius: 10px;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      padding: 8px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 8px;
       border: 1px solid rgba(220, 96, 111, 0.2);
       animation: slideDown 0.2s ease-out;
+
+      // 인사말 스타일
+      p:first-child {
+        text-align: center;
+        color: #DC606F;
+        font-family: "Jockey One";
+        font-size: 18px;
+        margin: 0;
+        padding: 4px 0;
+      }
+
+      // 사용자 이름 스타일
+      p:nth-child(2) {
+        text-align: center;
+        color: #333;
+        font-family: "Jockey One";
+        font-size: 20px;
+        font-weight: bold;
+        margin: 0;
+        padding: 0 0 12px 0;
+        border-bottom: 1px solid rgba(220, 96, 111, 0.2);
+      }
 
       .panel-button {
         width: 100%;
@@ -557,11 +583,15 @@
 import { computed, onMounted, ref } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import { storeToRefs } from 'pinia';
 import axios from 'axios';
 
 const userStore = useUserStore();
 const router = useRouter();
 const isPanelOpen = ref(false);
+
+// store의 state를 반응형으로 가져오기
+const { userId, userName, userType } = storeToRefs(userStore);
 
 const defaultImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAAAIVBMVEXl77rY5aDl8Lnd6Kja5qXg67He6azZ5aLj7bbj7rXa5qhY6pxuAAACr0lEQVR4nO3b25LqIBCFYUM4+v4PvHPQUcdoYMTd3an/u7C8zCpoaAOeTgAAAAAAAAAAAAAAAAAAAIAoJ/0AvUxBSghxEUKWfpzPlDj6YUjDMH8kP0a7eXJcYtxJyWYcN0X5nWXJE6Wf7A9CusyvpzTnIv1sjVzcynGNE6Qfr827LMam2ttxsTY2YbNYHtNY2EvLbpYpjZFVwJ33swzDKP2YdfYK5sJE2eSKSbYMjYWqqZpkRoYmj7Vh9FeN21+Wf+jvOSvLf6a+D8i+Poz6eVazYV557fOsoWQGr7wLaKl//e1mQ/0T5r8KhwpzpJppGRmvPsyR9pnS0gFo32dcddNsoDdrWZu1l0xLp6m+ZE4NQ6N/YOrfAVgYmGO9nTm5qqHx2cLbmcqNU/kec7M/0dS3ZXd2d079++VNHt/OtBRt1MvqfVdjK8tpPml+2Qmo7/w3lK2plqZhMbOO3XE5jE8HzimaOTL7LYfo1+sZ66ePwfRVmlJCjOf5pkkMxUQ3tmseDmd5TADgUJYV2a3fTC/O0+PnksNq+naJYy2Uc2Xa+L2fO8u5mUlpvRjovbFOwP20ZK9+z6RxSiT9mBVyeR/k9qtmDEX3dMvhvHll9tUA6R2feXbVBrnm8Sp/qrnpl2VrlIXGOC78KcoSJyhbq1uuzDzTdae+5fBvQ9J0IvD0B4b2OGpeP32eRU+alhsmr+l4Ndgni4qTNJc7ZZnSiC/Q7rN17IH4OUfLXZldwmXz2Wb5m/AN1F7VfyE60WrP/GuNkita54ERrZoPW7INggeELTfl6ghede7RlD2Sa9Hq/11ST2w967vJrKS2Gte//uXaTde1lbkQK5ruu8zsUGGkVoAvLGZiYb6xMsuF+cJiJtZr5jh+gVgL4PqTigIAAAAAAAAAAAAAAAAAAMT9Ay89GMi5B4sKAAAAAElFTkSuQmCC';
 
@@ -579,8 +609,21 @@ const togglePanel = () => {
   isPanelOpen.value = !isPanelOpen.value;
 };
 
-const goToMyPage = () => {
-  router.push('/mypage');
+const goToMyPage = async () => {
+  // 사용자 정보가 없으면 먼저 가져옵니다.
+  if (!userStore.userType) {
+    await userStore.fetchUserInfo();
+  }
+
+  // 사용자 타입에 따라 적절한 마이페이지로 라우팅합니다.
+  if (userStore.userType === 'E') {
+    console.log("전문가회원 마이페이지로 이동");
+    router.push({ name: 'mypageDefaultExpert' });
+  } else {
+    console.log("일반회원 마이페이지로 이동");
+    router.push({ name: 'mypageDefault' });
+  }
+
   isPanelOpen.value = false;
 };
 
