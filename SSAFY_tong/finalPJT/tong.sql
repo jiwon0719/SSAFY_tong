@@ -196,3 +196,105 @@ select * from quest;
 select * from expert;
 select * from matching;
 select * from user;
+
+
+-- ------------------------------------------------------
+-- User 테이블 데이터
+INSERT INTO user (user_id, user_type, password, name, email, phone, birthdate, addressZipcode, address, addressDetail, is_kakao_member) VALUES
+('user1', 'U', 'pass123', '김철수', 'kim@email.com', '010-1234-5678', '19900101', '06234', '서울시 강남구 테헤란로', '101동 1004호', 'X'),
+('user2', 'U', 'pass124', '이영희', 'lee@email.com', '010-2345-6789', '19910202', '06235', '서울시 강남구 역삼로', '202동 705호', 'O'),
+('expert1', 'E', 'pass125', '박전문', 'park@email.com', '010-3456-7890', '19850303', '06236', '서울시 강남구 선릉로', '303동 1202호', 'X'),
+('expert2', 'E', 'pass126', '정멘토', 'jung@email.com', '010-4567-8901', '19880404', '04101', '서울시 마포구 백범로', '404동 801호', 'X'),
+('expert3', 'E', 'pass127', '홍길동', 'hong@email.com', '010-5678-9012', '19920505', '07230', '서울시 영등포구 여의대로', '505동 1501호', 'X');
+
+-- Expert 테이블 데이터
+INSERT INTO expert (user_id, addressZipcode, address, addressDetail, introduction, price, price_detail, grade, company_name) VALUES
+('expert1', '06236', '서울시 강남구 선릉로', '303동 1202호', '10년 경력의 퍼스널 트레이너입니다. 체계적인 운동 지도를 제공합니다.', 50000, '1회 상담 5만원 / 10회 45만원 / 20회 80만원', '프로', '헬스케어 센터'),
+('expert2', '04101', '서울시 마포구 백범로', '404동 801호', '영양사 자격증을 보유한 다이어트 전문가입니다.', 40000, '1회 상담 4만원 / 10회 35만원 / 20회 60만원', '점장', '피트니스 클럽'),
+('expert3', '07230', '서울시 영등포구 여의대로', '505동 1501호', '체육학 박사 학위 보유, 과학적인 운동 지도를 제공합니다.', 60000, '1회 상담 6만원 / 10회 55만원 / 20회 100만원', '프로', '스포츠 센터');
+select * from expert;
+
+
+-- Expert Career 테이블 데이터
+INSERT INTO expert_career (expert_id, career_detail, start_date, end_date) VALUES
+(1, '메가 휘트니스 트레이너', '2015-01-01', '2018-12-31'),
+(1, '헬스케어 센터 센터장', '2019-01-01', '2023-12-31'),
+(2, '병원 영양사', '2016-01-01', '2020-12-31'),
+(2, '피트니스 클럽 트레이너', '2021-01-01', '2023-12-31'),
+(3, '대학교 체육학과 강사', '2018-01-01', '2023-12-31');
+select * from expert_career;
+
+
+-- Expert Image 테이블 데이터
+
+
+-- Matching 테이블 데이터
+INSERT INTO matching (user_id, expert_user_id, status) VALUES
+('user1', 'expert1', 'O'),
+('user1', 'expert2', 'O'),
+('user2', 'expert2', 'O'),
+('user2', 'expert3', 'X'),
+('user1', 'expert3', 'O');
+
+-- User Expert Chat 테이블 데이터
+-- INSERT INTO user_expert_chat (matching_id, sender_id, content, is_read) VALUES
+-- (1, 'user1', '상담 가능한 시간을 알려주세요', 'O'),
+-- (1, 'expert1', '네, 매주 월요일 2시가 가능합니다', 'O'),
+-- (2, 'user1', '식단 관련 문의드립니다', 'X'),
+-- (3, 'expert1', '운동 계획 보내드립니다', 'O'),
+-- (4, 'user2', '상담 신청합니다', 'X');
+
+-- Board Category 테이블 데이터
+INSERT INTO board_category (user_id, category, description) VALUES
+('admin', '건강정보', '건강 정보 공유 게시판'),
+('admin', '운동정보', '운동 정보 공유 게시판'),
+('admin', '식단정보', '식단 정보 공유 게시판'),
+('admin', 'Q&A', '질문과 답변 게시판'),
+('admin', '후기', '이용 후기 게시판');
+
+-- Board Category Hold 테이블 데이터
+-- INSERT INTO board_category_hold (category_id, user_id, is_hold) VALUES
+-- (1, 'user1', 'O'),
+-- (2, 'user1', 'O'),
+-- (3, 'user2', 'O'),
+-- (4, 'user2', 'X'),
+-- (5, 'user1', 'O');
+
+-- Board 테이블 데이터
+INSERT INTO board (category_id, title, writer, content) VALUES
+(1, '건강관리 꿀팁', 'user1', '일상적인 건강관리 방법 공유합니다. 1. 충분한 수면 2. 규칙적인 운동 3. 균형 잡힌 식사'),
+(2, '홈트레이닝 방법', 'expert1', '집에서 할 수 있는 효과적인 운동 루틴을 소개합니다. 스쿼트, 푸시업, 플랭크 순서로 진행하세요.'),
+(3, '다이어트 식단', 'expert2', '건강한 다이어트를 위한 일주일 식단표입니다. 단백질 위주의 식단으로 구성했습니다.'),
+(4, '운동 질문있어요', 'user2', '처음 헬스장을 가려고 하는데 필수적으로 준비할 것들이 무엇이 있을까요?'),
+(5, '상담 후기입니다', 'user1', '전문가 상담을 받고 한 달간 실천한 결과 5kg 감량에 성공했습니다!');
+
+-- Comment 테이블 데이터
+INSERT INTO comment (board_id, commenter, content, parent_comment_id) VALUES
+(1, 'expert1', '좋은 정보 감사합니다. 수면의 질을 높이는 방법도 추가해 주시면 좋을 것 같아요.', NULL),
+(1, 'user2', '저도 실천해보겠습니다. 많은 도움이 되었어요!', NULL),
+(2, 'user1', '홈트레이닝 영상도 있나요?', NULL),
+(2, 'expert2', '네, 다음 게시글에서 자세한 동작 방법을 설명해드리겠습니다.', 3),
+(3, 'user2', '칼로리 정보도 함께 올려주시면 감사하겠습니다.', NULL);
+
+-- Calendar 테이블 데이터
+INSERT INTO calendar (user_id, year, month, date) VALUES
+('user1', 2024, 11, 20),
+('user1', 2024, 11, 21),
+('user2', 2024, 11, 22);
+
+-- Quest 테이블 데이터
+INSERT INTO quest (calendar_id, expert_user_id, user_id, quest_title, quest_detail) VALUES
+(1, 'expert1', 'user1', '아침 운동하기', '30분 걷기 운동 실천하기'),
+(2, 'expert1', 'user1', '식단 기록하기', '오늘의 식단 사진 찍어서 공유하기'),
+(3, 'expert2', 'user2', '스트레칭하기', '기상 직후 전신 스트레칭 10분 실천하기'),
+(4, 'expert1', 'user1', '물 마시기', '하루 2리터 물 마시기 목표 달성하기'),
+(5, 'expert2', 'user2', '근력 운동하기', '스쿼트 30회 3세트 완료하기');
+
+-- Reservation 테이블 데이터
+INSERT INTO reservation (calendar_id, user_id, expert_user_id, time) VALUES
+(1, 'user1', 'expert1', '14:00'),
+(2, 'user1', 'expert1', '15:00'),
+(3, 'user2', 'expert2', '16:00'),
+(4, 'user1', 'expert1', '17:00'),
+(5, 'user2', 'expert2', '18:00');
+
