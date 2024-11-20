@@ -43,6 +43,12 @@ public class MatchingServiceImpl implements MatchingService {
 	public void updateScore(int expertId, String userId, int score) {
 		matchingDao.updateScore(expertId, userId, score);
 	}
+	
+	// 매칭 수락 / 거절(상태 업데이트)
+	@Override
+	public void updateMatchingStatus(String userId, String expertUserId, String status) {
+		matchingDao.updateMatchingStatus(userId, expertUserId, status);
+	}
 
 
 }

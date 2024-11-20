@@ -6,7 +6,7 @@
         <div class="form-content">
           <!-- 다중 이미지 업로드 섹션 -->
           <div class="form-group">
-            <label>프로필 이미지 (최대 5장)</label>
+            <label>프로필 이미지 (최소 1장 필수, 최대 5장까지 가능)</label>
             <div class="images-container">
               <div 
                 v-for="(image, index) in images" 
@@ -68,7 +68,7 @@
               <div v-for="(career, index) in careers" :key="index" class="career-item">
                 <div class="career-header">
                   <span>경력 #{{ index + 1 }}</span>
-                  <button @click="removeCareеr(index)" class="remove-career">삭제</button>
+                  <button @click="removeCareer(index)" class="remove-career">삭제</button>
                 </div>
                 <div class="career-inputs">
                   <div class="date-inputs">
@@ -99,35 +99,22 @@
           </div>
   
           <div class="form-group">
-            <label>위치</label>
-            <input 
-              type="text" 
-              v-model="expertForm.location"
-              placeholder="도로명주소로 정확히 기입 부탁드립니다"
-              class="form-input"
-            >
-          </div>
-  
-          <div class="form-group location-inputs">
-            <div class="coordinate-group">
-              <div class="form-group">
-                <label>위치상세 (위도)</label>
-                <input 
-                  type="text" 
-                  v-model="expertForm.latitude"
-                  class="form-input coordinate-input"
-                >
-              </div>
-              <div class="form-group">
-                <label>위치상세 (경도)</label>
-                <input 
-                  type="text" 
-                  v-model="expertForm.longitude"
-                  class="form-input coordinate-input"
-                >
-              </div>
+            <label>우편번호</label>
+            <div>
+              <input v-model="expertForm.addressZipcode" placeholder="우편번호" readonly />
+              <button @click="openPostcode">우편번호 찾기</button>
             </div>
-            <span class="help-text">⁕위치상세는 ~~~방법을 통해 직접 확인 후 기입 부탁드립니다.</span>
+          </div>
+
+          <div class="form-group location-inputs">
+            <div class="form-group">
+              <label>주소</label>
+              <input v-model="expertForm.address" placeholder="기본 주소" readonly />
+            </div>
+            <div class="form-group">
+              <label>상세 주소</label>
+              <input v-model="expertForm.addressDetail" placeholder="상세 주소 입력" />
+            </div>
           </div>
   
           <div class="form-group">
@@ -181,14 +168,18 @@
   </template>
   
 <script setup>
-  import { ref } from 'vue'
+  import { ref, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import { useExpertStore } from '@/stores/expert'
+  import { useUserStore } from '@/stores/user'
   import { storeToRefs } from 'pinia'
 
   const router = useRouter()
   const expertStore = useExpertStore()
+  const userStore = useUserStore()
+
   const { loading } = storeToRefs(expertStore)
+  const { userId } = storeToRefs(userStore)
 
   const fileInput = ref(null)
   const images = ref([])
@@ -196,14 +187,27 @@
   const expertForm = ref({ // 전문가 등록 폼 데이터
     companyName: '',
     grade: '',
-    location: '',
-    latitude: '', 
-    longitude: '', 
+    addressZipcode: '', 
+    addressDetail: '', 
+    address: '', 
     introduction: '', 
     price: '', 
     priceDetail: '', 
-    userId: 'expert'
+    userId: ''
   })
+
+  onMounted(async () => {
+    // 우편번호 
+    loadDaumPostcodeScript();
+
+    // userId없으면 사용자 정보 가져옴
+    if(!userId.value) {
+      await userStore.fetchUserInfo()
+    }
+    // 폼데이터에 userId 저장
+    expertForm.value.userId = userId.value
+  }) 
+
 
   // 이미지 업로드 처리
   const handleImageUpload = (event) => {
@@ -254,10 +258,11 @@
     careers.value.splice(index, 1)
   }
 
+  
   // 폼 유효성 검사
   const validateForm = () => {
-    const required = ['companyName', 'grade', 'location', 'latitude', 
-                    'longitude', 'introduction', 'price']
+    const required = ['companyName', 'grade', 'addressZipcode','addressDetail', 
+    'address', 'introduction', 'price', 'priceDetail']
     
     const missing = required.filter(field => !expertForm.value[field])
     if (missing.length > 0) {
@@ -294,6 +299,50 @@
   const goBack = () => {
     router.push('/matching')
   }
+
+  // 우편번호 찾기 
+  // Daum 주소 API 스크립트 로드
+  const loadDaumPostcodeScript = () => {
+    const script = document.createElement('script');
+    script.src = "//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    script.async = true;
+    document.head.appendChild(script);
+  };
+
+  const openPostcode = () => {
+    new window.daum.Postcode({
+      oncomplete: function (data) {
+        let addr = ''; 
+        let extraAddr = ''; 
+
+        if (data.userSelectedType === 'R') {
+          addr = data.roadAddress;
+        } else {
+          addr = data.jibunAddress;
+        }
+
+        if (data.userSelectedType === 'R') {
+          if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+            extraAddr += data.bname;
+          }
+          if (data.buildingName !== '' && data.apartment === 'Y') {
+            extraAddr += extraAddr !== '' ? ', ' + data.buildingName : data.buildingName;
+          }
+          if (extraAddr !== '') {
+            extraAddr = ' (' + extraAddr + ')';
+          }
+        }
+
+        expertForm.value.addressZipcode = data.zonecode;
+        expertForm.value.address = addr + extraAddr;
+        document.querySelector('input[placeholder="상세 주소 입력"]')?.focus()
+      },
+    }).open();
+  };
+
+
+
+
 
 </script>
   
@@ -446,9 +495,47 @@
     margin-bottom: 20px;
     position: relative;
   }
+
+  /* 우편번호 입력 그룹 */
+  .form-group input[placeholder="우편번호"] {
+    width: 200px;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    margin-right: 10px;
+  }
+
+  .form-group button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    background: #f5f5f5;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .form-group button:hover {
+    background: #e0e0e0;
+  }
   
+  /* 주소 입력 그룹 */
   .location-inputs {
     margin-bottom: 30px;
+  }
+  
+  .location-inputs .form-group {
+    margin-bottom: 15px;
+  }
+
+  .location-inputs input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
   }
   
   .coordinate-group {
@@ -562,6 +649,14 @@
   
     .date-inputs {
       flex-direction: column;
+    }
+
+    .form-group input[placeholder="우편번호"] {
+      width: calc(100% - 110px); /* 버튼 너비 + 마진 고려 */
+    }
+    
+    .form-group button {
+      width: 100px;
     }
   }
 </style>

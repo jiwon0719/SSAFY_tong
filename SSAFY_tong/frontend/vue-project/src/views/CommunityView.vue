@@ -4,7 +4,7 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <h2 class="board-title">게시판</h2>
-        <router-link to="/communityRegist">
+        <router-link to="/community/regist">
           <button class="post-register-btn">게시판 등록</button>
         </router-link>
       </div>
@@ -96,6 +96,11 @@ const fetchCategoryPosts = (categoryId, categoryTitle) => {
 </script>
 
 <style scoped>
+
+a {
+  text-decoration: none;
+  color: black;
+}
 /* community-layout의 스타일을 수정 */
 .community-layout {
   display: flex;

@@ -17,5 +17,7 @@ public interface MatchingService {
 	List<UserList> getExpertMatchingList(String expertId);
 	// 점수 업데이트 
 	void updateScore(int expertId, String userId, int score);
+	// 매칭 수락 / 거절(상태 업데이트)
+	void updateMatchingStatus(String userId, String expertUserId, String status);
 
 }

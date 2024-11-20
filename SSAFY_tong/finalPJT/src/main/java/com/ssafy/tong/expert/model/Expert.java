@@ -5,7 +5,9 @@ import java.util.List;
 public class Expert {
 	private int expertId;
 	private String userId; // 전문가 아이디
-	private String location; // 회사 위치 ex) 대전시 유성구 싸피동
+	private String addressZipcode;
+	private String address;
+	private String addressDetail;
 	private String introduction; // 전문가 소개
 	private int price; // 가격
 	private String priceDetail; // 가격 상세
@@ -13,24 +15,8 @@ public class Expert {
 	private int totalScore; // INSERT 시에 update. 회원들이 매긴 점수 전체
 	private int totalScoreCnt; // INSERT 시에 update. 회원들이 매긴 갯수 
 	private String companyName; // 회사명
-	private double latitude; // 위도
-	private double longitude; // 경도
 	private List<ExpertImage> expertImage; // 전문가 상세페이지 - 이미지
 	private List<ExpertCareer> expertCareer; // 전문가 경력
-	
-	
-	public List<ExpertCareer> getExpertCareer() {
-		return expertCareer;
-	}
-	public void setExpertCareer(List<ExpertCareer> expertCareer) {
-		this.expertCareer = expertCareer;
-	}
-	public List<ExpertImage> getExpertImage() {
-		return expertImage;
-	}
-	public void setExpertImage(List<ExpertImage> expertImage) {
-		this.expertImage = expertImage;
-	}
 	public int getExpertId() {
 		return expertId;
 	}
@@ -43,11 +29,23 @@ public class Expert {
 	public void setUserId(String userId) {
 		this.userId = userId;
 	}
-	public String getLocation() {
-		return location;
+	public String getAddressZipcode() {
+		return addressZipcode;
 	}
-	public void setLocation(String location) {
-		this.location = location;
+	public void setAddressZipcode(String addressZipcode) {
+		this.addressZipcode = addressZipcode;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getAddressDetail() {
+		return addressDetail;
+	}
+	public void setAddressDetail(String addressDetail) {
+		this.addressDetail = addressDetail;
 	}
 	public String getIntroduction() {
 		return introduction;
@@ -91,24 +89,24 @@ public class Expert {
 	public void setCompanyName(String companyName) {
 		this.companyName = companyName;
 	}
-	public double getLatitude() {
-		return latitude;
+	public List<ExpertImage> getExpertImage() {
+		return expertImage;
 	}
-	public void setLatitude(double latitude) {
-		this.latitude = latitude;
+	public void setExpertImage(List<ExpertImage> expertImage) {
+		this.expertImage = expertImage;
 	}
-	public double getLongitude() {
-		return longitude;
+	public List<ExpertCareer> getExpertCareer() {
+		return expertCareer;
 	}
-	public void setLongitude(double longitude) {
-		this.longitude = longitude;
+	public void setExpertCareer(List<ExpertCareer> expertCareer) {
+		this.expertCareer = expertCareer;
 	}
 	@Override
 	public String toString() {
-		return "Expert [expertId=" + expertId + ", userId=" + userId + ", location=" + location + ", introduction="
-				+ introduction + ", price=" + price + ", priceDetail=" + priceDetail + ", grade=" + grade
-				+ ", totalScore=" + totalScore + ", totalScoreCnt=" + totalScoreCnt + ", companyName=" + companyName
-				+ ", latitude=" + latitude + ", longitude=" + longitude + ", expertImage=" + expertImage
-				+ ", expertCareer=" + expertCareer + "]";
+		return "Expert [expertId=" + expertId + ", userId=" + userId + ", addressZipcode=" + addressZipcode
+				+ ", address=" + address + ", addressDetail=" + addressDetail + ", introduction=" + introduction
+				+ ", price=" + price + ", priceDetail=" + priceDetail + ", grade=" + grade + ", totalScore="
+				+ totalScore + ", totalScoreCnt=" + totalScoreCnt + ", companyName=" + companyName + ", expertImage="
+				+ expertImage + ", expertCareer=" + expertCareer + "]";
 	}
 }

@@ -18,8 +18,8 @@
 
     <!-- 게시글 작업 버튼 -->
     <div class="post-actions">
-      <button class="btn">수정</button>
-      <button class="btn">삭제</button>
+      <button class="btn" v-if="isAuthor">수정</button>
+      <button class="btn" v-if="isAuthor">삭제</button>
       <button class="btn" @click="goToList">목록으로</button>
     </div>
 
@@ -85,6 +85,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useBoardStore } from '@/stores/board';
 import { useCommentStore } from '@/stores/comment';
 import { useCommunityStore } from '@/stores/community';
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router'
 
@@ -92,12 +93,14 @@ import { useRoute, useRouter } from 'vue-router'
 const boardStore = useBoardStore();
 const commentStore = useCommentStore();
 const communityStore = useCommunityStore();
+const userStore = useUserStore();
 const router = useRouter();
 
 // 게시글 데이터와 댓글 데이터
 const { currentBoard } = storeToRefs(boardStore);
 const { comments = ref([]) } = storeToRefs(commentStore);
 const { selectCategoryId } = storeToRefs(communityStore);
+const { userId } = storeToRefs(userStore);
 
 // 댓글 상태
 const newComment = ref('');
@@ -138,6 +141,12 @@ onMounted(async () => {
       await boardStore.getBoardDetail(boardId);
       // 댓글 및 대댓글 로드
       await commentStore.getCommentsList(boardId);
+
+      // userId없으면 사용자 정보 가져옴
+      if(!userId.value) {
+        await userStore.fetchUserInfo()
+      }
+
     } catch (error) {
       console.error('댓글 데이터를 불러오는 중 오류가 발생했습니다:', error);
     }
@@ -163,7 +172,7 @@ const handleRegisterComment = async () => {
     await commentStore.registComment({
       boardId: currentBoard.value.boardId,
       content: newComment.value,
-      commenter: 'admin',
+      commenter: userId.value,
     });
     newComment.value = ''; // 입력 필드 초기화
   } catch (error) {
@@ -181,7 +190,7 @@ const handleRegisterReply = async (parentCommentId) => {
       boardId: currentBoard.value.boardId,
       parentCommentId: parentCommentId,
       content: newReply.value,
-      commenter: 'admin',
+      commenter: userId.value,
     });
     newReply.value = ''; // 입력 필드 초기화
     replyToId.value = null; // 대댓글 대상 초기화
@@ -189,6 +198,13 @@ const handleRegisterReply = async (parentCommentId) => {
     alert('대댓글 작성에 실패했습니다.');
   }
 };
+
+// 수정, 삭제 버튼
+const isAuthor = computed(() => {
+  return currentBoard.value?.writer === userId.value;
+})
+
+
 </script>
 
 <style scoped>

@@ -65,37 +65,65 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useCommunityStore} from '@/stores/community';
 import { useBoardStore} from '@/stores/board';
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
 const router = useRouter()
+const route = useRoute()
 const communityStore = useCommunityStore();
 const boardStore = useBoardStore();
+const userStore = useUserStore();
+
+// 컴포넌트 마운드 확인을 위한 로그 추가
+console.log("컴포넌트 setup 실행")
+
 // 반응형 상태를 가져오는 방법
 const { selectCategoryId, selectCategoryTitle } = storeToRefs(communityStore)
+const { userId } = storeToRefs(userStore);
 
 // 폼 데이터
 const postForm = ref({
   categoryId: selectCategoryId.value,
   title: '',
-  writer: 'admin', // 실제로는 로그인된 사용자 정보를 사용
+  writer: '', 
   content: '',
   viewCnt: 0
 })
 
 
+
 // 컴포넌트 마운트 시 카테고리 목록 로드
 onMounted(async () => {
-  await communityStore.getcategoryList()
+  console.log("onMounted 시작");
 
-  console.log(selectCategoryId.value)
+  await communityStore.getcategoryList()
+  // console.log("카테고리 목록 로드 완료");
+
+  // userId 체크
+  // console.log("현재 userId 상태:", userId.value);
+
+  // userId없으면 사용자 정보 가져옴
+  if(!userId.value) {
+    await userStore.fetchUserInfo()
+  }
+
+  // console.log(selectCategoryId.value)
   if(selectCategoryId.value) {
     postForm.value.categoryId = selectCategoryId.value
   }
+
+  postForm.value.writer = userId.value
+  // console.log("현재 유저 ID: ", userId.value)
 })
 
+// 추가로 라우터 이동 시점 확인
+router.beforeEach((to, from, next) => {
+  console.log("라우터 이동:", to.path);
+  next();
+});
 
 // 게시글 등록
 const submitPost = async () => {
@@ -118,7 +146,8 @@ const submitPost = async () => {
   }
 
   try {
-    console.log(postForm.value)
+
+    console.log("등록할 카테고리 정보: ", postForm.value)
     await boardStore.createBoard(postForm.value)
     alert("게시글이 성공적으로 등록되었습니다.")
 
@@ -126,7 +155,7 @@ const submitPost = async () => {
     await communityStore.fetchPostsByCategory(postForm.value.categoryId, selectCategoryTitle.value)
 
     // 등록 후 목록으로 이동
-    router.push('/community')  
+    router.push(`/community/${selectCategoryId.value}`)  
   } catch(error) {
     alert("게시글 등록에 실패했습니다.")
     console.log("게시글 등록 오류:", error)
@@ -136,7 +165,7 @@ const submitPost = async () => {
 
 // 목록으로 돌아가기
 const goBack = () => {
-  router.push('/community')
+  router.push(`/community/${selectCategoryId.value}`)
 }
 </script>
 

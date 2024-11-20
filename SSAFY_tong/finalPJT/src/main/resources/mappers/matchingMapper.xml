@@ -18,9 +18,8 @@
 	    e.expert_id as expertId,
 	    e.user_id as userId,
 	    u.name as name,
-	    e.location as location,
 	    e.grade as grade,
-	    u.user_profile_img_path as userProfileImgPath,
+	    u.userProfileImgPath as userProfileImgPath,
 	    MAX(m.status) as status,
 	    MAX(m.created_at) as createAt,
 	    MAX(m.score) as score,
@@ -30,7 +29,7 @@
 	JOIN expert e ON m.expert_user_id = e.user_id
 	JOIN user u ON e.user_id = u.user_id
 	WHERE m.user_id = #{userId}
-	GROUP BY e.expert_id, e.user_id, u.name, e.location, e.grade, u.user_profile_img_path, 
+	GROUP BY e.expert_id, e.user_id, u.name, e.grade, u.userProfileImgPath, 
 	         e.total_score, e.total_score_cnt
 	</select>
 
@@ -38,14 +37,14 @@
 	    SELECT 
 	        u.user_id as userId,
 	        u.name as name,
-	        u.user_profile_img_path as userProfileImgPath,
+	        u.userProfileImgPath as userProfileImgPath,
 	        MAX(m.status) as status,
 	        MAX(m.created_at) as createAt,
 	        MAX(m.score) as score
 	    FROM matching m
 	    JOIN user u ON m.user_id = u.user_id
 	    WHERE m.expert_user_id = #{expertId}
-	    GROUP BY u.user_id, u.name, u.user_profile_img_path
+	    GROUP BY u.user_id, u.name, u.userProfileImgPath
 	</select>
 
 
@@ -62,28 +61,43 @@
 	<!-- 점수 업데이트  -->
 	<update id="updateScore" parameterType="map">
 	    <!-- 매칭 테이블 점수 업데이트 -->
-	    UPDATE matching m
-	    JOIN expert e ON m.expert_user_id = e.user_id
-	    SET m.score = #{score}
-	    WHERE e.expert_id = #{expertId}
-	    AND m.user_id = #{userId};
-	    
 	    <!-- expert 테이블의 total_score와 total_score_cnt 업데이트 -->
-	    UPDATE expert e
-	    SET e.total_score = (
-	        SELECT COALESCE(SUM(m.score), 0)
-	        FROM matching m
-	        WHERE m.expert_user_id = e.user_id
-	        AND m.score IS NOT NULL
-	    ),
-	    e.total_score_cnt = (
-	        SELECT COUNT(*)
-	        FROM matching m
-	        WHERE m.expert_user_id = e.user_id
-	        AND m.score IS NOT NULL
-	    )
-	    WHERE e.expert_id = #{expertId};
+	    <!-- 동일한 테이블을 UPDATE와 하위 쿼리에서 동시에 참조할 때 발생하는 제약사항있으므로 임시 테이블로 우회 -->
+		UPDATE matching m
+		JOIN expert e ON m.expert_user_id = e.user_id  /* expert의 user_id와 matching의 expert_user_id 연결 */
+		SET m.score = #{score},
+		    e.total_score = (
+		        SELECT total
+		        FROM (
+		            SELECT COALESCE(SUM(m2.score), 0) as total
+		            FROM matching m2
+		            JOIN expert e2 ON m2.expert_user_id = e2.user_id  /* 같은 전문가의 모든 점수 합계를 위한 조인 */
+		            WHERE e2.expert_id = e.expert_id
+		            AND m2.score IS NOT NULL
+		        ) as temp
+		    ),
+		    e.total_score_cnt = (
+		        SELECT cnt
+		        FROM (
+		            SELECT COUNT(*) as cnt
+		            FROM matching m2
+		            JOIN expert e2 ON m2.expert_user_id = e2.user_id  /* 같은 전문가의 점수 개수를 위한 조인 */
+		            WHERE e2.expert_id = e.expert_id
+		            AND m2.score IS NOT NULL
+		        ) as temp2
+		    )
+		WHERE e.expert_id = #{expertId}
+		AND m.user_id = #{userId}
 	</update>
+	
+	<!-- 매칭 수락 / 거절(상태 업데이트) : updateMatchingStatus -->
+	<update id="updateMatchingStatus">
+        UPDATE matching 
+        SET status = #{status}
+        WHERE user_id = #{userId} 
+        AND expert_user_id = #{expertUserId}
+    </update>
+	
 	
 
 </mapper>

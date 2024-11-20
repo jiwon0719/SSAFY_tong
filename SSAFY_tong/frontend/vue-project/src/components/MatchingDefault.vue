@@ -13,7 +13,7 @@
         <button class="btn btn-outline">
           <span>내 위치로 검색하기</span>
         </button>
-        <button class="btn btn-outline" @click="navigateToExpertForm()">
+        <button v-if="userType === 'E'" class="btn btn-outline" @click="navigateToExpertForm()">
           <span>전문가 등록하기</span>
         </button>
       </div>
@@ -127,6 +127,7 @@ export default {
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useExpertStore } from '@/stores/expert'
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia'
 
 export default {
@@ -136,8 +137,10 @@ export default {
         const mapContainer = ref(null)
         const mapInstance = ref(null)
         const expertStore = useExpertStore()
+        const userStore = useUserStore()
         const { experts, loading } = storeToRefs(expertStore)
-        
+        const { userType } = storeToRefs(userStore)
+
         // 별점 계산 함수
         const calculateRating = (expert) => {
             if (!expert?.totalScoreCnt || expert.totalScoreCnt === 0) return '신규'
@@ -247,7 +250,8 @@ export default {
             mapContainer,
             experts,
             loading,
-            calculateRating
+            calculateRating, 
+            userType
         }
     },
     

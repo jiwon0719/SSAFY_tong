@@ -11,10 +11,10 @@
       <router-link to="/mypage" class="text-none">
         <div class="board-section" >
           <div class="info-board">
-            <span>🧐 나의 매칭 전문가</span>
+            <span>🧐 나의 매칭 현황</span>
           </div>
           <div class="board-item">
-            <span class="board-desc">내 전문가 확인</span>
+            <span class="board-desc">내 전문가/유저 확인</span>
           </div>
         </div>
       </router-link>
@@ -25,7 +25,7 @@
             <span>💬 채팅</span>
           </div>
           <div class="board-item">
-            <span class="board-desc">매칭 전문가 채팅 및 알림</span>
+            <span class="board-desc">채팅 및 알림</span>
           </div>
         </div>
       </router-link>

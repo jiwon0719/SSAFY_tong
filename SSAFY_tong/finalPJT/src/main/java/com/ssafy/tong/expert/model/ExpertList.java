@@ -6,7 +6,9 @@ public class ExpertList {
 	private int expertId; // expert
 	private String userId; // user
 	private String name; // user
-	private String loacation; // expert
+	private String addressZipcode;
+	private String address;
+	private String addressDetail;
 	private String grade; // expert
 	private String userProfileImgPath; // user
 	private String status;
@@ -20,8 +22,24 @@ public class ExpertList {
         if (totalScoreCnt == null || totalScoreCnt == 0) return 0.0;
         return Math.round((double)totalScore / totalScoreCnt * 10) / 10.0;
     }
-    
-	
+	public String getAddressZipcode() {
+		return addressZipcode;
+	}
+	public void setAddressZipcode(String addressZipcode) {
+		this.addressZipcode = addressZipcode;
+	}
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getAddressDetail() {
+		return addressDetail;
+	}
+	public void setAddressDetail(String addressDetail) {
+		this.addressDetail = addressDetail;
+	}
 	public Integer getTotalScore() {
 		return totalScore;
 	}
@@ -70,12 +88,6 @@ public class ExpertList {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public String getLoacation() {
-		return loacation;
-	}
-	public void setLoacation(String loacation) {
-		this.loacation = loacation;
-	}
 	public String getGrade() {
 		return grade;
 	}
@@ -90,9 +102,9 @@ public class ExpertList {
 	}
 	@Override
 	public String toString() {
-		return "ExpertList [expertId=" + expertId + ", userId=" + userId + ", name=" + name + ", loacation=" + loacation
-				+ ", grade=" + grade + ", userProfileImgPath=" + userProfileImgPath + ", status=" + status
-				+ ", createAt=" + createAt + ", score=" + score + "]";
+		return "ExpertList [expertId=" + expertId + ", userId=" + userId + ", name=" + name + ", addressZipcode="
+				+ addressZipcode + ", address=" + address + ", addressDetail=" + addressDetail + ", grade=" + grade
+				+ ", userProfileImgPath=" + userProfileImgPath + ", status=" + status + ", createAt=" + createAt
+				+ ", score=" + score + ", totalScore=" + totalScore + ", totalScoreCnt=" + totalScoreCnt + "]";
 	}
-
 }

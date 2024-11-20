@@ -82,16 +82,20 @@
   </template>
   
   <script setup>
-  import { ref, onMounted, watchEffect } from 'vue';
+  import { ref, onMounted, watchEffect, computed } from 'vue';
   import { useMatchingStore } from '@/stores/matching';
+  import { useUserStore } from '@/stores/user';
   import { storeToRefs } from 'pinia';
   
   // store 초기화
   const matchingStore = useMatchingStore();
+  const userStore = useUserStore();
   
   // store의 state를 반응형으로 가져오기
   const { matchingList, loading, error } = storeToRefs(matchingStore);
-  
+
+  const userId = computed(() => userStore.userId);
+
   // 컴포넌트 로컬 상태
   const showScoreModal = ref(false);
   const selectedExpert = ref(null);
@@ -101,28 +105,27 @@
   // 컴포넌트 마운트 시 데이터 로드
   onMounted(async () => {
     try {
-    await matchingStore.getUserMatchings('user');
-   
+      await userStore.fetchUserInfo()
+  
+      // 로그 확인
+      // userId가 여전히 없다면 에러 처리
+      if (!userId.value) {
+        throw new Error('사용자 ID를 가져올 수 없습니다.');
+      }
 
-    // 각 expert 객체의 모든 속성 출력
-    console.log('매칭 리스트 상세 정보:');
-    matchingList.value.forEach((expert, index) => {
-      console.log(`전문가 ${index + 1}:`, {
-        expertId: expert.expertId,
-        userId: expert.userId,
-        name: expert.name,
-        department: expert.department,
-        location: expert.location,
-        grade: expert.grade,
-        userProfileImgPath: expert.userProfileImgPath,
-        status: expert.status,
-        createAt: expert.createAt,
-        score: expert.score
+      // console.log('Fetching matchings for user:', userId.value);
+      await matchingStore.getUserMatchings(userId.value);
+    
+      // 각 expert 객체의 모든 속성 출력
+      // console.log('매칭 리스트 상세 정보:');
+      matchingList.value.forEach((expert, index) => {
+        // console.log(`전문가 ${index + 1}:`, expert);
       });
-    });
-  } catch (err) {
-    console.error('매칭 목록 로드 실패:', err);
-  }
+
+    } catch (err) {
+      // console.error('매칭 목록 로드 실패:', err);
+      error.value = '매칭 목록을 불러오는 데 실패했습니다. 다시 시도해 주세요.';
+    }
 });
   
 // 날짜 포맷팅 함수
@@ -158,13 +161,13 @@ const formatDate = (date) => {
   try {
     console.log('Submitting score:', {
       expertId: selectedExpert.value.expertId,
-      userId: 'user',
+      userId: userId.value,
       score: tempScore.value
     });
 
     await matchingStore.updateExpertScore(
       selectedExpert.value.expertId,
-      'user',
+      userId.value,
       tempScore.value
     );
     alert('평가가 완료되었습니다.');

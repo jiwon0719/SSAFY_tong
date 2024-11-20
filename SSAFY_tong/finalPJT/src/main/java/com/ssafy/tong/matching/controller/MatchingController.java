@@ -1,6 +1,8 @@
 package com.ssafy.tong.matching.controller;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,8 @@ public class MatchingController {
     @PostMapping
     public ResponseEntity<?> regist(@RequestBody Matching matching) {
         try {
+        	System.out.println("받은 매칭 정보: ");
+        	System.out.println(matching);
             matchingService.regist(matching);
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -59,6 +63,8 @@ public class MatchingController {
         }
     }
     
+    
+    
     // 전문가별 유저 매칭 현황 조회(UserList 정보 포함)
     @GetMapping("/expert/{expertId}")
     public ResponseEntity<Object> getExpertMatchings(@PathVariable String expertId) {
@@ -75,7 +81,20 @@ public class MatchingController {
     }   
     
     
+    // 매칭 수락 / 거절
+    @PutMapping("status")
+    public ResponseEntity<?> updateMatchingStatus(
+    		@RequestBody Map<String, String> request) {
+    	String userId = request.get("userId");
+    	String expertUserId = request.get("expertUserId");
+    	String status = request.get("status");
+    	
+    	matchingService.updateMatchingStatus(userId, expertUserId, status);
+    	
+    	return ResponseEntity.ok(null); 
+    }
     
+   
     
     // 점수 업데이트
     @PutMapping("/{expertId}/score")
