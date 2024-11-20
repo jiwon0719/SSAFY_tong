@@ -1,30 +1,27 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import vuetify from 'vite-plugin-vuetify'
 
-// https://vite.dev/config/
 export default defineConfig({
   server: {
-    host: '0.0.0.0',  // 모든 네트워크 인터페이스에서 접근 가능
-    port: 5173,       // 기본 포트
-
+    host: '0.0.0.0',
+    port: 5173,
     proxy: {
-      '/api': 'http://localhost:8080',  // Spring Boot API 서버 주소로 프록시
-      '/chatController': 'http://localhost:8080',  // WebSocket 엔드포인트도 프록시
+      '/api': 'http://localhost:8080',
+      '/chatController': 'http://localhost:8080',
     },
- },
- define : {
-  global : {},
- },
+  },
+  define: {
+    global: 'globalThis',  // 빈 객체({})에서 globalThis로 변경
+  },
   plugins: [
     vue(),
     vueDevTools(),
     vuetify({ autoImport: true }),
   ],
-  css : {
+  css: {
     preprocessorOptions: {
       scss: {
         additionalData: `@use "vuetify/styles" as *;`,

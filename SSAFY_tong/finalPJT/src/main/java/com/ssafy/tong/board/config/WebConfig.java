@@ -12,28 +12,27 @@ import com.ssafy.tong.board.intercepter.AdminIntercepter;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-	// 등록한 인터셉트 의존성 주입
-	@Autowired
-	AdminIntercepter adminIntercepter;
-	
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(adminIntercepter).addPathPatterns("/api-user/users");
-	}
-	
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		// "files/**" 경로로 요청이 들어오면 "C:/external-resources/" 디렉토리에서 파일을 찾습니다.
-		registry.addResourceHandler("/files/**")
-				.addResourceLocations("file:///C:/SSAFY/uploads");
-	}
-	
+    @Autowired
+    AdminIntercepter adminIntercepter;
+    
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(adminIntercepter).addPathPatterns("/api-user/users");
+    }
+    
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/files/**")
+                .addResourceLocations("file:///C:/SSAFY/uploads");
+    }
+    
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:5173")
+        registry.addMapping("/**")  // 모든 경로에 대해 CORS 허용
+                .allowedOrigins("http://localhost:5173", "http://127.0.0.1:5173")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
-        		.maxAge(3600);
+                .allowCredentials(true)  // 추가: 인증 정보 허용
+                .maxAge(3600);
     }
 }

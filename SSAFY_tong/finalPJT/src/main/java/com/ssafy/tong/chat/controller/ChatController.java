@@ -1,57 +1,47 @@
 package com.ssafy.tong.chat.controller;
 
-import java.util.List;
+import java.util.Date;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.stereotype.Controller;
 import com.ssafy.tong.chat.model.ChatMessage;
-import com.ssafy.tong.chat.model.ChatRoom;
-import com.ssafy.tong.chat.repository.ChatRoomRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 
-@RestController
-@CrossOrigin(origins = "*")
+import java.util.Date;
+
+@Controller
 public class ChatController {
     
-    private final SimpMessageSendingOperations messagingTemplate;
-    private final ChatRoomRepository chatRoomRepository;
-    
-    @Autowired
-    public ChatController(SimpMessageSendingOperations messagingTemplate, ChatRoomRepository chatRoomRepository) {
-        this.messagingTemplate = messagingTemplate;
-        this.chatRoomRepository = chatRoomRepository;
+    private final Logger logger = LoggerFactory.getLogger(ChatController.class);
+
+    @MessageMapping("/chat.send/{roomId}")
+    @SendTo("/topic/chat/{roomId}")
+    public ChatMessage send(@Payload ChatMessage message, 
+                          @DestinationVariable String roomId,
+                          SimpMessageHeaderAccessor headerAccessor) {
+        logger.debug("메시지 수신: room={}, sender={}, content={}, headers={}", 
+                    roomId, message.getSender(), message.getContent(), 
+                    headerAccessor.getMessageHeaders());
+        message.setTimestamp(new Date());
+        return message;
     }
 
-    @MessageMapping("/chat.sendMessage")
-    public void sendMessage(@Payload ChatMessage chatMessage) {
-        messagingTemplate.convertAndSend("/topic/room." + chatMessage.getRoomId(), chatMessage);
-    }
-
-    @MessageMapping("/chat.addUser")
-    public void addUser(@Payload ChatMessage chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        headerAccessor.getSessionAttributes().put("username", chatMessage.getSender());
-        headerAccessor.getSessionAttributes().put("room_id", chatMessage.getRoomId());
-        messagingTemplate.convertAndSend("/topic/room." + chatMessage.getRoomId(), chatMessage);
-    }
-
-    @GetMapping("/chat/rooms")
-    @ResponseBody
-    public List<ChatRoom> rooms() {
-        return chatRoomRepository.findAllRooms();
-    }
-
-    @PostMapping("/chat/rooms")
-    @ResponseBody
-    public ChatRoom createRoom(@RequestParam String name) {
-        return chatRoomRepository.createChatRoom(name);
-    }
-
-    @GetMapping("/chat/rooms/{roomId}")
-    @ResponseBody
-    public ChatRoom roomInfo(@PathVariable String roomId) {
-        return chatRoomRepository.findRoomById(roomId);
+    @MessageMapping("/chat.join/{roomId}")
+    @SendTo("/topic/chat/{roomId}")
+    public ChatMessage join(@Payload ChatMessage message, 
+                          @DestinationVariable String roomId,
+                          SimpMessageHeaderAccessor headerAccessor) {
+        logger.debug("사용자 입장: room={}, user={}, headers={}", 
+                    roomId, message.getSender(), 
+                    headerAccessor.getMessageHeaders());
+        message.setType("JOIN");
+        message.setContent(message.getSender() + "님이 입장하셨습니다.");
+        message.setTimestamp(new Date());
+        return message;
     }
 }
