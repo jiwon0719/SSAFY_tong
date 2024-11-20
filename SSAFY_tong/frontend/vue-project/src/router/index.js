@@ -24,12 +24,24 @@ import MatchingDefault from '@/components/MatchingDefault.vue'
 import MatchingExpertDetail from '@/components/MatchingExpertDetail.vue'
 import MatchingExpertRegist from '@/components/MatchingExpertRegist.vue'
 import MainDefault from '@/components/MainDefault.vue'
+import Chat from '@/components/Chat.vue'
+import ChatMake from '@/components/ChatMake.vue'
 
 const routes = [
   {
     path: '/',
     name: 'start',
     component: StartView  // Start 페이지
+  },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: Chat,
+  },
+  {
+    path: '/chatMake',
+    name: 'chatMake',
+    component: ChatMake,
   },
   {
     path: '/main',

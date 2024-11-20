@@ -10,6 +10,14 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',  // 모든 네트워크 인터페이스에서 접근 가능
     port: 5173,       // 기본 포트
+
+    proxy: {
+      '/api': 'http://localhost:8080',  // Spring Boot API 서버 주소로 프록시
+      '/chatController': 'http://localhost:8080',  // WebSocket 엔드포인트도 프록시
+    },
+ },
+ define : {
+  global : {},
  },
   plugins: [
     vue(),

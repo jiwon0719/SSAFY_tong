@@ -90,8 +90,30 @@
 		    <scope>runtime</scope>
 		</dependency>
 		
-		
+		<!-- WebSocket Starter -->
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-websocket</artifactId>
+	    </dependency>
+	
+	    <!-- Web Starter (필요한 경우) -->
+	    <dependency>
+	        <groupId>org.springframework.boot</groupId>
+	        <artifactId>spring-boot-starter-web</artifactId>
+	    </dependency>
+	    
+	    <!-- Jackson (웹소켓 메시지를 JSON으로 변환하는데 필요) -->
+	    <dependency>
+	        <groupId>com.fasterxml.jackson.core</groupId>
+	        <artifactId>jackson-databind</artifactId>
+	    </dependency>
 
+	    <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
 	    
 	</dependencies>
 
