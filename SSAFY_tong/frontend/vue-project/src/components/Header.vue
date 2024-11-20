@@ -88,11 +88,9 @@
                     </div>
                     <div class="rectangle-46">
                     </div>
-                    <router-link to="/calendar" >
-                        <div class="calendar">
-                            Calendar
-                        </div>
-                    </router-link>
+                      <div @click="navigateToCalendar" class="calendar">
+                        Calendar
+                      </div>
                     <svg id="12:2573" class="uitcalender"></svg>
                 </div>
                 <div class="match">
@@ -300,6 +298,34 @@
     overflow: hidden;
     // ... [기존 메뉴 스타일 유지]
   }
+
+  .calender {
+  .calendar {
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.3s ease;
+    
+    &:hover {
+      color: #E2495B;
+      transform: scale(1.05);
+    }
+  }
+}
+
+.frame-20 {
+  .community, .chat, .calender, .match {
+    .community-1, .chat-1, .calendar, .matching {
+      cursor: pointer;
+      transition: color 0.3s ease, transform 0.3s ease;
+      
+      &:hover {
+        color: #E2495B;
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+
 }
 
 @keyframes slideDown {
@@ -586,6 +612,7 @@ import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import axios from 'axios';
 
+
 const userStore = useUserStore();
 const router = useRouter();
 const isPanelOpen = ref(false);
@@ -597,6 +624,13 @@ const defaultImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMA
 
 const profileImage = computed(() => userStore.kakaoUserInfo?.profileImage || defaultImage);
 const isLoggedIn = computed(() => userStore.isAuthenticated);
+
+// 마이페이지 이동
+// 일반회원, 전문가회원 다르게 라우터
+const navigateToCalendar = () => {
+  const route = userStore.userType === 'E' ? '/calendar/expert' : '/calendar'
+  router.push(route);
+}
 
 const checkLoginStatus = async () => {
   userStore.loadTokenFromStorage();

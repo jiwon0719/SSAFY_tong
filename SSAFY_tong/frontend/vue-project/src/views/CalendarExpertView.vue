@@ -198,9 +198,12 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
 import { useExpertCalendarStore } from '@/stores/expertCalendar'
+import { useUserStore } from '@/stores/user';
 
 const store = useExpertCalendarStore()
-const expertId = 'expert'
+const userStore = useUserStore();
+
+const expertId = userStore.userId;
 
 // 색상 상수 정의
 const STATUS_COLORS = {
@@ -376,7 +379,11 @@ watch(() => store.pickerDate, async (newDate) => {
 // 컴포넌트 마운트 시 데이터 로드
 onMounted(async () => {
   try {
-    await store.getExpertMatchings(expertId)
+    if (!store.pickerDate.value) {
+      store.setPickerDate(new Date()) // 날짜가 없으면 현재 날짜 설정
+    }
+    await store.getExpertMatchings()
+    await store.fetchReservations(store.pickerDate.value) // 예약 데이터도 함께 로드
     await store.fetchQuests()
   } catch (error) {
     showMessage('데이터 로딩에 실패했습니다.', 'error')

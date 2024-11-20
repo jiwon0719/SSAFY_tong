@@ -3,11 +3,15 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from 'axios'
 import { useMatchingStore } from './matching'
+import { useUserStore } from './user'
 
 const CALENDAR_API_URL = 'http://localhost:8080/api/calendar'
 const QUEST_API_URL = 'http://localhost:8080/api/quest'
 
 export const useCalendarStore = defineStore('calendar', () => {
+  // store
+  const userStore = useUserStore();
+
   // 상태 정의
   const pickerDate = ref(null)
   const selectedExpertId = ref(null) // 객체 전체 저장하기
@@ -62,7 +66,7 @@ export const useCalendarStore = defineStore('calendar', () => {
   }
 
   // 특정 날짜의 일정 조회
-  const fetchCalendarByDate = async (userId, date) => {
+  const fetchCalendarByDate = async (date) => {
     try {
       let formattedDate
       if (date instanceof Date) {
@@ -76,6 +80,7 @@ export const useCalendarStore = defineStore('calendar', () => {
         formattedDate = newDate.toISOString().split('T')[0]
       }
       
+      const userId = userStore.userId; 
       console.log('Fetching calendar for:', userId, formattedDate)
       const response = await axios.get(`${CALENDAR_API_URL}/${userId}/${formattedDate}`)
       console.log('API Response:', response.data)
@@ -96,13 +101,14 @@ export const useCalendarStore = defineStore('calendar', () => {
 
 
   // 예약 생성
-  const createReservation = async (userId) => {
+  const createReservation = async () => {
     if (!selectedTime.value || !pickerDate.value || !selectedExpertId.value) {
       throw new Error('필수 정보가 누락되었습니다.')
     }
 
     isLoading.value = true
     try {
+      const userId = userStore.userId;
       const reservationData = {
         userId: userId,
         expertUserId: selectedExpertId.value.userId,
@@ -115,7 +121,7 @@ export const useCalendarStore = defineStore('calendar', () => {
       await axios.post(`${CALENDAR_API_URL}/reservation`, reservationData)
       
       // 예약 생성 후 일정 목록 새로고침
-      await fetchCalendarByDate(userId, pickerDate.value)
+      await fetchCalendarByDate(pickerDate.value)
       
       // 폼 초기화
       resetForm()
@@ -170,8 +176,9 @@ export const useCalendarStore = defineStore('calendar', () => {
 
       // 현재 선택된 날짜의 일정 새로고침 
       if(pickerDate.value) {
+        const userId = userStore.userId;
         // 로그인 유저로 바꾸기
-        await fetchCalendarByDate('user', pickerDate.value)
+        await fetchCalendarByDate(pickerDate.value)
       }
 
       return true
