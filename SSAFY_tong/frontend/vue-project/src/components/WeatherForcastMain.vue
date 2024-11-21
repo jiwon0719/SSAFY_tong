@@ -16,9 +16,9 @@
             />
             <div class="temp-info">
               <div class="current-temp">{{ Math.round(currentWeather.temp) }}°</div>
-              <div class="temp-range">
+              <!-- <div class="temp-range">
                 최고:{{ Math.round(currentWeather.tempMax) }}° 최저:{{ Math.round(currentWeather.tempMin) }}°
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
