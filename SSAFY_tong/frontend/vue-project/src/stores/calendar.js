@@ -97,32 +97,35 @@ export const useCalendarStore = defineStore('calendar', () => {
   // 특정 날짜의 일정 조회
   const fetchCalendarByDate = async (date) => {
     try {
-      let formattedDate
-      if (date instanceof Date) {
-        formattedDate = date.toISOString().split('T')[0]
-      } else if (typeof date === 'string') {
-        // 문자열이 이미 'YYYY-MM-DD' 형식인지 확인
-        // 날짜 파싱
-        // 자바스크립트는 Date 객체에서 월이 0부터 시작함!
-        const [year, month, day] = date.split('-')
-        const newDate = new Date(year, month - 1, day)
-        formattedDate = newDate.toISOString().split('T')[0]
+      // YYYY-MM-DD 형식으로 변환
+      const formattedDate = new Date(date).toISOString().split('T')[0];
+      console.log('Fetching with formatted date:', formattedDate);
+      console.log('Input date:', date);
+      const userId = userStore.userId;
+      console.log('Current userId:', userId);
+      
+      // 날짜 형식 그대로 사용
+      const response = await axios.get(`${CALENDAR_API_URL}/${userId}/${formattedDate}`);
+      console.log('Full API response:', response);
+      
+      if (!response.data) {
+        throw new Error('No data received from API');
       }
       
-      const userId = userStore.userId; 
-      console.log('Fetching calendar for:', userId, formattedDate)
-      const response = await axios.get(`${CALENDAR_API_URL}/${userId}/${formattedDate}`)
-      console.log('API Response:', response.data)
-  
       calendarData.value = {
         quests: Array.isArray(response.data.quests) ? response.data.quests : [],
         reservations: Array.isArray(response.data.reservations) ? response.data.reservations : []
-      }
+      };
       
-      return calendarData.value
+      console.log('Processed calendar data:', calendarData.value);
+      return calendarData.value;
     } catch (error) {
-      console.error('일정 조회 실패:', error)
-      throw error
+      console.error('Calendar fetch error details:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      throw error;
     }
   }
 

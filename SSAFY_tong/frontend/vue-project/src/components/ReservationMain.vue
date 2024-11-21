@@ -91,10 +91,12 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCalendarStore } from '@/stores/calendar'
+import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const store = useCalendarStore()
+const userStore = useUserStore()
 const { isLoading, calendarData } = storeToRefs(store)
 
 const lines = ref([])
@@ -128,8 +130,11 @@ const initAnimation = () => {
 // 현재 날짜로 고정
 const today = ref(`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`)
 
+// 캘린더이동
+// 일반회원, 전문가회원 다르게
 const navigateToCalendar = () => {
-  router.push('/calendar')
+  const route = userStore.userType === 'E' ? '/calendar/expert' : '/calendar'
+  router.push(route)
 }
 
 const todayQuests = computed(() => calendarData.value?.quests ?? [])
@@ -168,18 +173,32 @@ const getStatusText = (status) => {
 }
 
 onMounted(async () => {
-  initAnimation()
-  try {
-    await store.fetchCalendarByDate(today.value)
-    console.log('Fetching data for:', today.value)
-  } catch (error) {
-    console.error('Failed to fetch calendar data:', error)
-  }
+  console.log('Component mounted')
+ initAnimation()
+ try {
+   console.log('Fetching calendar data for:', today.value)
+   await store.fetchCalendarByDate(today.value)
+   console.log('Calendar data:', calendarData.value)
+   console.log('Today quests:', todayQuests.value)
+   console.log('Today reservations:', todayReservations.value) 
+ } catch (error) {
+   console.error('Calendar fetch error:', error)
+ }
 })
 
-watch(() => calendarData.value, (newValue) => {
-  console.log('Calendar data updated:', newValue)
+watch(() => calendarData.value, (newValue, oldValue) => {
+ console.log('Calendar data changed')
+ console.log('Old value:', oldValue)
+ console.log('New value:', newValue)
+ console.log('Current quests:', todayQuests.value)
+ console.log('Current reservations:', todayReservations.value)
 }, { deep: true })
+
+// 상태 변경 추적용
+watch(isLoading, (newValue) => {
+ console.log('Loading state changed:', newValue)
+})
+
 </script>
 
 <style scoped>

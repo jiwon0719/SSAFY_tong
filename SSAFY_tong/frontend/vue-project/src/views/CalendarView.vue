@@ -325,12 +325,17 @@ const showSnackbar = (text, color = '#E2495B') => {
 
 // 예약 처리
 const handleReservation = async () => {
- try {
+  try {
+   console.log('Reservation data:', { 
+     userId: userId.value,
+     date: store.pickerDate,
+     expertId: store.selectedExpertId 
+   })
    await store.createReservation(userId.value)
-   showSnackbar('예약이 신청되었습니다.')
-   showReservationForm.value = false
+   // ...
  } catch (error) {
-   showSnackbar('예약 신청에 실패했습니다.', 'error')
+   console.error('Reservation error details:', error)
+   showSnackbar('예약 신청에 실패했습니다: ' + error.message)
  }
 }
 
