@@ -1,47 +1,59 @@
 package com.ssafy.tong.chat.model;
 
-import java.util.UUID;
 
 public class ChatRoom {
-    private String roomId;
-    private String name;
+    private Long matchingId;
+    private String userId;
+    private String expertUserId;
+    private String partnerName;
+    private String lastMessage;
+    private String lastMessageTime;
 
-    // Getters
-    public String getRoomId() {
-        return roomId;
+    public Long getMatchingId() {
+        return matchingId;
     }
 
-    public String getName() {
-        return name;
+    public void setMatchingId(Long matchingId) {
+        this.matchingId = matchingId;
     }
 
-    // Setters
-    public void setRoomId(String roomId) {
-        this.roomId = roomId;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    // 정적 팩토리 메서드
-    public static ChatRoom create(String name) {
-        ChatRoom room = new ChatRoom();
-        room.roomId = UUID.randomUUID().toString();
-        room.name = name;
-        return room;
+    public String getExpertUserId() {
+        return expertUserId;
     }
 
-    // 기본 생성자
-    public ChatRoom() {
+    public void setExpertUserId(String expertUserId) {
+        this.expertUserId = expertUserId;
     }
 
-    // toString 메서드 추가
-    @Override
-    public String toString() {
-        return "ChatRoom{" +
-                "roomId='" + roomId + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+    public String getPartnerName() {
+        return partnerName;
+    }
+
+    public void setPartnerName(String partnerName) {
+        this.partnerName = partnerName;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public String getLastMessageTime() {
+        return lastMessageTime;
+    }
+
+    public void setLastMessageTime(String lastMessageTime) {
+        this.lastMessageTime = lastMessageTime;
     }
 }

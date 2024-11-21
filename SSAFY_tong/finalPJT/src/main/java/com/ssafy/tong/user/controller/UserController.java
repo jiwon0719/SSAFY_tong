@@ -29,7 +29,7 @@ import io.jsonwebtoken.UnsupportedJwtException;
 
 @RestController
 @RequestMapping("/api/user")
-@CrossOrigin("*") 
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
 public class UserController {
 
     private final UserService userService;

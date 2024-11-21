@@ -2,75 +2,97 @@
   <div class="chat-room-list">
     <h1>채팅방 목록</h1>
     
-    <!-- 채팅방 생성 폼 -->
-    <div class="create-room-form">
-      <input 
-        v-model="newRoomName" 
-        placeholder="새로운 채팅방 이름"
-        @keyup.enter="createRoom"
-      >
-      <button @click="createRoom">방 만들기</button>
+    <!-- 에러 메시지 표시 -->
+    <div v-if="error" class="error-message">
+      {{ error }}
     </div>
-
+    
     <!-- 채팅방 목록 -->
-    <div class="room-list">
+    <div v-else class="room-list">
+      <div v-if="matchedRooms.length === 0" class="no-rooms">
+        현재 진행 중인 채팅이 없습니다.
+      </div>
       <div 
-        v-for="room in chatRooms" 
-        :key="room.id" 
+        v-else
+        v-for="room in matchedRooms" 
+        :key="room.matchingId" 
         class="room-item"
         @click="enterRoom(room)"
       >
-        <h3>{{ room.name }}</h3>
-        <p>참여자 수: {{ room.participantCount || 0 }}</p>
+        <h3>{{ room.partnerName }}</h3>
+        <p>{{ room.lastMessage || '새로운 대화를 시작하세요' }}</p>
+        <small>{{ room.lastMessageTime || '' }}</small>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores/user';
+import axios from 'axios';
 
 export default {
   name: 'ChatRoomList',
   setup() {
     const router = useRouter();
-    const newRoomName = ref('');
-    const chatRooms = ref([
-      // 테스트용 더미 데이터
-      { id: '1', name: '테스트 채팅방 1', participantCount: 3 },
-      { id: '2', name: '테스트 채팅방 2', participantCount: 5 },
-    ]);
+    const userStore = useUserStore();
+    const matchedRooms = ref([]);
+    const error = ref(null);
 
-    const createRoom = () => {
-      if (newRoomName.value.trim()) {
-        const newRoom = {
-          id: Date.now().toString(), // 임시 ID
-          name: newRoomName.value,
-          participantCount: 0
-        };
-        chatRooms.value.push(newRoom);
-        newRoomName.value = '';
+    const fetchMatchedRooms = async () => {
+      try {
+        // 먼저 스토리지에서 토큰을 로드
+        userStore.loadTokenFromStorage();
+        
+        // 사용자 정보 가져오기
+        await userStore.fetchUserInfo();
+        
+        // 토큰 확인
+        if (!userStore.token && !userStore.kakaoToken) {
+          error.value = '로그인이 필요합니다.';
+          router.push('/login');
+          return;
+        }
+
+        const userId = userStore.getUserId;
+        console.log('Fetching rooms for userId:', userId);
+
+        if (!userId) {
+          console.error('UserId is not available');
+          error.value = '사용자 정보를 찾을 수 없습니다.';
+          return;
+        }
+
+        const response = await axios.get(`http://localhost:8080/api/chat/rooms/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
+          }
+        });
+        
+        console.log('Response:', response.data);
+        matchedRooms.value = response.data;
+      } catch (error) {
+        console.error('채팅방 목록 조회 실패:', error);
+        error.value = '채팅방 목록을 불러오는데 실패했습니다.';
       }
     };
 
-    const enterRoom = (room) => {
-      router.push({
-        name: 'chatRoom',
-        params: {
-          roomId: room.id
-        },
-        query: {
-          roomName: room.name
-        }
-      });
-    };
+    onMounted(async () => {
+      await fetchMatchedRooms();
+    });
 
     return {
-      newRoomName,
-      chatRooms,
-      createRoom,
-      enterRoom
+      matchedRooms,
+      error,
+      enterRoom: (room) => {
+        router.push({
+          name: 'chatRoom',
+          params: { matchingId: room.matchingId },
+          query: { partnerName: room.partnerName }
+        });
+      }
     };
   }
 }
@@ -116,5 +138,15 @@ export default {
 
 .room-item:hover {
   background-color: #f5f5f5;
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.no-rooms {
+  text-align: center;
+  color: #999;
 }
 </style>

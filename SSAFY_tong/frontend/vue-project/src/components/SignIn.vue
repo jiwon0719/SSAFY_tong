@@ -366,42 +366,37 @@ const togglePasswordVisibility = () => {
 
 // 일반 로그인 함수
 const login = async () => {
-  // 아이디와 비밀번호 유효성 검사
   if (!userId.value || !userPassword.value) {
     alert("아이디와 비밀번호를 입력해주세요.");
     return;
   }
 
   try {
-    // 로그인 요청
-    const response = await axios.post("http://localhost:8080/api/user/signIn", {
-      userId: userId.value,
-      password: userPassword.value,
-    });
+    const response = await axios.post(
+      "http://localhost:8080/api/user/signIn",
+      {
+        userId: userId.value,
+        password: userPassword.value,
+      },
+      {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      }
+    );
 
-    console.log(response);
-
-    // 서버 응답 확인
     if (response.data && response.data["access-token"]) {
-      // 로그인 성공
       alert("로그인 성공!");
-      // JWT 토큰 저장
       userStore.saveTokenToStorage(response.data["access-token"]);
-      
-      // 메인 페이지로 이동
-      router.push({ name: "main" })
-        .then(() => {
-          console.log("라우팅 완료:", router.currentRoute.value.name);
-        })
-        .catch((error) => {
-          console.error("라우팅 오류:", error);
-        });
+      router.push({ name: "main" });
     } else {
       alert(response.data.message || "로그인 실패. 아이디와 비밀번호를 확인하세요.");
     }
   } catch (error) {
     console.error("로그인 오류:", error);
-    alert("로그인 실패. 아이디와 비밀번호를 확인하세요.");
+    alert("로그인 실패. 서버 연결을 확인하세요.");
   }
 };
 

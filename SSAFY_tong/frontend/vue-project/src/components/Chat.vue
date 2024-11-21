@@ -1,17 +1,17 @@
 <template>
   <div class="chat-container">
     <div class="chat-header">
-      <h2>{{ roomName }}</h2>
+      <h2>{{ partnerName }}</h2>
     </div>
     
     <div class="chat-messages" ref="messageContainer">
       <div v-for="(message, index) in messages" 
            :key="index" 
-           :class="['message', message.sender === username ? 'sent' : 'received']">
+           :class="['message', message.senderId === userId ? 'sent' : 'received']">
         <div class="message-content">
-          <div class="sender">{{ message.sender }}</div>
+          <div class="sender">{{ message.senderId === userId ? '나' : partnerName }}</div>
           <div class="text">{{ message.content }}</div>
-          <div class="time">{{ formatTime(message.timestamp) }}</div>
+          <div class="time">{{ formatTime(message.sentAt) }}</div>
         </div>
       </div>
     </div>
@@ -28,46 +28,45 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { useUserStore } from '../stores/user';
+import { useRoute } from 'vue-router';
 import StompService from '../services/StompService';
+import axios from 'axios';
 
 export default {
   name: 'Chat',
-  props: {
-    roomId: {
-      type: String,
-      required: true
-    },
-    roomName: {
-      type: String,
-      required: true
-    },
-    username: {
-      type: String,
-      required: true
-    }
-  },
-  setup(props) {
+  setup() {
+    const route = useRoute();
+    const userStore = useUserStore();
     const messages = ref([]);
     const newMessage = ref('');
-    const connected = ref(false);
+    const matchingId = route.params.matchingId;
+    const partnerName = route.query.partnerName;
+    const userId = userStore.getUserId;
 
-    const connectToChat = async () => {
+    // 이전 채팅 내역 불러오기
+    const loadChatHistory = async () => {
       try {
-        await StompService.connect(props.roomId, props.username, (message) => {
-          messages.value.push(message);
-        });
-        console.log('채팅방 연결 성공:', props.roomId, props.username);
-        connected.value = true;
+        const response = await axios.get(`http://localhost:8080/api/chat/history/${matchingId}`);
+        messages.value = response.data;
       } catch (error) {
-        console.error('채팅방 연결 실패:', error);
+        console.error('채팅 내역 로드 실패:', error);
       }
     };
 
+    // 메시지 전송
     const sendMessage = async () => {
       if (newMessage.value.trim()) {
+        const message = {
+          matchingId: matchingId,
+          senderId: userId,
+          content: newMessage.value,
+          sentAt: new Date()
+        };
+
         try {
-          await StompService.sendMessage(props.roomId, props.username, newMessage.value);
+          await StompService.sendMessage(`/chat/${matchingId}`, message);
           newMessage.value = '';
         } catch (error) {
           console.error('메시지 전송 실패:', error);
@@ -75,15 +74,13 @@ export default {
       }
     };
 
-    const formatTime = (timestamp) => {
-      if (!timestamp) return '';
-      const date = new Date(timestamp);
-      return `${date.getHours()}:${String(date.getMinutes()).padStart(2, '0')}`;
-    };
-
-    onMounted(() => {
-      console.log('Chat 컴포넌트 마운트됨:', props.roomId, props.roomName, props.username);
-      connectToChat();
+    // WebSocket 연결 설정
+    onMounted(async () => {
+      await loadChatHistory();
+      await StompService.connect();
+      await StompService.subscribe(`/topic/chat/${matchingId}`, (message) => {
+        messages.value.push(JSON.parse(message.body));
+      });
     });
 
     onUnmounted(() => {
@@ -94,8 +91,14 @@ export default {
       messages,
       newMessage,
       sendMessage,
-      formatTime,
-      connected
+      userId,
+      partnerName,
+      formatTime: (date) => {
+        return new Date(date).toLocaleTimeString('ko-KR', {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      }
     };
   }
 }
