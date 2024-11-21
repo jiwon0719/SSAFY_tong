@@ -9,4 +9,7 @@ public interface ChatService {
     List<ChatRoom> getChatRoomsByUserId(String userId);
     List<ChatMessage> getChatHistory(Long matchingId);
     void saveMessage(ChatMessage message);
+    void updateMessageReadStatus(Long chatId);
+    void updateAllMessagesAsRead(Long matchingId);
+    int getUnreadMessageCount(Long matchingId, String userId);
 }

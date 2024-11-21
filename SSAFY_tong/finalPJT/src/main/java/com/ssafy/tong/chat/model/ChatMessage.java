@@ -1,6 +1,5 @@
 package com.ssafy.tong.chat.model;
 
-
 import java.time.LocalDateTime;
 
 public class ChatMessage {
@@ -10,6 +9,11 @@ public class ChatMessage {
     private String content;
     private LocalDateTime sentAt;
     private String isRead;
+    private String type;
+
+    public ChatMessage() {
+        this.sentAt = LocalDateTime.now();
+    }
 
     public Long getChatId() {
         return chatId;
@@ -57,5 +61,13 @@ public class ChatMessage {
 
     public void setIsRead(String isRead) {
         this.isRead = isRead;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

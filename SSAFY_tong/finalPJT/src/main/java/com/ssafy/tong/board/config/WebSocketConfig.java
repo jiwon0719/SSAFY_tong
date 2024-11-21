@@ -19,8 +19,10 @@ import org.springframework.web.socket.handler.WebSocketHandlerDecorator;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
+
     @Bean
-    public TaskScheduler webSocketTaskScheduler() {  // Bean 이름 변경
+    public TaskScheduler webSocketTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         scheduler.setPoolSize(1);
         scheduler.setThreadNamePrefix("websocket-heartbeat-thread-");
@@ -30,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/tongChat")
+        registry.addEndpoint("/tongChat", "/ws-stomp") // "/ws-stomp" 엔드포인트 추가
                 .setAllowedOriginPatterns("*")
                 .withSockJS()
                 .setHeartbeatTime(25000)
@@ -40,9 +42,12 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
+        // 구독 경로 설정
         config.enableSimpleBroker("/topic")
               .setHeartbeatValue(new long[]{10000, 10000})
-              .setTaskScheduler(webSocketTaskScheduler());  // 변경된 이름 사용
+              .setTaskScheduler(webSocketTaskScheduler());
+        
+        // 메시지 발행 경로 설정
         config.setApplicationDestinationPrefixes("/app");
     }
 
@@ -50,8 +55,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
         registration.addDecoratorFactory(handler -> {
             return new WebSocketHandlerDecorator(handler) {
-                private final Logger logger = LoggerFactory.getLogger(WebSocketConfig.class);
-
                 @Override
                 public void afterConnectionEstablished(WebSocketSession session) throws Exception {
                     logger.info("새로운 WebSocket 연결 설정: {}", session.getId());
@@ -72,6 +75,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
             };
         });
         
+        // 메시지 크기 및 시간 제한 설정
         registration.setSendTimeLimit(30 * 1000)
                    .setSendBufferSizeLimit(512 * 1024)
                    .setMessageSizeLimit(128 * 1024)

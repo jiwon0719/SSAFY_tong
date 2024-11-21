@@ -67,8 +67,32 @@
             #{matchingId},
             #{senderId},
             #{content},
-            #{sentAt},
+            NOW(),
             'X'
         )
     </insert>
+
+    <!-- 메시지 읽음 상태 업데이트 -->
+    <update id="updateMessageReadStatus" parameterType="long">
+        UPDATE user_expert_chat 
+        SET is_read = 'O' 
+        WHERE chat_id = #{chatId}
+    </update>
+
+    <!-- 모든 메시지 읽음 상태 업데이트 -->
+    <update id="updateAllMessagesAsRead" parameterType="long">
+        UPDATE user_expert_chat 
+        SET is_read = 'O' 
+        WHERE matching_id = #{matchingId}
+        AND is_read = 'X'
+    </update>
+
+    <!-- 읽지 않은 메시지 수 조회 -->
+    <select id="getUnreadMessageCount" resultType="int">
+        SELECT COUNT(*)
+        FROM user_expert_chat
+        WHERE matching_id = #{matchingId}
+        AND sender_id != #{userId}
+        AND is_read = 'X'
+    </select>
 </mapper>
