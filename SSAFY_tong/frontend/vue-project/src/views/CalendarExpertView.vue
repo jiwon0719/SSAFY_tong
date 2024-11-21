@@ -169,7 +169,7 @@
                     <v-list-item-subtitle class="mt-2">
                       <div class="d-flex align-center">
                         <v-icon small color="grey" class="mr-1">mdi-account</v-icon>
-                        {{ quest.userId }}
+                        {{ getUserName(quest.userId) }}
                       </div>
                     </v-list-item-subtitle>
                     
@@ -366,6 +366,13 @@ const handleStatusChange = async (reservationId, newStatus) => {
   }
 }
 
+// userId를 사용자 이름으로 변환하는 함수
+const getUserName = (userId) => {
+  const user = store.userMatchingList.find(user => user.userId === userId)
+  return user ? user.name : userId // 매칭된 사용자가 없으면 ID를 반환
+}
+
+
 // Watches
 watch(() => store.pickerDate, async (newDate) => {
   console.log('Watch triggered - New Date:', newDate)
@@ -391,13 +398,7 @@ onMounted(async () => {
 })
 </script>
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
-
 <style scoped>
-:deep(*) {
-  font-family: 'Noto Sans KR', sans-serif !important;
-}
-
 .v-date-picker {
   width: 100%;
 }
