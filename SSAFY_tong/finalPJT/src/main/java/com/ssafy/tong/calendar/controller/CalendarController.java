@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -87,8 +88,13 @@ public class CalendarController {
     // 예약 신청 (일반회원용)
     @PostMapping("/reservation")
     public ResponseEntity<Void> createReservation(@RequestBody Reservation reservation) {
-        calendarService.createReservation(reservation);
-        return ResponseEntity.ok().build();
+//        System.out.println(reservation);
+        try {
+            calendarService.createReservation(reservation);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 			
 }

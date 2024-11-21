@@ -71,7 +71,7 @@
                   @click="handleExpertSelect(item.raw)"
                 >
                   <v-list-item-title>
-                    {{ item.raw.name }}
+                    <!-- {{ item.raw.name }} -->
                   </v-list-item-title>
                   <v-list-item-subtitle>
                     {{ item.raw.grade }} ({{ item.raw.userId }})
@@ -336,7 +336,7 @@ watch(() => store.pickerDate, async (newDate) => {
   if (!newDate) return
   
   try {
-    const data = await store.fetchCalendarByDate(userId.value, newDate)
+    const data = await store.fetchCalendarByDate(newDate)
     console.log('Calendar data received:', data)
     calendarData.value = data // store에서 이미 형식화된 데이터를 받음
     quests.value = data.quests

@@ -18,9 +18,9 @@
               </button>
             </div>
             <div class="action-buttons">
-              <select class="post-count-select">
+              <!-- <select class="post-count-select">
                 <option>10개씩 보기▼</option>
-              </select>
+              </select> -->
               <router-link to="/community/board-regist">
                   <button class="write-post-btn" @click="onPostClick">게시물 작성</button>
               </router-link>
@@ -98,7 +98,8 @@
   // 데이터를 새로 로드하는 함수
   const loadData = async () => {
     if (selectCategoryId.value) {
-      await boardStore.getBoardList(selectCategoryId.value);
+      const data = await boardStore.getBoardList(selectCategoryId.value);
+      store.boardList = data; // store의 boardList 업데이트
       await fetchCommentCounts();
     }
   };
@@ -107,16 +108,17 @@
   onMounted(loadData);
   
 
-  // 라우트 변경을 감지하여 데이터 다시 로드 (수정된 부분)
+  // 라우트 변경을 감지하여 데이터 다시 로드
+  // 상세 -> 목록(조회수 최신화) & 카테고리 변경 시
   watch(
-    () => route.path,
-    async (newPath, oldPath) => {
-      // 상세페이지에서 목록으로 돌아오는 경우에만 데이터 새로 로드
-      if (newPath === '/community' && oldPath?.startsWith('/community/')) {
-        await loadData();
-      }
+  [() => route.path, () => route.params.categoryId],
+  async ([newPath, newCategoryId], [oldPath, oldCategoryId]) => {
+    if ((newPath && newPath.includes('/community') && oldPath?.includes('/board/')) || 
+    (newCategoryId && newCategoryId !== oldCategoryId)) {
+      await loadData();
     }
-  );
+  }
+);
 
   // 게시글 작성 버튼 클릭 시 호출되는 함수
   const onPostClick = () => {
@@ -127,202 +129,230 @@
 
   // 게시글 상세 이동
   const viewBoardDetail = async(boardId) => {
-    await boardStore.getBoardDetail(boardId);
+    // await boardStore.getBoardDetail(boardId); // 이거떄문에 조회수 2번 호출 ㅠ
     console.log("게시글 상세 조회 완료 후 currentBoard:", boardStore.currentBoard);  // getBoardDetail 완료 후 값 출력
   }
   </script>
   
   <style scoped>
-
-  .detaillink {
-  text-decoration: none; /* 밑줄 제거 */
-  color: inherit; /* 기본 색상 유지 */
-  }
-
-
-  /* main-content의 스타일을 수정 */
-  .main-content {
-    flex: 1;
-    margin-left: 280px; /* sidebar 너비만큼 마진 */
-    padding: 20px;
-    min-height: 100vh;
-    position: relative;
-    box-sizing: border-box;
-  }
-  
-  .content-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    position: relative;
-    min-height: calc(100vh - 40px);
-    padding-bottom: 100px;
-  }
-  
-  .category-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  
-  .search-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    gap: 20px;
-  }
-  
-  .search-input-wrapper {
-    position: relative;
-    flex: 1;
-    max-width: 500px;
-  }
-  
-  .search-input {
-    width: 100%;
-    padding: 10px 40px 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.95rem;
-  }
-  
-  .search-btn {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .action-buttons {
-    display: flex;
-    gap: 10px;
-  }
-  
-  .post-count-select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
-  }
-  
-  .write-post-btn {
-    padding: 8px 16px;
-    background-color: #e75757;
-    color: white;
-    border-radius: 8px;
-  }
-  
-  .posts-container {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    margin-bottom: 30px;
-  }
-  
-  .post-item {
-    z-index: 2;
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-  }
-  
-  .post-content {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-  }
-  
-  .user-info {
-    display: flex;
-    gap: 4px;
-  }
-  
-  .user-avatar {
-
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #eee;
-  }
-  
-  .post-details {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+a {
+  text-decoration: none;
 }
 
-/* username 컨테이너 추가 - 사용자명과 날짜를 한 줄에 표시 */
+* {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.category-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+}
+
+.user-header {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+}
+
+.post-text {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+}
+
+
+
+
+
+.main-content {
+  margin-left: 280px;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+.content-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+
+.category-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  gap: 16px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #e75757;
+  outline: none;
+}
+
+.search-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.search-btn:hover {
+  opacity: 1;
+}
+
+/* 게시글 작성 버튼 */
+.write-post-btn {
+ padding: 10px 16px;
+ background-color: #ff4757;
+ color: white;
+ border-radius: 8px;
+ font-size: 0.95rem;
+ border: none;
+ transition: all 0.3s ease;
+ box-shadow: 0 2px 4px rgba(255, 71, 87, 0.2);
+}
+/* 게시글 작성 버튼 - 효과 */
+.write-post-btn:hover {
+ background-color: #ff6b81;
+ transform: translateY(-2px);
+ box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);
+}
+
+.post-item {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.post-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.user-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #f3f4f6;
+}
+
 .user-header {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
+  margin-bottom: 8px;
 }
 
-/* 날짜 스타일 추가 */
-.reg-date {
-  color: #666;
-  font-size: 0.9rem;
+.username {
+  font-weight: 600;
+  color: #1f2937;
 }
-  
-  .username {
-    font-weight: 500;
-  }
-  
-  .post-text {
-    color: #666;
-    font-size: 0.9rem;
-  }
-  
-  .post-stats {
-    display: flex;
-    gap: 10px;
-    color: #666;
-    font-size: 0.9rem;
-  }
-  
-  .pagination-wrapper {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    padding: 20px 0;
-    background-color: #f5f5f5;
-  }
-  
-  .pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 5px;
-  }
-  
-  .page-numbers {
-    display: flex;
-    gap: 5px;
-  }
-  
-  .page-number {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .page-number:hover {
-    background-color: #f0f0f0;
-  }
-  
-  .page-nav {
-    padding: 0 10px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
+
+.reg-date {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.post-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.post-text {
+  color: #4b5563;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 6px; /* Add space before stats */
+}
+
+.post-stats {
+  display: flex;
+  gap: 16px;
+  color: #6b7280;
+  font-size: 0.875rem;
+  padding-left: 52px; /* Aligns with content, accounting for avatar width + gap */
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 0;
+}
+
+.page-number {
+  min-width: 32px;
+  height: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  color: #4b5563;
+  transition: all 0.2s;
+}
+
+.page-number:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.page-nav {
+  padding: 0 12px;
+  height: 32px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: white;
+  color: #4b5563;
+  transition: all 0.2s;
+}
+
+.page-nav:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+}
+
+.view-count, .comment-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
   </style>

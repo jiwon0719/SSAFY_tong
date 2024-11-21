@@ -15,43 +15,42 @@ export const useBoardStore = defineStore('board', () => {
   // 게시글 목록 조회
   const getBoardList = async (categoryId) => {
     try {
-      const response = await axios.get(`${REST_API_URL}/${categoryId}`)
+      const response = await axios.get(`${REST_API_URL}/${categoryId}`, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       console.log("게시글 목록 조회 응답: ", response.data)
-
+      
       boardList.value = response.data
       return response.data
     } catch (error) {
       console.error("게시글 목록을 가져오는데 실패했습니다:", error)
       throw error
     }
-  }
+   }
 
   // 게시글 상세 조회
   const getBoardDetail = async (boardId) => {
     try {
-      // 게시글 상세 정보를 먼저 가져옴
+      // 조회수 증가 API를 따로 호출
+      await axios.post(`${BOARD_API_URL}/${boardId}/incrementView`)
+      // 상세 조회
       const response = await axios.get(`${BOARD_API_URL}/${boardId}`)
       currentBoard.value = response.data
       
-      // 조회수 증가 API를 따로 호출
-      await axios.post(`${BOARD_API_URL}/${boardId}/incrementView`)
-      
-      // 증가된 조회수를 반영하기 위해 게시글 정보를 다시 가져옴
-      const updatedResponse = await axios.get(`${BOARD_API_URL}/${boardId}`)
-      currentBoard.value = updatedResponse.data
-      
-      // 조회수 증가를 위해 추가한 부분
       // boardList에서 해당 게시글의 조회수도 업데이트
       const boardIndex = boardList.value.findIndex(board => board.boardId === boardId)
       if (boardIndex !== -1) {
         boardList.value[boardIndex] = {
           ...boardList.value[boardIndex],
-          viewCount: currentBoard.value.viewCount
+          view_cnt: currentBoard.value.view_cnt
         }
       }      
 
       console.log("게시글 상세 조회 완료")
-      return updatedResponse.data
+      return response.data
     } catch (error) {
       console.error("게시글 상세 정보를 가져오는데 실패했습니다:", error)
       throw error
