@@ -1,15 +1,44 @@
 import { ref, onMounted } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
+import { useUserStore } from './user'
 
 const REST_API_URL = `http://localhost:8080/api/boardCategory`
 
 export const useCommunityStore = defineStore('community', () => {
+  const userStore = useUserStore();
+
   const categoryList = ref([])
   const boardList = ref([])
   const selectCategoryId = ref(null)
   const selectCategoryTitle = ref(null)
+  const categoryHolds = ref([])
+
+  // 카테고리 찜 등록
+  const toggleHold = async (categoryId) => {
+    try {
+      const userId = userStore.userId;
+      const response = await axios.post(`${REST_API_URL}/hold/${categoryId}?userId=${userId}`);
+      // 등록 후 찜 조회 
+      await fetchHolds();
+      return response.data;
+    } catch (error) {
+      console.error('찜하기 실패:', error);
+    }
+  }
+
+  // 카테고리 찜 조회
+  const fetchHolds = async () => {
+    try {
+      const userId = userStore.userId;
+      const response = await axios.get(`${REST_API_URL}/holds?userId=${userId}`);
+      categoryHolds.value = response.data;
+    } catch (error) {
+      console.error('찜 목록 조회 실패:', error);
+    }
+  }
   
+
   // 카테고리 전체 조회(list)
   const getcategoryList = async () => {
     try {
@@ -79,11 +108,13 @@ const fetchPostsByCategory = async (categoryId, categoryTitle) => {
 
   return {
     categoryList,
-    boardList,
+    boardList, 
     selectCategoryId,
     selectCategoryTitle,
+    categoryHolds,
+    toggleHold,
+    fetchHolds,
     getcategoryList,
-    fetchPostsByCategory,
-    createCategory
+    fetchPostsByCategory
   }
 })

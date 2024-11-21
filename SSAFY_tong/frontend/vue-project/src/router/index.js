@@ -8,6 +8,7 @@ import CommunityDetail from '@/components/CommunityDetail.vue'
 import CommunityList from '@/components/CommunityList.vue'
 import CommunityRegist from '@/components/CommunityRegist.vue'
 import CommunityBoardRegist from '@/components/CommunityBoardRegist.vue'
+import CommunityBoardEdit from '@/components/CommunityBoardEdit.vue'
 import MypageView from '@/views/MypageView.vue'
 import MypageDefault from '@/components/MypageDefault.vue'
 import MypageDefaultExpert from '@/components/MypageDefaultExpert.vue'
@@ -29,8 +30,6 @@ import ChatRoomList from '@/components/ChatRoomList.vue'
 import Chat from '@/components/Chat.vue';
 
 import { useUserStore } from '@/stores/user'
-
-
 
 const routes = [
   {
@@ -144,6 +143,11 @@ const routes = [
             name: 'communityDetail',
             component: CommunityDetail,
           },
+          {
+            path: ':categoryId/edit/:boardId', 
+            name: 'communityBoardEdit',
+            component: CommunityBoardEdit, 
+          }, 
         ]
       },
       {

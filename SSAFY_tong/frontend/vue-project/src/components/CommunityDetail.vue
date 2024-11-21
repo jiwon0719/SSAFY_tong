@@ -14,8 +14,8 @@
     </div>
 
     <div class="post-actions">
-      <button class="btn" v-if="isAuthor">수정</button>
-      <button class="btn" v-if="isAuthor">삭제</button>
+      <button class="btn" v-if="isAuthor" @click="handleEditBoard">수정</button>
+      <button class="btn" v-if="isAuthor" @click="handleDeleteBoard">삭제</button>
       <button class="btn" @click="goToList">목록으로</button>
     </div>
 
@@ -208,7 +208,23 @@ const isAuthor = computed(() => {
   return currentBoard.value?.writer === userId.value;
 })
 
+// 게시글 삭제
+const handleDeleteBoard = async () => {
+  if(!confirm('정말 삭제하시겠습니까? ')) return;
 
+  try {
+    await boardStore.deleteBoard(currentBoard.value.boardId);
+    alert('게시글이 삭제되었습니다.');
+    goToList(); 
+  } catch (error) {
+    alert('게시글 삭제에 실패했습니다.');
+  }
+}
+
+// 게시글 수정
+const handleEditBoard = () => {
+  router.push(`/community/${selectCategoryId.value}/edit/${currentBoard.value.boardId}`);
+}
 
 
 </script>

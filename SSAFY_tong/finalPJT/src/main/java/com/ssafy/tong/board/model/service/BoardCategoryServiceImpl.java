@@ -1,6 +1,7 @@
 package com.ssafy.tong.board.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,26 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 	@Override
 	public List<CategoryViewResponse> findTopViewedCategories() {
 		return boardCategoryDao.selectTopViewedCategories();
+	}
+	// 카테고리 찜 등록
+	@Override
+	public void toggleHold(Integer categoryId, String userId) {
+		Map<String, Object> check = boardCategoryDao.findHoldByCategoryAndUser(categoryId, userId);
+		   
+		if (check == null) {
+		    // 찜이 없으면 새로 등록
+			boardCategoryDao.insertHold(categoryId, userId, "O");
+		} else {
+		    // 있으면 상태 토글
+		    String currentStatus = (String) check.get("is_hold");
+		    String newStatus = "O".equals(currentStatus) ? "X" : "O";
+		    boardCategoryDao.updateHold(categoryId, userId, newStatus);
+		}	
+	}
+	// 카테고리 찜 조회
+	@Override
+	public List<BoardCategory> getHoldsByUser(String userId) {
+	   return boardCategoryDao.findHoldsByUser(userId);
 	}
 
 }

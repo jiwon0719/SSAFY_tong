@@ -9,31 +9,65 @@
         </router-link>
       </div>
       
-      <!-- HOT 게시판 -->
-      <div class="section-title">
-        <span>HOT 게시판 목록</span>
-      </div>
-      <div class="board-section" v-for="category in topCategories" :key="category.categoryId" >
-        <router-link :to="`/community/${category.categoryId}`">
-          <div class="hot-info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
-            <p class="category-title">🔥 {{ category.category }}</p>
-            <p class="board-desc">{{ category.description }}</p>
-          </div>
-        </router-link>
-      </div>
+     <!-- 찜한 게시판 영역 -->
+     <div class="section-title">
+       <span>찜한 게시판 목록</span>
+     </div>
+     <div class="board-section" v-for="category in heldCategories" :key="category.categoryId">
+       <router-link :to="`/community/${category.categoryId}`">
+         <div class="hot-info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
+           <p class="category-title">⭐ {{ category.category }}</p>
+           <p class="board-desc">{{ category.description }}</p>
+         </div>
+       </router-link>
+     </div>
+
+     <hr>
+     <br>
+
+     <!-- HOT 게시판 영역 -->  
+     <div class="section-title">
+       <span>HOT 게시판 목록</span>
+     </div>
+     <div class="board-section" v-for="category in topCategories" :key="category.categoryId">
+       <div class="info-board-wrapper">
+         <router-link :to="`/community/${category.categoryId}`">
+           <div class="hot-info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
+             <p class="category-title">🔥 {{ category.category }}</p>
+             <p class="board-desc">{{ category.description }}</p>
+           </div>
+         </router-link>
+         <button 
+           class="hold-btn"
+           @click="toggleHold(category.categoryId)"
+           :class="{ 'held': isHeld(category.categoryId) }"
+         >
+           ★
+         </button>
+       </div>
+     </div>
 
       <hr>
       <br>
 
       <!-- 일반 게시판 -->
       <div class="board-section" v-for="category in store.categoryList" :key="category.categoryId">
-        <router-link :to="`/community/${category.categoryId}`">
-          <div class="info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
-            <p class="category-title">📌 {{ category.category }}</p>
-            <p class="board-desc">{{ category.description }}</p>
-          </div>
-        </router-link>
-      </div>
+       <div class="info-board-wrapper">
+         <router-link :to="`/community/${category.categoryId}`">
+           <div class="info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
+             <p class="category-title">📌 {{ category.category }}</p>
+             <p class="board-desc">{{ category.description }}</p>
+           </div>
+         </router-link>
+         <button 
+           class="hold-btn"
+           @click="toggleHold(category.categoryId)"
+           :class="{ 'held': isHeld(category.categoryId) }"
+         >
+           ★
+         </button>
+       </div>
+     </div>
     </aside>  
 
     <!-- 오른쪽 메인 컨텐츠 영역 -->
@@ -47,7 +81,7 @@
 
 <script setup>
 import { useCommunityStore } from '@/stores/community'
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
 
@@ -55,6 +89,24 @@ const store = useCommunityStore();
 const route = useRoute();
 const router = useRouter();
 const topCategories = ref([]);
+
+// 찜한 카테고리 computed 속성
+const heldCategories = computed(() => 
+ store.categoryList.filter(category => 
+   store.categoryHolds.some(hold => hold.categoryId === category.categoryId)
+ )
+);
+
+// 찜 상태 확인
+const isHeld = (categoryId) => {
+ return store.categoryHolds.some(hold => hold.categoryId === categoryId);
+};
+
+// 찜 토글
+const toggleHold = async (categoryId) => {
+ await store.toggleHold(categoryId);
+};
+
 
 // 핫게시판 조회(TOP3)
 const fetchTopCategories = async () => {
@@ -69,7 +121,8 @@ const fetchTopCategories = async () => {
 onMounted(async() => {
     await Promise.all([
       store.getcategoryList(),  
-      fetchTopCategories()
+      fetchTopCategories(), 
+      store.fetchHolds()
     ])
     
     // 현재 라우트의 categoryId가 있다면 해당 카테고리의 게시글을 가져옴
@@ -112,6 +165,33 @@ a{
   text-decoration: none;
   color: black;
 }
+
+
+/* 찜 기능 관련 스타일 */
+.info-board-wrapper {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+}
+
+.hold-btn {
+ background: none;
+ border: none;
+ cursor: pointer;
+ font-size: 1.2em;
+ color: #ccc;
+ padding: 5px;
+ transition: color 0.3s;
+}
+
+.hold-btn.held {
+ color: #ffd700;
+}
+
+.hold-btn:hover {
+ color: #ffd700;
+}
+
 
 .community-layout {
   display: flex;

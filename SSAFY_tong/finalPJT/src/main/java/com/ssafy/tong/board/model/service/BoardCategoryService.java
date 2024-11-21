@@ -19,6 +19,8 @@ public interface BoardCategoryService {
 	void modify(BoardCategory boardCategory);
 	// 핫게
 	List<CategoryViewResponse> findTopViewedCategories();
-
-
+	// 카테고리 찜 등록
+	void toggleHold(Integer categoryId, String userId);
+	// 카테고리 찜 조회
+	List<BoardCategory> getHoldsByUser(String userId);
 }
