@@ -6,9 +6,20 @@
 <mapper namespace="com.ssafy.tong.comment.model.dao.CommentDao">
 	<!-- 전체 조회 -->
 	<select id="selectComment" resultType="Comment" parameterType="int">
-		SELECT comment_id, board_id, commenter, content, reg_date, parent_comment_id 
-		  FROM comment
-		 WHERE board_id = #{boardId};
+		SELECT 
+		    c.comment_id,
+		    c.board_id,
+		    c.commenter,
+		    c.content,
+		    c.reg_date,
+		    c.parent_comment_id,
+		    u.user_type
+		FROM comment c
+		JOIN user u ON c.commenter = u.user_id
+		WHERE c.board_id = #{boardId}
+		ORDER BY 
+		    CASE WHEN c.parent_comment_id IS NULL THEN c.comment_id ELSE c.parent_comment_id END,
+		    c.comment_id;
 	</select>
 
 	<!-- 삭제 -->

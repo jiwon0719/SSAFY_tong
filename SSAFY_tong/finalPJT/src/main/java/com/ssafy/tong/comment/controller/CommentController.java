@@ -33,6 +33,9 @@ public class CommentController {
 		ResponseEntity<Object> responseEntity;
 		try {
 			List<Comment> list = commentService.list(boardId);
+			for(Comment comment : list) {
+				System.out.println(comment);
+			}
 			if(list.isEmpty()) {
 				responseEntity = new ResponseEntity<>(list, HttpStatus.NO_CONTENT); 
 			} else {

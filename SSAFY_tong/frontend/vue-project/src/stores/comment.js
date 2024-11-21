@@ -10,11 +10,13 @@ export const useCommentStore = defineStore('comment',() => {
     const error = ref(null)
 
     // 전체 댓글 조회
+    // userType 포함하도록 수정
     const getCommentsList = async (boardId) => {
         try {
             loading.value = true;
+
             const response = await axios.get(`${COMMENT_API_URL}/${boardId}`)
-            console.log("API 응답 데이터 : ", response.data)
+            console.log("API 응답 데이터(userType 확인하기!!!) : ", response.data)
 
             if(Array.isArray(response.data)) {
                 comments.value = response.data;
