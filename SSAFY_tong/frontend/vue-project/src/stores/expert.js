@@ -45,8 +45,9 @@ export const useExpertStore = defineStore('expert', () => {
 
       // 각 응답 데이터 설정
       expertDetail.value = expertResponse.data
+      console.log(expertDetail.value)
       expertCareers.value = careersResponse.data
-      
+      console.log(expertCareers.value)
       // 이미지 데이터에 URL 추가
       expertImages.value = imagesResponse.data.map(img => {
         const imageUrl = `http://localhost:8080/api/expert/image/${img.filePath}/${img.systemName}`;
@@ -84,15 +85,15 @@ export const useExpertStore = defineStore('expert', () => {
       
       // expert 데이터를 문자열로 변환
       formData.append('expert', new Blob([JSON.stringify({
-        userId: 'expert', 
-        location: expertData.location,
+        userId: expertData.userId, 
+        addressZipcode: expertData.addressZipcode,
+        addressDetail: expertData.addressDetail, 
+        address: expertData.address,
         introduction: expertData.introduction,
         price: Number(expertData.price),
         priceDetail: expertData.priceDetail, 
         grade: expertData.grade,
         companyName: expertData.companyName,
-        latitude: Number(expertData.latitude),
-        longitude: Number(expertData.longitude),
         totalScore: 0,
         totalScoreCnt: 0
       })], {
@@ -149,7 +150,7 @@ export const useExpertStore = defineStore('expert', () => {
   const validateExpertData = (expertData) => {
     const errors = []
     
-    if (!expertData.location) errors.push('위치를 입력해주세요')
+
     if (!expertData.introduction) errors.push('소개를 입력해주세요')
     if (!expertData.price || expertData.price <= 0) errors.push('가격을 올바르게 입력해주세요')
     if (!expertData.priceDetail) errors.push('가격 상세 정보를 입력해주세요')

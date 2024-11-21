@@ -13,7 +13,7 @@
         <button class="btn btn-outline">
           <span>내 위치로 검색하기</span>
         </button>
-        <button class="btn btn-outline" @click="navigateToExpertForm()">
+        <button v-if="userType === 'E'" class="btn btn-outline" @click="navigateToExpertForm()">
           <span>전문가 등록하기</span>
         </button>
       </div>
@@ -58,76 +58,12 @@
   </div>
 </template>
 
-
-<!-- 기존 스크립트 -->
-<!-- <script>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
-
-export default {
-  name: 'MatchingDefault',
-  emits: ['changeComponent'],  // changeComponent 이벤트 선언
-  methods: {
-    goToExpertRegist() {
-      this.$emit('change-component', 'MatchingExpertRegist');
-    },
-    goToExpertDetail() {
-      this.$emit('change-component', 'MatchingExpertDetail');
-    }
-  },
-
-  setup() {
-    const mapContainer = ref(null);
-    const mapInstance = ref(null); // 카카오 맵 인스턴스를 저장할 ref
-
-    const { VITE_KAKAO_MAP_KEY } = import.meta.env;
-
-    // 카카오 맵 로딩
-    const loadKakaoMap = (container) => {
-      const script = document.createElement('script');
-      script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false`;
-      document.head.appendChild(script);
-
-      script.onload = () => {
-        window.kakao.maps.load(() => {
-          const options = {
-            center: new window.kakao.maps.LatLng(36.355339, 127.297577), // 지도 중심 좌표
-            level: 3, // 지도 확대 레벨
-            maxLevel: 5, // 지도 축소 제한 레벨
-          };
-
-          // 지도 인스턴스를 생성
-          mapInstance.value = new window.kakao.maps.Map(container, options);
-        });
-      };
-    };
-
-    // onMounted: 맵을 로드
-    onMounted(() => {
-      if (mapContainer.value) {
-        loadKakaoMap(mapContainer.value);
-      }
-    });
-
-    // onBeforeUnmount: 맵 인스턴스를 정리 (optional)
-    onBeforeUnmount(() => {
-      if (mapInstance.value) {
-        window.kakao.maps.event.removeListener(mapInstance.value, 'click');
-        // 다른 카카오 맵 이벤트나 리소스도 정리할 수 있음
-      }
-    });
-
-    return {
-      mapContainer,
-    };
-  },
-};
-</script> -->
-
-
 <script>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useExpertStore } from '@/stores/expert'
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia'
+import defaultProfileImg from '@/assets/images/기본프로필.jpg';
 
 export default {
     name: 'MatchingDefault',
@@ -136,8 +72,10 @@ export default {
         const mapContainer = ref(null)
         const mapInstance = ref(null)
         const expertStore = useExpertStore()
+        const userStore = useUserStore()
         const { experts, loading } = storeToRefs(expertStore)
-        
+        const { userType } = storeToRefs(userStore)
+
         // 별점 계산 함수
         const calculateRating = (expert) => {
             if (!expert?.totalScoreCnt || expert.totalScoreCnt === 0) return '신규'
@@ -147,10 +85,10 @@ export default {
         // 카카오맵 초기화
         const initializeMap = () => {
             if (!mapContainer.value) {
-                console.error('mapContainer가 없습니다.');
+                // console.error('mapContainer가 없습니다.');
                 return
             }
-            console.log('카카오맵 초기화 중...');
+            // console.log('카카오맵 초기화 중...');
             
             const options = {
                 center: new window.kakao.maps.LatLng(36.355339, 127.297577),
@@ -159,81 +97,118 @@ export default {
             
             // 지도 인스턴스 생성
             mapInstance.value = new window.kakao.maps.Map(mapContainer.value, options)
-            console.log('지도 인스턴스 생성 완료');
-            
-            // 전문가 마커 추가
-            if (experts.value?.length) {
-                console.log('전문가 마커 추가 시작...');
-                experts.value.forEach(expert => {
-                    if (expert.latitude && expert.longitude) {
-                        const markerPosition = new window.kakao.maps.LatLng(
-                            expert.latitude, 
-                            expert.longitude
-                        )
-                        
-                        const marker = new window.kakao.maps.Marker({
-                            position: markerPosition,
-                            map: mapInstance.value
-                        })
-                        console.log(`마커 추가: ${expert.name} - ${expert.latitude}, ${expert.longitude}`);
-                        
-                        // 인포윈도우 생성
-                        const infowindow = new window.kakao.maps.InfoWindow({
-                            content: `
-                                <div style="padding:5px;">
-                                    <strong>${expert.name} 선생님</strong><br/>
-                                    ${expert.grade}<br/>
-                                    ${expert.location}
-                                </div>
-                            `
-                        })
-                        
-                        // 마커 클릭 이벤트
-                        window.kakao.maps.event.addListener(marker, 'click', () => {
-                            infowindow.open(mapInstance.value, marker)
-                        })
-                    }
-                })
-            } else {
-                console.warn('전문가 정보가 없습니다.');
-            }
+            // console.log('지도 인스턴스 생성 완료');
         }
+
+
+        // 전문가 마커 생성
+        const addExpertMarkers = (experts) => {
+            if (!experts || experts.length === 0) return
+            const geocoder = new kakao.maps.services.Geocoder()
+            
+            experts.forEach((expert) => {
+                if (!expert.address) return // 주소가 없는 경우 건너뜀
+                
+                console.log(expert.address)
+                geocoder.addressSearch(expert.address, (result, status) => {
+                    if (status === kakao.maps.services.Status.OK) {
+                        const coords = new kakao.maps.LatLng(result[0].y, result[0].x)
+
+                // 전문가 프로필 이미지를 포함한 HTML 마커 콘텐츠 생성
+                const content = document.createElement('div');
+                const img = document.createElement('img');
+                
+                // 이미지 스타일 설정
+                img.src = expert.userProfileImgPath || defaultProfileImg;
+                img.style.width = '40px';
+                img.style.height = '40px';
+                img.style.borderRadius = '50%';
+                img.style.border = '2px solid #E2495B';
+                img.style.objectFit = 'cover';
+                
+                // div 스타일 설정
+                content.appendChild(img);
+                content.style.padding = '3px';
+                content.style.backgroundColor = 'white';
+                content.style.borderRadius = '50%';
+                content.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
+                
+                // CustomOverlay를 사용하여 마커 생성
+                const customOverlay = new kakao.maps.CustomOverlay({
+                    position: coords,
+                    content: content,
+                    map: mapInstance.value,
+                    zIndex: 1
+                });
+
+                // 이름을 보여주는 인포윈도우 생성
+                const infowindow = new kakao.maps.InfoWindow({
+                    content: `<div style="padding:5px;font-size:12px;text-align:center;">${expert.name || '전문가'}</div>`,
+                    zIndex: 2
+                });
+
+                // 마커에 마우스오버 이벤트 추가
+                kakao.maps.event.addListener(customOverlay, 'mouseover', function() {
+                    infowindow.open(mapInstance.value, customOverlay);
+                });
+
+                // 마커에 마우스아웃 이벤트 추가
+                kakao.maps.event.addListener(customOverlay, 'mouseout', function() {
+                    infowindow.close();
+                });
+            } else {
+                console.error(`주소 변환 실패: ${expert.address}`)
+            }
+                })
+            })
+        }
+
+
+
 
         // 카카오맵 스크립트 로드
         const loadKakaoMap = () => {
-            const script = document.createElement('script')
+          return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
             const { VITE_KAKAO_MAP_KEY } = import.meta.env;
             
             if (!VITE_KAKAO_MAP_KEY) {
                 console.error('카카오맵 API 키가 설정되지 않았습니다.');
+                reject(new Error('API 키 누락'));
                 return;
             }
-            
-            console.log('카카오맵 스크립트 로드 중...');
-            console.log(`카카오맵 URL: https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false`);
+            // console.log('카카오맵 스크립트 로드 중...');
+            // console.log(`카카오맵 URL: https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false`);
 
-            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false`;
-            script.async = true
+            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&libraries=services&autoload=false`; // 지도 생성 및 마커 라이브러리 추가
             document.head.appendChild(script);
             
             script.onload = () => {
-                console.log('카카오맵 스크립트 로딩 완료');
+                // console.log('카카오맵 스크립트 로딩 완료');
                 window.kakao.maps.load(() => {
                     initializeMap()
-                    console.log("onload 완료")
+                    resolve(); // 지도 초기화 완료 시 resolve 호출
+                    // console.log("onload 완료")
                 })
             }
             
             script.onerror = () => {
                 console.error('카카오맵 스크립트 로딩 실패');
-            }
-        }
+                reject(new Error('스크립트 로딩 실패'));
+            };
+          });
+        };
 
         onMounted(async () => {
             console.log('전문가 데이터 로딩 시작...');
             await expertStore.fetchExperts()
             console.log('전문가 데이터 로딩 완료');
             loadKakaoMap()
+
+            // 전문가 데이터 로드 후 마커 추가
+            if (experts.value && experts.value.length > 0) {
+                addExpertMarkers(experts.value);
+            }
         })
 
         onBeforeUnmount(() => {
@@ -247,13 +222,15 @@ export default {
             mapContainer,
             experts,
             loading,
-            calculateRating
+            calculateRating, 
+            userType, 
+            addExpertMarkers
         }
     },
     
     methods: {
         navigateToExpertForm() {
-            console.log('전문가 등록 폼으로 이동');
+            // console.log('전문가 등록 폼으로 이동');
             this.$router.push('/matching/regist')
         }
     }

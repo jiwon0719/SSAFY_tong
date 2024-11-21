@@ -52,22 +52,40 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCommunityStore } from '@/stores/community';
+import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 
 const router = useRouter()
-const store = useCommunityStore()
+const communityStore = useCommunityStore();
+const userStore = useUserStore();
+const categoryId = '';
+
+// 반응형 상태를 가져오는 방법
+const { userId } = storeToRefs(userStore);
 
 // 폼 데이터
 const postForm = ref({
   category: '',
   content: '',
-  userId: 'admin' // 실제로는 로그인된 사용자 정보를 사용
+  userId: '',
 })
 
-// 게시글 등록
+// 컴포넌트 마운트
+onMounted(async () => {
+  // userId없으면 사용자 정보 가져옴
+  if(!userId.value) {
+    await userStore.fetchUserInfo()
+  }
+
+  // 폼데이터에 userId 저장
+  postForm.value.userId = userId.value
+})
+
+
+// 게시판 카테고리 등록
 const submitPost = async () => {
   // 유효성 검사
   if (!postForm.value.category || !postForm.value.content) {
@@ -76,7 +94,7 @@ const submitPost = async () => {
   }
 
   try {
-    await store.createCategory({
+    await communityStore.createCategory({
       category: postForm.value.category, 
       description: postForm.value.content,
       userId: postForm.value.userId
@@ -92,9 +110,9 @@ const submitPost = async () => {
   }  
 }
 
-// 목록으로 돌아가기
+// 목록으로 돌아가기(기본: 자유게시판)
 const goBack = () => {
-  router.push('/community')
+  router.push(`/community/1`)
 }
 </script>
 

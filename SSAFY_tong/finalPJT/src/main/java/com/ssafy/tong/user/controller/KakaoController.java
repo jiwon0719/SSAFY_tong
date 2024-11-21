@@ -116,8 +116,8 @@ public class KakaoController {
             kakaoId = kakaoId+"a!";
             System.out.println(kakaoId);
             User user = userService.findUserByUserId(kakaoId);
-            
             System.out.println("user : "+ user);
+            
             
             if (user == null) {
             	System.out.println("user==null 케이스");
@@ -126,7 +126,8 @@ public class KakaoController {
                 return new ResponseEntity<>(kakaoUserInfo, HttpStatus.valueOf(201)); 
             } else {
                 // 사용자가 있으면 정상 처리
-                return ResponseEntity.ok().body(new KakaoUserInfo(kakaoId, nickname, email, profileImage));
+            	char userType = user.getUserType(); // (추가) 사용자 정보 추출 : userType
+                return ResponseEntity.ok().body(new KakaoUserInfo(kakaoId, nickname, email, profileImage, userType));
             }
         } catch (Exception e) {
         	System.out.println("비정상반환");

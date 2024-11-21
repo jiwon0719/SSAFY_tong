@@ -7,6 +7,8 @@ export const useUserStore = defineStore('user', {
     token: null,
     kakaoToken: null,
     userId: null,
+    userType: null,
+    userName: null, 
     kakaoUserInfo: null,
     profileImage: null, // 프로필 이미지 상태 추가
   }),
@@ -20,6 +22,12 @@ export const useUserStore = defineStore('user', {
     },
     setUserId(userId) {
       this.userId = userId;
+    },
+    setUserType(userType) {
+      this.userType = userType;
+    },
+    setUserName(userName) {
+      this.userName = userName;
     },
     saveTokenToStorage(token) {
       this.setToken(token);
@@ -55,6 +63,8 @@ export const useUserStore = defineStore('user', {
 
       try {
         let userId = null; // const를 let으로 변경
+        let userType = null; // const를 let으로 변경
+        let userName = null; // const를 let으로 변경
 
         if (this.kakaoToken != null) {
           const kakaoResponse = await axios.get('http://localhost:8080/oauth2/kakao/user-info', {
@@ -65,6 +75,8 @@ export const useUserStore = defineStore('user', {
 
           if (kakaoResponse.status === 200) {
             userId = kakaoResponse.data.kakaoId;
+            userType = kakaoResponse.data.userType; // 구현  필요
+            userName = kakaoResponse.data.nickname;
             console.log('kakaoResponse.data.userId :', userId);
 
             // 카카오 사용자 정보 저장
@@ -75,8 +87,11 @@ export const useUserStore = defineStore('user', {
               profileImage: kakaoResponse.data.profileImage,
             });
 
-            // userId 설정
-            this.setUserId(userId);
+            // store.js에 기본정보 저장
+           this.setUserId(userId);
+           this.setUserType(userType);
+           this.setUserName(userName);
+
 
             // 프로필 이미지 설정
             this.setProfileImage(kakaoResponse.data.profileImage);
@@ -99,8 +114,15 @@ export const useUserStore = defineStore('user', {
 
           if (jwtResponse.status === 200) {
             userId = jwtResponse.data.userId;
+            userType = jwtResponse.data.userDetails.userType;
+            userName = jwtResponse.data.name;
+            
+            // store.js에 기본정보 저장
             this.setUserId(userId);
+            this.setUserType(userType);
+            this.setUserName(userName);
 
+            
             // 프로필 이미지 설정
             this.setProfileImage(jwtResponse.data.profileImage);
           }

@@ -4,23 +4,22 @@
     <aside class="sidebar">
       <div class="sidebar-header">
         <h2 class="board-title">게시판</h2>
-        <router-link to="/communityRegist">
+        <router-link to="/community/regist">
           <button class="post-register-btn">게시판 등록</button>
         </router-link>
       </div>
       
       <!-- HOT 게시판 -->
-      <div class="board-section">
-        <div class="hot-board">
-          <span class="hot-icon">🔥</span>
-          <span>HOT 게시판 목록</span>
-        </div>
-        <div class="board-item" >
-          <span class="board-icon">💪</span>
-          <span>헬스방</span>
-          <br>
-          <span class="board-desc">디비에있는 헬스방 소개글</span>
-        </div>
+      <div class="section-title">
+        <span>HOT 게시판 목록</span>
+      </div>
+      <div class="board-section" v-for="category in topCategories" :key="category.categoryId" >
+        <router-link :to="`/community/${category.categoryId}`">
+          <div class="hot-info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
+            <p class="category-title">🔥 {{ category.category }}</p>
+            <p class="board-desc">{{ category.description }}</p>
+          </div>
+        </router-link>
       </div>
 
       <hr>
@@ -30,10 +29,8 @@
       <div class="board-section" v-for="category in store.categoryList" :key="category.categoryId">
         <router-link :to="`/community/${category.categoryId}`">
           <div class="info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
-            <span>📝 {{ category.category }}</span>
-          </div>
-          <div class="board-item">
-            <span class="board-desc">{{ category.description }}</span>
+            <p class="category-title">📌 {{ category.category }}</p>
+            <p class="board-desc">{{ category.description }}</p>
           </div>
         </router-link>
       </div>
@@ -52,13 +49,28 @@
 import { useCommunityStore } from '@/stores/community'
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import axios from 'axios';
 
 const store = useCommunityStore();
 const route = useRoute();
 const router = useRouter();
+const topCategories = ref([]);
 
-onMounted(() => {
-    store.getcategoryList();
+// 핫게시판 조회(TOP3)
+const fetchTopCategories = async () => {
+  try {
+    const response = await axios.get(`http://localhost:8080/api/boardCategory/top-viewed`);
+    topCategories.value = response.data;
+  } catch (error) {
+    console.error('HOT 게시판을 불러오는데 실패했습니다:', error);
+  }
+};
+
+onMounted(async() => {
+    await Promise.all([
+      store.getcategoryList(),  
+      fetchTopCategories()
+    ])
     
     // 현재 라우트의 categoryId가 있다면 해당 카테고리의 게시글을 가져옴
     if (route.params.categoryId) {
@@ -96,253 +108,253 @@ const fetchCategoryPosts = (categoryId, categoryTitle) => {
 </script>
 
 <style scoped>
-/* community-layout의 스타일을 수정 */
+a{
+  text-decoration: none;
+  color: black;
+}
+
 .community-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f8f9fa;
   position: relative;
-  overflow-x: hidden; /* 가로 스크롤 방지 */
+  overflow-x: hidden;
 }
 
-/* sidebar의 스타일을 수정 */
 .sidebar {
-  width: 280px;
+  width: 300px;
   background: white;
-  border-right: 1px solid #e0e0e0;
-  padding: 20px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+  padding: 25px;
+  position: fixed;
   left: 0;
-  top: 10vh; /* 헤더 바로 아래 10vh로 설정 */
-  height: calc(100vh + 10vh); 
-  overflow-y: auto; /* 스크롤이 필요한 경우에만 */
+  top: 10vh;
+  height: calc(100vh - 10vh);
+  overflow-y: auto;
   z-index: 10;
 }
 
-/* 사이드바 헤더 스타일 */
 .sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-}
-
-
-
-.board-title {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.post-register-btn {
-  padding: 8px 12px;
-  background-color: #e75757;
-  color: white;
-  border-radius: 6px;
-  font-size: 0.9rem;
-}
-
-.board-section {
   margin-bottom: 30px;
 }
 
-.info-board {
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #e0e0e0;
+.board-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.post-register-btn {
+  padding: 10px 16px;
+  background-color: #ff4757;
+  color: white;
   border-radius: 8px;
-  transition: background-color 0.3s, transform 0.3s;  /* 부드러운 전환 효과 */
+  font-size: 0.95rem;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.2);
+}
+
+.post-register-btn:hover {
+  background-color: #ff6b81;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);
+}
+
+.board-section {
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
 }
 
 .hot-board {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+  margin-bottom: 15px;
+  padding: 10px;
+  background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%);
+  border-radius: 10px;
+  color: white;
+  font-weight: 500;
+}
+
+.info-board {
+  padding: 15px;
+  background-color: white;
+  border: 1px solid #edf2f7;
+  border-radius: 12px;
   margin-bottom: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.board-section:hover .info-board {
-  background-color: #f0f0f0; /* info-board 배경 색 변화 */
-  transform: scale(1.05); /* 크기 확대 */
+/* 카테고리 제목 */
+.info-board .category-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+/* 카테고리 설명 */
+.info-board .board-desc {
+  color: #718096;
+  font-size: 0.9rem;
+  line-height: 1.4;
 }
 
-.board-section:hover .board-item {
-  background-color: #f9f9f9; /* board-item 배경 색 변화 */
-  transform: scale(1.03); /* 크기 확대 */
-}
 
-.board-section:hover {
-  cursor: pointer; /* 마우스를 손 모양으로 변경 */
+.board-item {
+  padding: 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  transition: all 0.3s ease;
 }
 
 .board-desc {
-  color: #777;
-  font-size: small;
+  color: #718096;
+  font-size: 0.9rem;
+  line-height: 1.5;
 }
 
+.board-section:hover .info-board {
+  background-color: #f8f9fa;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
 
-/* main-content의 스타일을 수정 */
 .main-content {
   flex: 1;
-  margin-left: 280px; /* sidebar 너비만큼 마진 */
-  padding: 20px;
-  min-height: 100vh;
-  position: relative;
-  box-sizing: border-box;
-}
-
-.content-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  min-height: calc(100vh - 40px);
-  padding-bottom: 100px;
+  margin-left: 300px;
+  padding: 30px;
+  background-color: #f8f9fa;
 }
 
 .search-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 20px;
-}
-
-.search-input-wrapper {
-  position: relative;
-  flex: 1;
-  max-width: 500px;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
 }
 
 .search-input {
-  width: 100%;
-  padding: 10px 40px 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  border: 2px solid #edf2f7;
+  transition: all 0.3s ease;
 }
 
-.search-btn {
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.action-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.post-count-select {
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: white;
-}
-
-.write-post-btn {
-  padding: 8px 16px;
-  background-color: #e75757;
-  color: white;
-  border-radius: 8px;
-}
-
-.posts-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  margin-bottom: 60px;
+.search-input:focus {
+  border-color: #ff4757;
+  box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
 }
 
 .post-item {
   background: white;
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
 }
 
-.post-content {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.user-info {
-  display: flex;
-  gap: 12px;
+.post-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  background-color: #eee;
-}
-
-.post-details {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.username {
-  font-weight: 500;
-}
-
-.post-text {
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.post-stats {
-  display: flex;
-  gap: 15px;
-  color: #666;
-  font-size: 0.9rem;
-}
-
-.pagination-wrapper {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 20px 0;
-  background-color: #f5f5f5;
+  background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%);
 }
 
 .pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 5px;
-}
-
-.page-numbers {
-  display: flex;
-  gap: 5px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .page-number {
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  cursor: pointer;
+  min-width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
 }
 
-.page-number:hover {
-  background-color: #f0f0f0;
+.page-number.active {
+  background-color: #ff4757;
+  color: white;
 }
 
-.page-nav {
-  padding: 0 10px;
-  height: 30px;
+.page-number:hover:not(.active) {
+  background-color: #f1f5f9;
+}
+
+/* 핫게시판 관련 스타일 */
+.section-title {
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  margin-bottom: 8px;
+  padding: 5px 0;
+  color: #666;
+  font-size: 0.95rem;
 }
+
+.hot-board-item {
+  margin-bottom: 8px;
+}
+
+.hot-info-board {
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ffe0e0;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.1);
+}
+
+.hot-info-board:hover {
+  background-color: #fff5f5;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+}
+
+.hot-info-board .category-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #e03131;
+  margin-bottom: 5px;
+}
+
+.hot-info-board .board-desc {
+  color: #495057;
+}
+
+/* 폰트 */
+/* 폰트 적용 */
+.community-layout * {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.board-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+}
+
+.category-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 600;
+}
+
+.post-register-btn,
+.board-desc,
+.section-title span {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+}
+
 </style>

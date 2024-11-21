@@ -69,36 +69,43 @@ public class CalendarServiceImpl implements CalendarService {
 	// 예약 신청
 	@Override
 	public void createReservation(Reservation reservation) {
-	    // 1. 해당 날짜의 Calendar가 이미 존재하는지 확인
-	    LocalDate pickedDate = reservation.getPickDate();
-	    Calendar existingCalendar = calendarDao.selectCalendarByDateAndUser(
-	        reservation.getUserId(),
-	        pickedDate.getYear(),
-	        pickedDate.getMonthValue(),
-	        pickedDate.getDayOfMonth()
-	    );
-
-	    int calendarId;
-	    
-	    if (existingCalendar != null) {
-	        // 이미 존재하는 Calendar 사용
-	        calendarId = existingCalendar.getCalendarId();
-	    } else {
-	        // 새로운 Calendar 생성
-	        Calendar newCalendar = new Calendar();
-	        newCalendar.setUserId(reservation.getUserId());
-	        newCalendar.setYear(pickedDate.getYear());
-	        newCalendar.setMonth(pickedDate.getMonthValue());
-	        newCalendar.setDate(pickedDate.getDayOfMonth());
-	        
-	        calendarId = calendarDao.insertCalendar(newCalendar);
-	    }
-
-	    // 2. Reservation 생성
-	    reservation.setCalendarId(calendarId);
-	    calendarDao.insertReservation(reservation);
+		Calendar newCalendar = createCalendarIfNotExists(reservation);
+		if (newCalendar.getCalendarId() <= 0) {
+		   throw new RuntimeException("Calendar creation failed"); // calendar_id 생성 실패시 예외처리
+		}
+		reservation.setCalendarId(newCalendar.getCalendarId()); // 생성된 calendar_id를 예약정보에 설정
+		calendarDao.insertReservation(reservation); // 예약 정보 저장
 	}
 
+	// Calendar 존재 여부 확인 및 생성 로직
+	private Calendar createCalendarIfNotExists(Reservation reservation) {
+	   // 해당 날짜에 Calendar가 이미 존재하는지 확인
+	   LocalDate pickedDate = reservation.getPickDate();
+	   Calendar existingCalendar = calendarDao.selectCalendarByDateAndUser(
+	       reservation.getUserId(),
+	       pickedDate.getYear(),
+	       pickedDate.getMonthValue(), 
+	       pickedDate.getDayOfMonth()
+	   );
+
+	   if (existingCalendar != null) {
+	       return existingCalendar; // 존재하면 기존 Calendar 반환
+	   }
+
+	   // 없으면 새로운 Calendar 생성
+	   Calendar newCalendar = new Calendar();
+	   newCalendar.setUserId(reservation.getUserId());
+	   newCalendar.setYear(pickedDate.getYear());
+	   newCalendar.setMonth(pickedDate.getMonthValue());
+	   newCalendar.setDate(pickedDate.getDayOfMonth());
+
+	   calendarDao.insertCalendar(newCalendar);
+	   return newCalendar;
+	}
+
+	
+	
+	
 	// (전문가용) 예약 조회
 	@Override
 	public List<Reservation> getExpertReservations(String expertId, LocalDate date) {

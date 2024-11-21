@@ -2,8 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useCalendarStore } from '@/stores/calendar'
-
-
+import { useUserStore } from './user'
 
 const CALENDAR_EXPERT_API_URL = 'http://localhost:8080/api/calendar'
 const RESERVATION_API_URL =     'http://localhost:8080/api/expert/reservations'
@@ -12,6 +11,8 @@ const MATCHING_API_URL =        `http://localhost:8080/api/matching`
 
 export const useExpertCalendarStore = defineStore('expertCalendar', () => {
   const store = useCalendarStore()
+  const userStore = useUserStore();
+
   // state
   const pickerDate = ref(new Date()) // 문자열이 아닌 Date 객체로 초기화
   const reservations = ref([])
@@ -19,7 +20,7 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
   const error = ref(null)
   const userMatchingList = ref([])
   const quests = ref([])
-
+  const expertUserId = computed(() => userStore.userId) // 전문가가 로그인 했으니 본인 아이디 가져올 것 // API 호출 시 반응형으로 동작
 
   // getters
   const formattedDate = computed(() => {
@@ -63,7 +64,7 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
       console.log('Formatted Date:', formattedDate.value)
       
       const params = {
-        expertId: 'expert', 
+        expertId: expertUserId.value, 
         date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       }
       console.log('Request Params:', params)
@@ -115,12 +116,12 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
 
 
   // 퀘스트 관련 actions 추가
-  // 전문가별 매칭 목록 조회 (UserList 형태로 반환)
-  const getExpertMatchings = async (expertId) => {
+  // 전문가별 유저 매칭 목록 조회 (UserList 형태로 반환)
+  const getExpertMatchings = async () => {
     try {
-      console.log('매칭 목록 요청 시작 - expertId:', expertId);
+      console.log('매칭 목록 요청 시작 - expertId:', expertUserId.value);
 
-      const response = await axios.get(`${MATCHING_API_URL}/expert/${expertId}`)
+      const response = await axios.get(`${MATCHING_API_URL}/expert/${expertUserId.value}`)
       console.log('매칭 목록 API 응답 데이터:', response);
       console.log('매칭 목록 데이터:', response.data);
 
@@ -152,7 +153,7 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
       console.log("Formmated Date for Quests: ", formattedDate.value)
 
       const params = {
-        expertId: 'expert', 
+        expertId: expertUserId.value, 
         date: `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
       }
       console.log("Quest Request Params: ", params)
@@ -243,6 +244,7 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
     error,
     userMatchingList,
     quests,
+    expertUserId, 
     
     // getters
     formattedDate,

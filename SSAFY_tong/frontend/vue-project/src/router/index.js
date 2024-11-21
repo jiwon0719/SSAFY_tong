@@ -10,6 +10,7 @@ import CommunityRegist from '@/components/CommunityRegist.vue'
 import CommunityBoardRegist from '@/components/CommunityBoardRegist.vue'
 import MypageView from '@/views/MypageView.vue'
 import MypageDefault from '@/components/MypageDefault.vue'
+import MypageDefaultExpert from '@/components/MypageDefaultExpert.vue'
 import ChatList from '@/components/ChatList.vue'
 import ChattingRoom from '@/components/ChattingRoom.vue'
 import UpdateUserInfo from '@/components/UpdateUserInfo.vue'
@@ -18,14 +19,18 @@ import CalendarExpertView from '@/views/CalendarExpertView.vue'
 import CalendarDefault from '@/components/tmp/CalendarDefault.vue'
 import CalendarDefaultReservation from '@/components/tmp/CalendarDefaultReservation.vue'
 import CalendarDefaultCalendar from '@/components/tmp/CalendarDefaultCalendar.vue'
-import { compile } from 'vue'
 import MatchingView from '@/views/MatchingView.vue'
 import MatchingDefault from '@/components/MatchingDefault.vue'
 import MatchingExpertDetail from '@/components/MatchingExpertDetail.vue'
 import MatchingExpertRegist from '@/components/MatchingExpertRegist.vue'
 import MainDefault from '@/components/MainDefault.vue'
+
 import ChatRoomList from '@/components/ChatRoomList.vue'
 import Chat from '@/components/Chat.vue';
+
+import { useUserStore } from '@/stores/user'
+
+
 
 const routes = [
   {
@@ -89,7 +94,7 @@ const routes = [
         path: '/mypage',
         name: 'mypage',
         component: MypageView,
-
+        meta: { requiresAuth: true }, 
         children: [
           {
             path: '',
@@ -97,17 +102,22 @@ const routes = [
             component: MypageDefault,
           },
           {
-            path: '/chatList',
+            path: 'expert',
+            name: 'mypageDefaultExpert',
+            component: MypageDefaultExpert,
+          },
+          {
+            path: 'chatList',
             name: 'chatList',
             component: ChatList,
           },
           {
-            path: '/chattingRoom',
+            path: 'chattingRoom',
             name: 'chattingRoom',
             component: ChattingRoom,
           },
           {
-            path: '/updateUserInfo',
+            path: 'updateUserInfo',
             name: 'updateUserInfo',
             component: UpdateUserInfo,
           },
@@ -120,6 +130,16 @@ const routes = [
 
         children: [
           {
+            path: 'regist',
+            name: 'communityRegist',
+            component: CommunityRegist,
+          },
+          {
+            path: 'board-regist',
+            name: 'communityBoardRegist',
+            component: CommunityBoardRegist,
+          },
+          {
             path: ':categoryId',
             name: 'communityList',
             component: CommunityList,
@@ -128,16 +148,6 @@ const routes = [
             path: ':categoryId/:boardId',
             name: 'communityDetail',
             component: CommunityDetail,
-          },
-          {
-            path: '/communityRegist',
-            name: 'communityRegist',
-            component: CommunityRegist,
-          },
-          {
-            path: '/communityBoardRegist',
-            name: 'communityBoardRegist',
-            component: CommunityBoardRegist,
           },
         ]
       },
@@ -192,6 +202,7 @@ const router = createRouter({
   }
   
 });
+
 
 // 페이지 이동 후 항상 상단으로 스크롤 이동
 router.afterEach(() => {
