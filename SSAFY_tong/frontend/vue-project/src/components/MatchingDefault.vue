@@ -61,6 +61,7 @@
 
 <script>
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useExpertStore } from '@/stores/expert'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
@@ -70,6 +71,18 @@ export default {
     name: 'MatchingDefault',
     
     setup() {
+      // 전문가 등록 페이지 이동
+        const router = useRouter();
+        const navigateToExpertForm = () => {
+            router.push({
+                name: 'matchingExpertRegist'
+            }).catch(err => {
+                if (err.name !== 'NavigationDuplicated') {
+                    throw err;
+                }
+            });
+        };
+
         const mapContainer = ref(null)
         const mapInstance = ref(null)
 
@@ -324,7 +337,8 @@ export default {
             mapContainer,
             experts: visibleExperts, // 보이는 전문가만 반환
             loading,
-            userType
+            userType, 
+            navigateToExpertForm
         };
     }
 }
@@ -333,6 +347,50 @@ export default {
 
 
 <style lang="scss">
+// 폰트 관련 CSS
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+.v-date-picker,
+.v-list-item,
+.v-date-picker-header,
+.v-date-picker-table {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+.v-date-picker {
+  width: 100%;
+}
+
+:deep(.custom-calendar) {
+  .v-date-picker-header {
+    padding: 4px 8px;
+  }
+  
+  .v-date-picker-header__value {
+    color: #E2495B;
+  }
+
+  .v-btn--active {
+    background-color: #E2495B !important;
+    color: white !important;
+  }
+
+  .v-btn:not(.v-btn--active) {
+    color: #666;
+  }
+
+  .v-date-picker-table {
+    height: auto;
+  }
+}
+
+.v-list-item {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+
+// 매칭 관련
 .matching-container {
   display: flex;
   height: 100%;
@@ -490,7 +548,7 @@ export default {
 .expert-card.active {
   background: rgba(226, 73, 91, 0.1);
   border-color: #E2495B;
-  // active 상태 전환도 동일하게 0.4초
+    // active 상태 전환도 동일하게 0.4초
   transition: all 0.4s ease-in-out;
 }
 
