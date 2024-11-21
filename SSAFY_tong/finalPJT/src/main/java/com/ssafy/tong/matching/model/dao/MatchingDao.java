@@ -1,6 +1,7 @@
 package com.ssafy.tong.matching.model.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
 
@@ -24,5 +25,12 @@ public interface MatchingDao {
 			@Param("expertUserId")String expertUserId, 
 			@Param("status")String status
 	);
+	// 매칭 ID 찾기 메서드 추가
+	Long findMatchingId(
+		@Param("userId") String userId, 
+		@Param("expertUserId") String expertUserId
+	);
+	// 전문가 정보 조회
+	Map<String, Object> selectExpertInfo(@Param("expertUserId") String expertUserId);
 
 }

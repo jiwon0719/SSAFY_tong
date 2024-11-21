@@ -1,6 +1,7 @@
 package com.ssafy.tong.matching.model.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ssafy.tong.expert.model.ExpertList;
 import com.ssafy.tong.expert.model.UserList;
@@ -19,5 +20,9 @@ public interface MatchingService {
 	void updateScore(int expertId, String userId, int score);
 	// 매칭 수락 / 거절(상태 업데이트)
 	void updateMatchingStatus(String userId, String expertUserId, String status);
+	// 매칭 ID 찾기 메서드 추가
+	Long findMatchingId(String userId, String expertUserId);
+	// 전문가 정보 조회 메서드 추가
+	Map<String, Object> getExpertInfo(String expertUserId);
 
 }

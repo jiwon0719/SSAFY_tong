@@ -1,6 +1,7 @@
 package com.ssafy.tong.matching.model.service;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.stereotype.Service;
 import com.ssafy.tong.expert.model.ExpertList;
 import com.ssafy.tong.expert.model.UserList;
@@ -50,5 +51,15 @@ public class MatchingServiceImpl implements MatchingService {
 		matchingDao.updateMatchingStatus(userId, expertUserId, status);
 	}
 
+    // 매칭 ID 찾기 구현
+    @Override
+    public Long findMatchingId(String userId, String expertUserId) {
+        return matchingDao.findMatchingId(userId, expertUserId);
+    }
+
+    @Override
+    public Map<String, Object> getExpertInfo(String expertUserId) {
+        return matchingDao.selectExpertInfo(expertUserId);
+    }
 
 }
