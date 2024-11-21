@@ -22,7 +22,7 @@ import com.ssafy.tong.user.model.KakaoUserInfo;
 import com.ssafy.tong.user.model.User;
 import com.ssafy.tong.user.model.service.UserService;
 
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
 @RestController
 @RequestMapping("/oauth2/kakao")
 public class KakaoController {

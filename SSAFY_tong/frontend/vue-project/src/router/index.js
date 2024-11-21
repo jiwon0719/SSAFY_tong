@@ -24,7 +24,12 @@ import MatchingDefault from '@/components/MatchingDefault.vue'
 import MatchingExpertDetail from '@/components/MatchingExpertDetail.vue'
 import MatchingExpertRegist from '@/components/MatchingExpertRegist.vue'
 import MainDefault from '@/components/MainDefault.vue'
+
+import ChatRoomList from '@/components/ChatRoomList.vue'
+import Chat from '@/components/Chat.vue';
+
 import { useUserStore } from '@/stores/user'
+
 
 
 const routes = [
@@ -32,6 +37,21 @@ const routes = [
     path: '/',
     name: 'start',
     component: StartView  // Start 페이지
+  },
+  {
+    path: '/chat',
+    name: 'chatRooms',
+    component: ChatRoomList, // 채팅방 목록
+  },
+  {
+    path: '/chat/:roomId',
+    name: 'chatRoom',
+    component: Chat,        // ChatRoom을 Chat으로 수정
+    props: route => ({
+      roomId: route.params.roomId,
+      roomName: route.query.roomName,
+      username: localStorage.getItem('username') || '게스트'
+    })
   },
   {
     path: '/main',
