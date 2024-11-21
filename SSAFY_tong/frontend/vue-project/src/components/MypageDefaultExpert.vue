@@ -65,6 +65,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useMatchingStore } from '@/stores/matching';
 import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
+import axios from 'axios';
 
 // store 초기화
 const matchingStore = useMatchingStore();
@@ -104,9 +105,67 @@ onMounted(async () => {
 const handleMatchingResponse = async (user, response) => {
   try {
     const status = response === 'accept' ? 'O' : 'X';
-    console.log('매칭 응답 처리 시작:', { user, status });  // 디버깅용 로그 추가
+    console.log('매칭 응답 처리 시작:', { user, status });
 
-    await matchingStore.updateMatchingStatus(user.userId, userId.value, status); // 유저아이디, 전문가아니디, 상태
+    // 매칭 상태 업데이트
+    await matchingStore.updateMatchingStatus(user.userId, userId.value, status);
+
+    // 매칭이 수락된 경우에만 환영 메시지 전송
+    if (response === 'accept') {
+      try {
+        // 매칭 ID 조회
+        const matchingResponse = await axios.get(
+          `http://localhost:8080/api/matching/find/${user.userId}/${userId.value}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
+            }
+          }
+        );
+        
+        const matchingId = matchingResponse.data;
+        
+        // 전문가 정보 조회
+        const expertResponse = await axios.get(
+          `http://localhost:8080/api/matching/expert-info/${userId.value}`,
+          {
+            headers: {
+              'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
+            }
+          }
+        );
+        
+        const expertInfo = expertResponse.data;
+        
+        // 환영 메시지 전송
+        await axios.post(
+          'http://localhost:8080/api/chat/message',
+          {
+            matchingId: matchingId,
+            senderId: userId.value,
+            content: ` 🎉✨저희 둘이 TONG했어요✨🎉
+🏃드디어 찾으셨네요! 믿을 수 있는 전문가와 함께하세요‍🏃‍ 
+
+저를 만나시려면 ${expertInfo.companyName} 로 와주세요!
+
+직급 : ${expertInfo.grade}
+주소 : ${expertInfo.address} ${expertInfo.addressDetail}
+1회 가격 : ${expertInfo.price}원
+
+문의 사항은 편하게 채팅해주세요~`,
+            type: "CHAT",
+            isRead: "X"
+          },
+          {
+            headers: {
+              'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
+            }
+          }
+        );
+      } catch (error) {
+        console.error('환영 메시지 전송 실패:', error);
+      }
+    }
     
     alert(response === 'accept' ? '매칭이 수락되었습니다.' : '매칭이 거절되었습니다.');
   } catch (err) {

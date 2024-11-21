@@ -114,6 +114,27 @@ public class MatchingController {
         }
     }
     
+    @GetMapping("/find/{userId}/{expertUserId}")
+    public ResponseEntity<Long> findMatchingId(
+        @PathVariable String userId,
+        @PathVariable String expertUserId
+    ) {
+        try {
+            Long matchingId = matchingService.findMatchingId(userId, expertUserId);
+            return ResponseEntity.ok(matchingId);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
     
-    
+    // 전문가 정보 조회 메서드 추가
+    @GetMapping("/expert-info/{expertUserId}")
+    public ResponseEntity<?> getExpertInfo(@PathVariable String expertUserId) {
+        try {
+            Map<String, Object> expertInfo = matchingService.getExpertInfo(expertUserId);
+            return ResponseEntity.ok(expertInfo);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

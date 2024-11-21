@@ -98,6 +98,26 @@
         AND expert_user_id = #{expertUserId}
     </update>
 	
+	<!-- 매칭 ID 찾기 -->
+	<select id="findMatchingId" resultType="long">
+	    SELECT matching_id
+	    FROM matching
+	    WHERE user_id = #{userId}
+	    AND expert_user_id = #{expertUserId}
+	    LIMIT 1
+	</select>
 	
+	<!-- 전문가 정보 조회 -->
+	<select id="selectExpertInfo" resultType="map">
+	    SELECT 
+	        e.company_name as companyName,
+	        e.grade,
+	        e.address,
+	        e.address_detail as addressDetail,
+	        e.price,
+	        e.introduction
+	    FROM expert e
+	    WHERE e.user_id = #{expertUserId}
+	</select>
 
 </mapper>
