@@ -74,7 +74,7 @@
                     </div>
                     <div class="rectangle-43">
                     </div>
-                    <router-link to="/chatList" class="chagList">
+                    <router-link to="/chat" class="chagList">
                         <div class="chat-1">
                             Chat
                         </div>

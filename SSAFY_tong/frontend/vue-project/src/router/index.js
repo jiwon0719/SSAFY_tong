@@ -39,21 +39,6 @@ const routes = [
     component: StartView  // Start 페이지
   },
   {
-    path: '/chat',
-    name: 'chatRooms',
-    component: ChatRoomList, // 채팅방 목록
-  },
-  {
-    path: '/chat/:roomId',
-    name: 'chatRoom',
-    component: Chat,        // ChatRoom을 Chat으로 수정
-    props: route => ({
-      roomId: route.params.roomId,
-      roomName: route.query.roomName,
-      username: localStorage.getItem('username') || '게스트'
-    })
-  },
-  {
     path: '/main',
     name: 'main',
     component: MainView, // Main 페이지
@@ -107,9 +92,19 @@ const routes = [
             component: MypageDefaultExpert,
           },
           {
-            path: 'chatList',
-            name: 'chatList',
-            component: ChatList,
+            path: '/chat',
+            name: 'chatRooms',
+            component: ChatRoomList, // 채팅방 목록
+          },
+          {
+            path: '/chat/:roomId',
+            name: 'chatRoom',
+            component: Chat,        // ChatRoom을 Chat으로 수정
+            props: route => ({
+              roomId: route.params.roomId,
+              roomName: route.query.roomName,
+              username: localStorage.getItem('username') || '게스트'
+            })
           },
           {
             path: 'chattingRoom',

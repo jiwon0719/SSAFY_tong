@@ -19,7 +19,7 @@
         </div>
       </router-link>
 
-      <router-link to="/chatList" class="text-none">
+      <router-link to="/chat" class="text-none">
         <div class="board-section">
           <div class="info-board">
             <span>💬 채팅</span>

@@ -41,4 +41,37 @@ public class ChatServiceImpl implements ChatService {
     public void saveMessage(ChatMessage message) {
         chatDao.saveMessage(message);
     }
+
+    @Override
+    public void updateMessageReadStatus(Long chatId) {
+        try {
+            logger.info("Updating message read status for chat ID: {}", chatId);
+            chatDao.updateMessageReadStatus(chatId);
+        } catch (Exception e) {
+            logger.error("Error in updateMessageReadStatus: ", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public void updateAllMessagesAsRead(Long matchingId) {
+        try {
+            logger.info("Updating all messages as read for matching ID: {}", matchingId);
+            chatDao.updateAllMessagesAsRead(matchingId);
+        } catch (Exception e) {
+            logger.error("Error in updateAllMessagesAsRead: ", e);
+            throw e;
+        }
+    }
+
+    @Override
+    public int getUnreadMessageCount(Long matchingId, String userId) {
+        try {
+            logger.info("Getting unread message count for matching ID: {} and user ID: {}", matchingId, userId);
+            return chatDao.getUnreadMessageCount(matchingId, userId);
+        } catch (Exception e) {
+            logger.error("Error in getUnreadMessageCount: ", e);
+            throw e;
+        }
+    }
 }
