@@ -7,8 +7,16 @@ public class Comment {
 	private String content;
 	private String regDate;
 	private Integer parentCommentId;
+	private String userType; // user테이블 조인
+	
 	
 
+	public String getUserType() {
+		return userType;
+	}
+	public void setUserType(String userType) {
+		this.userType = userType;
+	}
 	public Integer getParentCommentId() {
 		return parentCommentId;
 	}
@@ -48,6 +56,7 @@ public class Comment {
 	@Override
 	public String toString() {
 		return "Comment [commentId=" + commentId + ", boardId=" + boardId + ", commenter=" + commenter + ", content="
-				+ content + ", regDate=" + regDate + ", parentCommentId=" + parentCommentId + "]";
+				+ content + ", regDate=" + regDate + ", parentCommentId=" + parentCommentId + ", userType=" + userType
+				+ "]";
 	}
 }

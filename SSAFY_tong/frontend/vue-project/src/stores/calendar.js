@@ -55,15 +55,44 @@ export const useCalendarStore = defineStore('calendar', () => {
   // 매칭된 전문가 목록 조회
   const fetchMatchingExperts = async (userId) => {
     try {
-      const matchedList = await matchingStore.getUserMatchings(userId)
-      console.log('Fetched experts:', matchedList)
-      // matching "O" 전문가만 필터링 된다.
-      matchingExperts.value = matchedList.filter(match => match.status === 'O')
+      const result = await matchingStore.getUserMatchings(userId)
+      console.log('Fetched experts:', result)
+      
+      // response가 있고 배열인지 확인
+      if (result && Array.isArray(result)) {
+        matchingExperts.value = result.filter(match => match.status === 'O')
+      } else {
+        console.warn('Invalid result format:', result)
+        matchingExperts.value = []
+      }
+      return matchingExperts.value
     } catch (error) {
       console.error('매칭된 전문가 조회 실패:', error)
+      matchingExperts.value = []
       throw error
     }
   }
+
+  // 새로운 메서드 추가: 초기 데이터 로드
+  const loadInitialData = async (userId) => {
+    try {
+      const today = new Date().toISOString().split('T')[0]
+      
+      const [experts, calendar] = await Promise.all([
+        fetchMatchingExperts(userId),
+        fetchCalendarByDate(today)
+      ])
+      
+      return {
+        experts,
+        calendar
+      }
+    } catch (error) {
+      console.error('초기 데이터 로드 실패:', error)
+      throw error
+    }
+  }
+
 
   // 특정 날짜의 일정 조회
   const fetchCalendarByDate = async (date) => {
@@ -211,5 +240,6 @@ export const useCalendarStore = defineStore('calendar', () => {
     resetForm,
     formatDate, 
     updateQuestStatus, 
+    loadInitialData, 
   }
 })

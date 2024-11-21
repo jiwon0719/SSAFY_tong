@@ -270,9 +270,6 @@ const snackbarColor = ref('#E2495B')
 // 오늘 날짜 이전은 선택 불가 (예약 폼에서만 사용)
 const minDate = new Date().toISOString().split('T')[0]
 
-// 현재 로그인한 사용자 ID (실제로는 auth store 등에서 가져와야 함)
-// const userId = 'user'
-
 // 이벤트 데이터 (퀘스트와 예약이 있는 날짜)
 const events = computed(() => {
   if (!quests.value || !store.reservations) return []
@@ -354,13 +351,27 @@ watch(() => store.selectedExpertId, (newExpert) => {
  }
 }, { deep: true })
 
-// Lifecycle Hooks
+
+// 오늘 날짜 가져오기
+const today = computed(() => {
+  return new Date().toISOString().split('T')[0]
+})
+
+
 onMounted(async () => {
- try {
-   await store.fetchMatchingExperts(userId.value)
- } catch (error) {
-   showSnackbar('전문가 목록 조회에 실패했습니다.', 'error')
- }
+  try {
+    // 데이터가 없을 때만 초기 로드
+    if (!store.reservations.length && !quests.value.length) {
+      const data = await store.loadInitialData(userId.value)
+      if (data.calendar) {
+        quests.value = data.calendar.quests
+        reservations.value = data.calendar.reservations
+        calendarData.value = data.calendar
+      }
+    }
+  } catch (error) {
+    showSnackbar('데이터 조회에 실패했습니다.', 'error')
+  }
 })
 
 
@@ -426,7 +437,27 @@ const updateQuestStatus = async (questId, newStatus) => {
 
 </script>
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
 <style scoped>
+/* 컴포넌트 전체에 폰트 적용 */
+:deep(.v-application) {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* 모든 텍스트 요소에 폰트 적용 */
+:deep(.text-h6),
+:deep(.text-subtitle-1),
+:deep(.v-list-item-title),
+:deep(.v-list-item-subtitle),
+:deep(.v-card-title),
+:deep(.v-card-subtitle),
+:deep(.v-card-text),
+:deep(.v-btn),
+:deep(.v-chip) {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
 .v-date-picker {
   width: 100%;
 }
@@ -435,15 +466,18 @@ const updateQuestStatus = async (questId, newStatus) => {
 :deep(.custom-calendar) {
   .v-date-picker-header {
     padding: 4px 8px;
+    font-family: 'Noto Sans KR', sans-serif !important;
   }
   
   .v-date-picker-header__value {
     color: #E2495B;
+    font-family: 'Noto Sans KR', sans-serif !important;
   }
 
   /* 날짜 버튼 기본 스타일 */
   .v-date-picker-month button {
     color: #666;
+    font-family: 'Noto Sans KR', sans-serif !important;
   }
 
   /* 선택된 날짜 스타일 */

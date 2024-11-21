@@ -29,7 +29,15 @@
       <div v-else class="comments-list">
         <div v-for="comment in rootComments" :key="comment.commentId" class="comment">
           <div class="comment-header">
-            <span class="author">{{ comment.commenter }}</span>
+            <span class="author">
+              {{ comment.commenter }}
+              <ShieldCheck v-if="isExpertUser(comment.commenter)" 
+                     class="inline-icon" 
+                     size="16" 
+                     fill="#4F46E5"
+                     color="white"
+                     title="전문가 인증" />
+            </span>
             <span class="date">{{ formatDate(comment.regDate) }}</span>
           </div>
           <div class="comment-content">{{ comment.content }}</div>
@@ -56,7 +64,15 @@
             :key="reply.commentId" 
             class="reply">
             <div class="reply-header">
-              <span class="author">{{ reply.commenter }}</span>
+              <span class="author">
+                {{ reply.commenter }}
+                <ShieldCheck v-if="isExpertUser(reply.commenter)" 
+                       class="inline-icon" 
+                       size="16" 
+                       fill="#4F46E5"
+                       color="white"
+                       title="전문가 인증" />
+              </span>
               <span class="date">{{ formatDate(reply.regDate) }}</span>
             </div>
             <div class="reply-content">{{ reply.content }}</div>
@@ -77,7 +93,6 @@
 </template>
 
 <script setup>
-// Script remains exactly the same as the original
 import { ref, onMounted, computed } from 'vue';
 import { useBoardStore } from '@/stores/board';
 import { useCommentStore } from '@/stores/comment';
@@ -86,7 +101,7 @@ import { useUserStore } from '@/stores/user';
 import { storeToRefs } from 'pinia';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import { Send } from 'lucide-vue-next'; // 아이콘
+import { Send, ShieldCheck } from 'lucide-vue-next'; // 아이콘
 
 const boardStore = useBoardStore();
 const commentStore = useCommentStore();
@@ -145,6 +160,17 @@ const rootComments = computed(() => {
 
 const formatDate = (dateString) => new Date(dateString).toLocaleString();
 
+// 전문가 사용자 체크 함수 추가
+const isExpertUser = (commenterId) => {
+  // 현재 댓글이나 답글의 userType을 직접 확인
+  const comment = comments.value?.find(comment => comment.commenter === commenterId);
+  if (comment) {
+    return comment.userType === 'E';
+  }
+  return false;
+};
+
+// 댓글 등록
 const handleRegisterComment = async () => {
   if (!newComment.value.trim()) return;
   try {
@@ -152,6 +178,7 @@ const handleRegisterComment = async () => {
       boardId: currentBoard.value.boardId,
       content: newComment.value,
       commenter: userId.value,
+      userType: userType.value
     });
     newComment.value = '';
   } catch (error) {
@@ -159,6 +186,7 @@ const handleRegisterComment = async () => {
   }
 };
 
+// 대댓글 등록
 const handleRegisterReply = async (parentCommentId) => {
   if (!newReply.value.trim()) return;
   try {
@@ -167,6 +195,7 @@ const handleRegisterReply = async (parentCommentId) => {
       parentCommentId: parentCommentId,
       content: newReply.value,
       commenter: userId.value,
+      userType: userType.value
     });
     newReply.value = '';
     replyToId.value = null;
@@ -178,6 +207,10 @@ const handleRegisterReply = async (parentCommentId) => {
 const isAuthor = computed(() => {
   return currentBoard.value?.writer === userId.value;
 })
+
+
+
+
 </script>
 
 <style scoped>
@@ -442,4 +475,25 @@ const isAuthor = computed(() => {
 .btn-send:hover {
   background: #d64545;
 }
+
+/* 전문가 배지 */
+.inline-icon {
+  vertical-align: middle;
+  scale: 1.3;
+  margin-left: -1px;
+  /* 아이콘에 호버 효과 추가 */
+  transition: transform 0.2s ease;
+}
+
+.inline-icon:hover {
+  transform: scale(1.1);
+}
+
+.author {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;  /* 작성자 이름을 좀 더 굵게 */
+}
+
 </style>

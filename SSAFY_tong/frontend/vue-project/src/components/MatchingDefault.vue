@@ -25,6 +25,7 @@
             v-for="expert in experts" 
             :key="expert.expertId"
             :to="`/matching/detail/${expert.expertId}`" 
+            :data-expert-id="expert.expertId"
             class="expert-card"
           >
             <img 
@@ -59,11 +60,11 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useExpertStore } from '@/stores/expert'
-import { useUserStore } from '@/stores/user';
+import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import defaultProfileImg from '@/assets/images/기본프로필.jpg';
+import defaultProfileImg from '@/assets/images/기본프로필.jpg'
 
 export default {
     name: 'MatchingDefault',
@@ -71,168 +72,260 @@ export default {
     setup() {
         const mapContainer = ref(null)
         const mapInstance = ref(null)
+
+        // expertId를 key로 사용하는 Map 객체들. 
+        // Map을 사용하여 O(1) 시간 복잡도로 접근 가능
+        const markers = ref(new Map())  // 마커 저장 Map
+        const infowindows = ref(new Map()) // 전보창 Map
+        const visibleMarkers = ref(new Set()) // 현재 지도 영역에 보이는 마커의 expertId를 저장
+        
         const expertStore = useExpertStore()
         const userStore = useUserStore()
         const { experts, loading } = storeToRefs(expertStore)
         const { userType } = storeToRefs(userStore)
+        
+        let activeInfoWindow = null // 현재 활성화된 정보창 추적
 
-        // 별점 계산 함수
-        const calculateRating = (expert) => {
-            if (!expert?.totalScoreCnt || expert.totalScoreCnt === 0) return '신규'
-            return (expert.totalScore / expert.totalScoreCnt).toFixed(1)
-        }
+        // 현재 지도에 보이는 전문가 목록만 필터링하는 computed 속성
+        const visibleExperts = computed(() => {
+            if (!experts.value) return [];
+            // 1. 마커가 생성되어 있고(markers에 존재)
+            // 2. 현재 지도 영역에 보이는(visibleMarkers에 존재) 전문가만 반환
+            return experts.value.filter(expert => 
+                markers.value.has(expert.expertId) && 
+                visibleMarkers.value.has(expert.expertId)
+            );
+        });
+
+        // 지도 영역 변경 이벤트 핸들러(변경될떄마다 수행)
+        const handleBoundsChanged = () => {
+            if (!mapInstance.value) return;
+            
+            const bounds = mapInstance.value.getBounds();
+            visibleMarkers.value.clear();
+
+            // markers Map을 순회하면서 보이는 마커 확인
+            markers.value.forEach((marker, expertId) => {
+                const position = marker.getPosition();
+                if (bounds.contain(position)) {
+                    visibleMarkers.value.add(expertId);
+                }
+            });
+        };
 
         // 카카오맵 초기화
         const initializeMap = () => {
-            if (!mapContainer.value) {
-                // console.error('mapContainer가 없습니다.');
-                return
-            }
-            // console.log('카카오맵 초기화 중...');
+            if (!mapContainer.value) return;
             
             const options = {
                 center: new window.kakao.maps.LatLng(36.355339, 127.297577),
                 level: 3
             }
             
-            // 지도 인스턴스 생성
             mapInstance.value = new window.kakao.maps.Map(mapContainer.value, options)
-            // console.log('지도 인스턴스 생성 완료');
+            window.kakao.maps.event.addListener(mapInstance.value, 'bounds_changed', handleBoundsChanged);
         }
 
+         // 단일 전문가의 마커를 생성하는 Promise 함수
+        const createExpertMarker = (expert) => {
+          // Promise를 반환하여 비동기 처리를 가능하게 함
+            return new Promise((resolve) => {
+                if (!expert.address) {
+                    resolve();
+                    return;
+                }
 
-        // 전문가 마커 생성
-        const addExpertMarkers = (experts) => {
-            if (!experts || experts.length === 0) return
-            const geocoder = new kakao.maps.services.Geocoder()
-            
-            experts.forEach((expert) => {
-                if (!expert.address) return // 주소가 없는 경우 건너뜀
+                const geocoder = new window.kakao.maps.services.Geocoder();
                 
-                console.log(expert.address)
+                // 주소 -> 좌표 변환(비동기 처리)
                 geocoder.addressSearch(expert.address, (result, status) => {
-                    if (status === kakao.maps.services.Status.OK) {
-                        const coords = new kakao.maps.LatLng(result[0].y, result[0].x)
+                    if (status === window.kakao.maps.services.Status.OK) {
+                        const coords = new window.kakao.maps.LatLng(result[0].y, result[0].x);
 
-                // 전문가 프로필 이미지를 포함한 HTML 마커 콘텐츠 생성
-                const content = document.createElement('div');
-                const img = document.createElement('img');
-                
-                // 이미지 스타일 설정
-                img.src = expert.userProfileImgPath || defaultProfileImg;
-                img.style.width = '40px';
-                img.style.height = '40px';
-                img.style.borderRadius = '50%';
-                img.style.border = '2px solid #E2495B';
-                img.style.objectFit = 'cover';
-                
-                // div 스타일 설정
-                content.appendChild(img);
-                content.style.padding = '3px';
-                content.style.backgroundColor = 'white';
-                content.style.borderRadius = '50%';
-                content.style.boxShadow = '0 2px 6px rgba(0,0,0,0.3)';
-                
-                // CustomOverlay를 사용하여 마커 생성
-                const customOverlay = new kakao.maps.CustomOverlay({
-                    position: coords,
-                    content: content,
-                    map: mapInstance.value,
-                    zIndex: 1
-                });
+                        // 마커 DOM 요소 생성
+                        const markerContainer = document.createElement('div');
+                        markerContainer.className = 'marker-container';
+                        markerContainer.innerHTML = `
+                            <div class="marker-image-container">
+                                <img src="${expert.userProfileImgPath || defaultProfileImg}" 
+                                    class="marker-image" 
+                                    alt="${expert.name}">
+                            </div>
+                            <div class="marker-pointer"></div>
+                        `;
 
-                // 이름을 보여주는 인포윈도우 생성
-                const infowindow = new kakao.maps.InfoWindow({
-                    content: `<div style="padding:5px;font-size:12px;text-align:center;">${expert.name || '전문가'}</div>`,
-                    zIndex: 2
-                });
+                        // 인포윈도우 DOM 요소 생성
+                        const infoContainer = document.createElement('div');
+                        infoContainer.className = 'marker-info';
+                        infoContainer.style.cssText = 'display: none;';
+                        infoContainer.innerHTML = `
+                            <div class="expert-name">${expert.name} 선생님</div>
+                            <div class="expert-type">${expert.grade || '전문가'}</div>
+                            <div class="rating">
+                                ${expert.totalScoreCnt > 0 
+                                    ? `★ ${(expert.totalScore / expert.totalScoreCnt).toFixed(1)} (${expert.totalScoreCnt}개)`
+                                    : '신규'}
+                            </div>
+                        `;
 
-                // 마커에 마우스오버 이벤트 추가
-                kakao.maps.event.addListener(customOverlay, 'mouseover', function() {
-                    infowindow.open(mapInstance.value, customOverlay);
-                });
+                        // 마커와 인포윈도우 오버레이 생성
+                        const markerOverlay = new window.kakao.maps.CustomOverlay({
+                            position: coords,
+                            content: markerContainer,
+                            yAnchor: 1.0,
+                            zIndex: 1
+                        });
 
-                // 마커에 마우스아웃 이벤트 추가
-                kakao.maps.event.addListener(customOverlay, 'mouseout', function() {
-                    infowindow.close();
+                        const infoOverlay = new window.kakao.maps.CustomOverlay({
+                            position: coords,
+                            content: infoContainer,
+                            yAnchor: 2.3,
+                            zIndex: 2
+                        });
+
+                        // 마커 이벤트 핸들러
+                        const showInfo = () => {
+                            if (activeInfoWindow) {
+                                activeInfoWindow.getContent().style.display = 'none';
+                            }
+                            infoOverlay.setMap(mapInstance.value);
+                            infoContainer.style.display = 'block';
+                            activeInfoWindow = infoOverlay;
+
+                            highlightExpertCard(expert.expertId);
+                        };
+
+                        const hideInfo = () => {
+                            if (activeInfoWindow === infoOverlay) {
+                                infoContainer.style.display = 'none';
+                                activeInfoWindow = null;
+                            }
+                            removeExpertCardHighlight(expert.expertId);
+                        };
+
+                        // 이벤트 리스너 등록
+                        markerContainer.addEventListener('mouseover', showInfo);
+                        markerContainer.addEventListener('mouseout', hideInfo);
+                        markerContainer.addEventListener('click', () => scrollToExpertCard(expert.expertId));
+
+                        // 오버레이를 지도에 표시
+                        markerOverlay.setMap(mapInstance.value);
+                        infoOverlay.setMap(mapInstance.value);
+
+                        // Map에 마커와 인포윈도우 저장
+                        markers.value.set(expert.expertId, markerOverlay);
+                        infowindows.value.set(expert.expertId, infoOverlay);
+                    }
+                    resolve();
                 });
-            } else {
-                console.error(`주소 변환 실패: ${expert.address}`)
+            });
+        };
+
+        // 모든 전문가의 마커를 생성하는 함수
+        const addExpertMarkers = async (experts) => {
+            if (!experts || experts.length === 0) return;
+
+            // 기존 마커와 인포윈도우 제거
+            markers.value.forEach(marker => marker.setMap(null));
+            infowindows.value.forEach(info => info.setMap(null));
+            markers.value.clear();
+            infowindows.value.clear();
+
+            // Promise.all을 사용하여 모든 마커 생성을 동시에 처리
+            // 각 createExpertMarker가 반환하는 Promise를 배열로 모아서 한번에 처리
+            await Promise.all(experts.map(expert => createExpertMarker(expert)));
+            
+            // 모든 마커가 생성된 후 보이는 마커 업데이트
+            handleBoundsChanged();
+        };
+
+        // UI 헬퍼 함수들
+        const highlightExpertCard = (expertId) => {
+            const expertCard = document.querySelector(`[data-expert-id="${expertId}"]`);
+            if (expertCard) {
+                document.querySelectorAll('.expert-card').forEach(card => {
+                    card.classList.remove('active');
+                });
+                expertCard.classList.add('active');
             }
-                })
-            })
-        }
+        };
 
+        const removeExpertCardHighlight = (expertId) => {
+            const expertCard = document.querySelector(`[data-expert-id="${expertId}"]`);
+            if (expertCard) {
+                expertCard.classList.remove('active');
+            }
+        };
 
+        const scrollToExpertCard = (expertId) => {
+            const expertCard = document.querySelector(`[data-expert-id="${expertId}"]`);
+            if (expertCard) {
+                const container = document.querySelector('.expert-list-container');
+                const scrollTop = expertCard.offsetTop - container.offsetHeight * 0.2;
+                
+                container.scrollTo({
+                    top: scrollTop,
+                    behavior: 'smooth'
+                });
 
+                highlightExpertCard(expertId);
+                setTimeout(() => removeExpertCardHighlight(expertId), 1000);
+            }
+        };
 
-        // 카카오맵 스크립트 로드
+        // 카카오맵 로드
         const loadKakaoMap = () => {
-          return new Promise((resolve, reject) => {
-            const script = document.createElement('script');
-            const { VITE_KAKAO_MAP_KEY } = import.meta.env;
-            
-            if (!VITE_KAKAO_MAP_KEY) {
-                console.error('카카오맵 API 키가 설정되지 않았습니다.');
-                reject(new Error('API 키 누락'));
-                return;
-            }
-            // console.log('카카오맵 스크립트 로드 중...');
-            // console.log(`카카오맵 URL: https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&autoload=false`);
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                const { VITE_KAKAO_MAP_KEY } = import.meta.env;
+                
+                if (!VITE_KAKAO_MAP_KEY) {
+                    reject(new Error('API 키 누락'));
+                    return;
+                }
 
-            script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&libraries=services&autoload=false`; // 지도 생성 및 마커 라이브러리 추가
-            document.head.appendChild(script);
-            
-            script.onload = () => {
-                // console.log('카카오맵 스크립트 로딩 완료');
-                window.kakao.maps.load(() => {
-                    initializeMap()
-                    resolve(); // 지도 초기화 완료 시 resolve 호출
-                    // console.log("onload 완료")
-                })
-            }
-            
-            script.onerror = () => {
-                console.error('카카오맵 스크립트 로딩 실패');
-                reject(new Error('스크립트 로딩 실패'));
-            };
-          });
+                script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${VITE_KAKAO_MAP_KEY}&libraries=services&autoload=false`;
+                document.head.appendChild(script);
+                
+                script.onload = () => {
+                    window.kakao.maps.load(() => {
+                        initializeMap();
+                        resolve();
+                    });
+                };
+                
+                script.onerror = () => {
+                    reject(new Error('스크립트 로딩 실패'));
+                };
+            });
         };
 
         onMounted(async () => {
-            console.log('전문가 데이터 로딩 시작...');
-            await expertStore.fetchExperts()
-            console.log('전문가 데이터 로딩 완료');
-            loadKakaoMap()
-
-            // 전문가 데이터 로드 후 마커 추가
-            if (experts.value && experts.value.length > 0) {
-                addExpertMarkers(experts.value);
-            }
-        })
+          // 전문가 데이터 로드  
+          await expertStore.fetchExperts();
+          // 카카오맵 로드
+          await loadKakaoMap();
+          // 전문가 데이터가 있으면 마커 생성
+          if (experts.value?.length > 0) {
+            await addExpertMarkers(experts.value);
+          }
+        });
 
         onBeforeUnmount(() => {
             if (mapInstance.value) {
-                mapInstance.value = null
-                console.log('맵 인스턴스 정리됨');
+                window.kakao.maps.event.removeListener(mapInstance.value, 'bounds_changed', handleBoundsChanged);
+                markers.value.forEach(marker => marker.setMap(null));
+                infowindows.value.forEach(info => info.setMap(null));
+                mapInstance.value = null;
             }
-        })
+        });
 
         return {
             mapContainer,
-            experts,
+            experts: visibleExperts, // 보이는 전문가만 반환
             loading,
-            calculateRating, 
-            userType, 
-            addExpertMarkers
-        }
-    },
-    
-    methods: {
-        navigateToExpertForm() {
-            // console.log('전문가 등록 폼으로 이동');
-            this.$router.push('/matching/regist')
-        }
+            userType
+        };
     }
 }
 </script>
@@ -261,6 +354,8 @@ export default {
 
     .expert-list-container {
       padding: 20px;
+      height: 100%; // 높이 설정
+      overflow-y: auto; // 스크롤 가능하도록 설정
 
       .section-title {
         margin-bottom: 20px;
@@ -321,9 +416,10 @@ export default {
   border-radius: 5px;
   text-decoration: none;
   color: inherit;
-  transition: all 0.3s ease;
   border: 1px solid transparent;
   cursor: pointer;
+  // 전환 시간을 0.4초로 늘림
+  transition: all 0.4s ease-in-out;
 
   &:hover {
     background: rgba(217, 217, 217, 0.5);
@@ -349,7 +445,7 @@ export default {
     height: 98px;
     border-radius: 5px;
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
   }
 
   .expert-info {
@@ -366,7 +462,7 @@ export default {
       font-size: 16px;
       font-weight: 400;
       color: #000;
-      transition: color 0.3s ease;
+      transition: color 0.4s ease;
     }
 
     .expert-type {
@@ -387,12 +483,112 @@ export default {
     gap: 4px;
     margin-top: 8px;
     font-size: 12px;
-    transition: color 0.3s ease;
+    transition: color 0.4s ease;
   }
 }
 
 .expert-card.active {
   background: rgba(226, 73, 91, 0.1);
   border-color: #E2495B;
+  // active 상태 전환도 동일하게 0.4초
+  transition: all 0.4s ease-in-out;
+}
+
+// 마커 관련 스타일
+.marker-info {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #E2495B;
+    box-shadow: 0 2px 6px rgba(226, 73, 91, 0.2);
+    min-width: 150px;
+    text-align: center;
+    pointer-events: none;
+    display: none; // 초기 상태 숨김
+    // position: absolute; // 위치 고정
+    // transform: translate(-50%, -100%); // 중앙 정렬
+    z-index: 2;
+}
+
+.marker-container {
+    position: relative;
+    width: 46px;
+    height: 56px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.marker-image-container {
+    width: 46px;
+    height: 46px;
+    background-color: #E2495B;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(226, 73, 91, 0.3);
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2px;
+}
+
+.marker-image {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2px solid white;
+    object-fit: cover;
+}
+
+.marker-pointer {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid #E2495B;
+    filter: drop-shadow(0 2px 2px rgba(226, 73, 91, 0.3));
+}
+
+.marker-info .expert-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #000;
+    margin-bottom: 4px;
+}
+
+.marker-info .expert-type {
+    font-size: 12px;
+    color: #8A8A8A;
+    margin-bottom: 4px;
+}
+
+.marker-info .rating {
+    font-size: 12px;
+    color: #E2495B;
+}
+
+.expert-card.active {
+    background: rgba(226, 73, 91, 0.1);
+    border: 1px solid #E2495B;
+    transition: all 0.3s ease;
+}
+
+// 맵 컨테이너 스타일
+.map-section {
+  flex: 1;
+  height: 100%;
+  position: relative;
+
+  #kakao-map {
+    width: 100%;
+    height: 80%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
 }
 </style>
