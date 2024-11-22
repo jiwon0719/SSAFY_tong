@@ -2,8 +2,8 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-const MATCHING_API_URL = `http://localhost:8080/api/matching`
-const EXPERT_API_URL = `http://localhost:8080/api/expert`
+const MATCHING_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/matching`
+const EXPERT_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/expert`
 
 export const useMatchingStore = defineStore('matching', () => {
   const matchingList = ref([]) // (회원용) 전문가 매칭 리스트
@@ -75,7 +75,7 @@ export const useMatchingStore = defineStore('matching', () => {
     }
   }
 
-  // 유저별 매칭 목록 조회 (ExpertList 형태로 반환)
+  // 유저별 칭 목록 조회 (ExpertList 형태로 반환)
   const getUserMatchings = async (userId) => {
     try {
       loading.value = true
@@ -144,12 +144,63 @@ export const useMatchingStore = defineStore('matching', () => {
       loading.value = true
       console.log('매칭 상태 업데이트 요청:', { userId, expertUserId, status })
   
+      // 매칭 상태 업데이트
       const response = await axios.put(`${MATCHING_API_URL}/status`, {
         userId: userId,
         expertUserId: expertUserId,
         status: status
       })
   
+      // 매칭이 수락된 경우에만 환영 메시지 전송
+      if (status === 'O') {
+        try {
+          // 전문가 정보 조회 전에 로그 추가
+          console.log('전문가 정보 조회 시작:', expertUserId)
+          
+          const expertInfoResponse = await axios.get(
+            `${MATCHING_API_URL}/expert-info/${expertUserId}`
+          )
+          
+          // 응답 데이터 확인
+          console.log('전문가 정보 응답:', expertInfoResponse.data)
+          
+          if (!expertInfoResponse.data) {
+            throw new Error('전문가 정보를 찾을 수 없습니다.')
+          }
+
+          const expertInfo = expertInfoResponse.data
+          // 1. 매칭 ID 조회
+          const matchingResponse = await axios.get(
+            `${MATCHING_API_URL}/find/${userId}/${expertUserId}`
+          )
+          const matchingId = matchingResponse.data
+
+          // 2. 환영 메시지 생성
+          const welcomeMessage = `회원을 승락하였습니다. 감사합니다.\n\n` + 
+            `              🎉✨저희 둘이 TONG했어요✨🎉\n` +
+            `🏃드디어 찾으셨네요! 믿을 수 있는 전문가와 함께하세요‍🏃‍\n\n` +
+            `저를 ${expertInfo.companyName}에서 만나실 수 있습니다!\n\n` +
+            `직급 : ${expertInfo.grade}\n` +
+            `주소 : ${expertInfo.address} ${expertInfo.addressDetail}\n` +
+            `1회 가격 : ${expertInfo.price}원\n\n` +
+            `문의 사항은 편하게 채팅해주세요~`
+
+
+          // 3. 채팅 메시지 전송
+          await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/chat/message`, {
+            matchingId: matchingId,
+            senderId: expertUserId,
+            content: welcomeMessage,
+            type: "CHAT",
+            isRead: "X"
+          })
+        } catch (error) {
+          console.error("환영 메시지 전송 실패:", error)
+          console.error("상세 에러:", error.response?.data)
+          throw error  // 에러를 상위로 전파
+        }
+      }
+
       console.log('매칭 상태 업데이트 완료:', response.data)
       
       // 매칭 목록 갱신

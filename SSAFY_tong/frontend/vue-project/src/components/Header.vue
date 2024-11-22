@@ -60,7 +60,7 @@
                     </div>
                     <div class="rectangle-40">
                     </div>
-                    <router-link to="/community" class="community">
+                    <router-link to="/community/1" class="community">
                         <div class="community-1">
                             Community
                         </div>
@@ -670,7 +670,7 @@ const handleLogout = async () => {
   // Step 2: 카카오 로그아웃 처리
   if (kakaoAccessToken) {
     try {
-      await axios.get('http://localhost:8080/oauth2/kakao/unlink', {
+      await axios.get(`${import.meta.env.VITE_API_BASE_URL}/oauth2/kakao/unlink`, {
         headers: {
           Authorization: `Bearer ${kakaoAccessToken}`,
         },
