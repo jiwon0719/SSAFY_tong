@@ -11,6 +11,7 @@ export const useUserStore = defineStore('user', {
     userName: null, 
     kakaoUserInfo: null,
     profileImage: null, // 프로필 이미지 상태 추가
+    birthday: null, 
   }),
 
   actions: {
@@ -57,6 +58,9 @@ export const useUserStore = defineStore('user', {
     setProfileImage(imageUrl) {
       this.profileImage = imageUrl;
     },
+    setBirthday(biethday) {
+      this.birthday = biethday;
+    },
 
     async fetchUserInfo() {
       const router = useRouter();
@@ -71,13 +75,17 @@ export const useUserStore = defineStore('user', {
             headers: { Authorization: `Bearer ${this.kakaoToken}` },
           });
 
-          console.log('kakaoResponse.data:', kakaoResponse.data);
+          console.log('kakaoResponse.data 응답 데이터 전체:', kakaoResponse.data);
 
           if (kakaoResponse.status === 200) {
             userId = kakaoResponse.data.kakaoId;
             userType = kakaoResponse.data.userType; // 구현  필요
             userName = kakaoResponse.data.nickname;
             console.log('kakaoResponse.data.userId :', userId);
+
+            if (kakaoResponse.data.birthdate) {
+              this.setBirthday(kakaoResponse.data.birthdate);
+            }
 
             // 카카오 사용자 정보 저장
             this.setKakaoUserInfo({
@@ -110,13 +118,17 @@ export const useUserStore = defineStore('user', {
             headers: { Authorization: `Bearer ${this.token}` },
           });
 
-          console.log('jwtResponse.data :', jwtResponse.data);
+          console.log('jwtResponse.data 응답 데이터 전체:', jwtResponse.data);
 
           if (jwtResponse.status === 200) {
             userId = jwtResponse.data.userId;
             userType = jwtResponse.data.userDetails.userType;
             userName = jwtResponse.data.name;
             
+            if (jwtResponse.data.userDetails.birthdate) {
+              this.setBirthday(jwtResponse.data.userDetails.birthdate);
+            }
+
             // store.js에 기본정보 저장
             this.setUserId(userId);
             this.setUserType(userType);
@@ -171,5 +183,11 @@ export const useUserStore = defineStore('user', {
     getProfileImage(state) {
       return state.profileImage || '/default-profile.png'; // 프로필 이미지 없을 경우 기본값 설정
     },
+    getBirthday(state) {
+      return state.birthday;
+    }, 
+    getUserName(state) {
+      return state.userName;
+    }
   },
 });

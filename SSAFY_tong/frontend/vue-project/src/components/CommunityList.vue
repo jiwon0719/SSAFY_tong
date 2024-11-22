@@ -9,11 +9,13 @@
           <div class="search-bar">
             <div class="search-input-wrapper">
               <input 
+                v-model="searchQuery"
                 type="text" 
                 placeholder="제목, 내용으로 검색" 
                 class="search-input"
-              >
-              <button class="search-btn">
+              > 
+              <!-- @keyup.enter="handleSearch" -->
+              <button class="search-btn" @click="handleSearch">
                 <span>🔍</span>
               </button>
             </div>
@@ -28,8 +30,8 @@
           </div>
   
           <!-- 게시물 목록 -->
-          <div v-if="store.boardList.length > 0">
-            <div class="posts-container" v-for="board in store.boardList" :key="board.boardId">
+          <div v-if="filteredBoardList.length > 0">
+            <div class="posts-container" v-for="board in filteredBoardList" :key="board.boardId">
               <router-link :to="`/community/${route.params.categoryId}/${board.boardId}`" class= "detaillink" @click="viewBoardDetail(board.boardId)">
                 <div class="post-item">
                   <div class="post-content">
@@ -73,65 +75,84 @@
   </template>
   
   <script setup>
-  import { useCommunityStore } from '@/stores/community'
-  import { useBoardStore } from '@/stores/board';
-  import { ref, onMounted, watch } from 'vue';
-  import { storeToRefs } from 'pinia';
-  import { useRoute } from 'vue-router';
+    import { useCommunityStore } from '@/stores/community'
+    import { useBoardStore } from '@/stores/board';
+    import { ref, onMounted, watch, computed } from 'vue';
+    import { storeToRefs } from 'pinia';
+    import { useRoute } from 'vue-router';
 
-  const store = useCommunityStore(); 
-  const boardStore = useBoardStore();
-  const route = useRoute();
-  const { selectCategoryId, selectCategoryTitle } = storeToRefs(store);
-  
-  // 댓글 수 저장
-  const commentCounts = ref({});
+    const store = useCommunityStore(); 
+    const boardStore = useBoardStore();
+    const route = useRoute();
+    const { selectCategoryId, selectCategoryTitle } = storeToRefs(store);
+    
+    // 댓글 수 저장
+    const commentCounts = ref({});
 
-  // 댓글 수를 가져오는 함수
-  const fetchCommentCounts = async () => {
-    for (const board of store.boardList) {
-      const count = await boardStore.getCommentCount(board.boardId);
-      commentCounts.value[board.boardId] = count;
+    // 댓글 수를 가져오는 함수
+    const fetchCommentCounts = async () => {
+      for (const board of store.boardList) {
+        const count = await boardStore.getCommentCount(board.boardId);
+        commentCounts.value[board.boardId] = count;
+      }
+    };
+
+    // 데이터를 새로 로드하는 함수
+    const loadData = async () => {
+      if (selectCategoryId.value) {
+        const data = await boardStore.getBoardList(selectCategoryId.value);
+        store.boardList = data; // store의 boardList 업데이트
+        await fetchCommentCounts();
+      }
+    };
+
+    // 컴포넌트가 마운트될 때 댓글 수 가져오기
+    onMounted(loadData);
+    
+
+    // 라우트 변경을 감지하여 데이터 다시 로드
+    // 상세 -> 목록(조회수 최신화) & 카테고리 변경 시
+    watch(
+      [() => route.path, () => route.params.categoryId],
+      async ([newPath, newCategoryId], [oldPath, oldCategoryId]) => {
+        if ((newPath && newPath.includes('/community') && oldPath?.includes('/board/')) || 
+        (newCategoryId && newCategoryId !== oldCategoryId)) {
+          await loadData();
+        }
+      }
+    );
+
+    // 게시글 작성 버튼 클릭 시 호출되는 함수
+    const onPostClick = () => {
+      console.log("선택된 카테고리 ID:", selectCategoryId.value);
+      console.log("선택된 카테고리 제목:", selectCategoryTitle.value);
+      // 여기서 추가로 게시글 작성 로직을 수행할 수 있습니다.
+    };
+
+    // 게시글 상세 이동
+    const viewBoardDetail = async(boardId) => {
+      // await boardStore.getBoardDetail(boardId); // 이거떄문에 조회수 2번 호출 ㅠ
+      console.log("게시글 상세 조회 완료 후 currentBoard:", boardStore.currentBoard);  // getBoardDetail 완료 후 값 출력
     }
-  };
 
-  // 데이터를 새로 로드하는 함수
-  const loadData = async () => {
-    if (selectCategoryId.value) {
-      const data = await boardStore.getBoardList(selectCategoryId.value);
-      store.boardList = data; // store의 boardList 업데이트
-      await fetchCommentCounts();
-    }
-  };
+    // 검색어 상태 관리
+    const searchQuery = ref('');
 
-  // 컴포넌트가 마운트될 때 댓글 수 가져오기
-  onMounted(loadData);
-  
+    // 필터링된 게시글 목록
+    const filteredBoardList = computed(() => {
+      if (!searchQuery.value) return store.boardList;
+      
+      const query = searchQuery.value.toLowerCase();
+      return store.boardList.filter(board => 
+        board.title.toLowerCase().includes(query) ||
+        board.content.toLowerCase().includes(query)
+      );
+    });
 
-  // 라우트 변경을 감지하여 데이터 다시 로드
-  // 상세 -> 목록(조회수 최신화) & 카테고리 변경 시
-  watch(
-  [() => route.path, () => route.params.categoryId],
-  async ([newPath, newCategoryId], [oldPath, oldCategoryId]) => {
-    if ((newPath && newPath.includes('/community') && oldPath?.includes('/board/')) || 
-    (newCategoryId && newCategoryId !== oldCategoryId)) {
-      await loadData();
-    }
-  }
-);
-
-  // 게시글 작성 버튼 클릭 시 호출되는 함수
-  const onPostClick = () => {
-    console.log("선택된 카테고리 ID:", selectCategoryId.value);
-    console.log("선택된 카테고리 제목:", selectCategoryTitle.value);
-    // 여기서 추가로 게시글 작성 로직을 수행할 수 있습니다.
-  };
-
-  // 게시글 상세 이동
-  const viewBoardDetail = async(boardId) => {
-    // await boardStore.getBoardDetail(boardId); // 이거떄문에 조회수 2번 호출 ㅠ
-    console.log("게시글 상세 조회 완료 후 currentBoard:", boardStore.currentBoard);  // getBoardDetail 완료 후 값 출력
-  }
+    // 검색 핸들러
+    const handleSearch = () => {
+      console.log('Searching for:', searchQuery.value);
+    };
   </script>
   
   <style scoped>
