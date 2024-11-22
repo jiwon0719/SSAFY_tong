@@ -270,20 +270,6 @@ const snackbarColor = ref('#E2495B')
 // 오늘 날짜 이전은 선택 불가 (예약 폼에서만 사용)
 const minDate = new Date().toISOString().split('T')[0]
 
-// 오늘 날짜의 퀘스트를 따로 가져오는 함수
-const fetchTodayQuests = async () => {
-  try {
-    const today = new Date().toISOString().split('T')[0]
-    const data = await store.fetchCalendarByDate(today)
-    if (data.quests) {
-      quests.value = data.quests
-    }
-  } catch (error) {
-    console.error('퀘스트 데이터 조회 실패:', error)
-    showSnackbar('퀘스트 조회에 실패했습니다.', 'error')
-  }
-}
-
 // 이벤트 데이터 (퀘스트와 예약이 있는 날짜)
 const events = computed(() => {
   if (!quests.value || !store.reservations) return []
@@ -383,9 +369,6 @@ onMounted(async () => {
         calendarData.value = data.calendar
       }
     }
-
-    // 오늘 날짜의 퀘스트 데이터만 따로 가져오기
-    await fetchTodayQuests()
   } catch (error) {
     showSnackbar('데이터 조회에 실패했습니다.', 'error')
   }
