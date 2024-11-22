@@ -211,7 +211,7 @@ a{
  /* top: 10vh;                    */
  top: 0;   
  /* height: calc(100vh + 10vh);   */
- height: 100vh;  
+ min-height: 100vh;  
  overflow-y: auto;               
  z-index: 10;                    
 }

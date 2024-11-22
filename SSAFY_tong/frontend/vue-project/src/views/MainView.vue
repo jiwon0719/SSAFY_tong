@@ -38,7 +38,7 @@ onMounted(() => {
   flex: 1 0 auto;
   width: 100%;
   padding-top: 100px; /* 헤더 높이만큼만 패딩 지정 */
-  margin-bottom: 300px;
+  /* margin-bottom: 300px; */
   background-color: #f8f9fa; /* 추가된 부분 */
 }
 

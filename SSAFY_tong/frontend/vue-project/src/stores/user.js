@@ -39,7 +39,7 @@ export const useUserStore = defineStore('user', {
       sessionStorage.setItem('kakao-access-token', token);
     },
     loadTokenFromStorage() {
-      console.log('세션 스토리지에 토큰 있는거 확인!');
+      // console.log('세션 스토리지에 토큰 있는거 확인!');
       this.token = sessionStorage.getItem('access-token');
       this.kakaoToken = sessionStorage.getItem('kakao-access-token');
     },
@@ -118,7 +118,7 @@ export const useUserStore = defineStore('user', {
             headers: { Authorization: `Bearer ${this.token}` },
           });
 
-          console.log('jwtResponse.data 응답 데이터 전체:', jwtResponse.data);
+          // console.log('jwtResponse.data 응답 데이터 전체:', jwtResponse.data);
 
           if (jwtResponse.status === 200) {
             userId = jwtResponse.data.userId;
@@ -140,7 +140,7 @@ export const useUserStore = defineStore('user', {
           }
         }
 
-        console.log('Final userId : ', this.userId);
+        // console.log('Final userId : ', this.userId);
       } catch (error) {
         console.error('Error fetching user info:', error);
       }
@@ -170,11 +170,11 @@ export const useUserStore = defineStore('user', {
 
   getters: {
     isAuthenticated(state) {
-      console.log('isAuthenticated 통해서 있는지 확인 >>>>' + state.token + ' ' + state.kakaoToken);
+      // console.log('isAuthenticated 통해서 있는지 확인 >>>>' + state.token + ' ' + state.kakaoToken);
       return !!(state.token || state.kakaoToken);
     },
     getUserId(state) {
-      console.log('userId 확인 ' + state.userId);
+      // console.log('userId 확인 ' + state.userId);
       return state.userId;
     },
     getKakaoUserInfo(state) {

@@ -169,9 +169,6 @@ a {
 }
 
 
-
-
-
 .main-content {
   margin-left: 0px;
   padding: 20px;

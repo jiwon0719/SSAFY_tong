@@ -382,7 +382,8 @@ export default {
 // 매칭 관련
 .matching-container {
   display: flex;
-  height: calc(100vh - 64px); // Adjust based on your header height
+  // height: calc(100vh - 64px); // Adjust based on your header height
+  height: 100vh;
   width: 100%;
   overflow: hidden;
 

@@ -150,8 +150,8 @@ onMounted(async () => {
     // 유저 정보 가져오기
     await userStore.fetchUserInfo();
 
-    console.log('유저 생일:', userStore.getBirthday);
-    console.log('유저 이름:', userStore.getUserName);
+    // console.log('유저 생일:', userStore.getBirthday);
+    // console.log('유저 이름:', userStore.getUserName);
 
     if (!userStore.getUserId) {
       router.push('/signUp');

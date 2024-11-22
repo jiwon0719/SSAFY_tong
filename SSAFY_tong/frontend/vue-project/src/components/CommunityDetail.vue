@@ -1,13 +1,13 @@
 <template>
   <div class="post-detail">
-    <header class="post-header">
+    <div class="post-header">
       <h1 class="post-title">{{ currentBoard?.title }}</h1>
       <div class="post-info">
         <span>작성자: {{ currentBoard?.writer }}</span>
         <span>작성일: {{ currentBoard?.regDate }}</span>
         <span>조회수: {{ currentBoard?.viewCnt }}</span>
       </div>
-    </header>
+    </div>
 
     <div class="post-content">
       {{ currentBoard?.content }}
@@ -255,7 +255,7 @@ const handleEditBoard = () => {
 }
 
 .post-content {
-  min-height: 200px;
+  min-height: 100px;
   margin: 2rem 0;
   padding: 1.5rem;
   background: #fafafa;
