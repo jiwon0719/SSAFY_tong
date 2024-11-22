@@ -30,6 +30,13 @@
         <v-icon color="#333" class="mr-2">mdi-message-text</v-icon>
         <span>Messages</span>
       </div>
+      <div class="messages-container">
+        <!-- 이모지 컴포넌트 -->
+        <div class="emoji-container">
+          <EyeFollowingEmoji />
+        </div>
+        <!-- 메시지 컨텐츠는 여기에 추가 -->
+      </div>
     </div>
   </div>
   <v-snackbar
@@ -47,6 +54,7 @@ import BirthdayModal from './BirthdayModal.vue';
 import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
 import ReservationMain from './ReservationMain.vue'
 import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
+import EyeFollowingEmoji from './EyeFollowingEmoji.vue';
 
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -171,9 +179,9 @@ onMounted(async () => {
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
   gap: 20px;
-  height: calc(100vh - 120px); /* Header(60px) + Footer(60px) 고려 */
+  height: calc(100vh - 120px);
   width: 100%;
-  padding: 30px;
+  padding: 40px;
   box-sizing: border-box;
   font-family: 'Noto Sans KR', sans-serif;
 }
@@ -212,5 +220,18 @@ onMounted(async () => {
   grid-template-columns: 1fr;
   grid-template-rows: repeat(4, 1fr);
 }
+}
+
+.messages-container {
+  padding: 20px;
+  height: calc(100% - 60px);
+  position: relative;
+}
+
+.emoji-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 </style>

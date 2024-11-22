@@ -58,17 +58,6 @@
           <div v-else>
             <p>게시글이 없습니다.</p>
           </div>
-  
-          <!-- 페이지네이션 -->
-          <div class="pagination-wrapper">
-            <div class="pagination">
-              <button class="page-nav">◀</button>
-              <div class="page-numbers">
-                <button v-for="n in 7" :key="n" class="page-number">{{ n }}</button>
-              </div>
-              <button class="page-nav">▶</button>
-            </div>
-          </div>
         </div>
       </main>
   
@@ -184,7 +173,7 @@ a {
 
 
 .main-content {
-  margin-left: 280px;
+  margin-left: 0px;
   padding: 20px;
   min-height: 100vh;
 }

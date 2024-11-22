@@ -31,16 +31,29 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  position: relative;
 }
 
 .main-content {
-  flex: 1;
+  flex: 1 0 auto;
   width: 100%;
-  margin-top: 100px; /* 헤더 높이만큼 여백 */
-  margin-bottom: 20vh; /* Footer 높이만큼 여백 */
-  padding: 20px;
-  position: relative; /* 자식 요소들의 위치 기준점 */
+  padding-top: 100px; /* 헤더 높이만큼만 패딩 지정 */
+  margin-bottom: 300px;
+  background-color: #f8f9fa; /* 추가된 부분 */
 }
 
-/* header와 footer는 자신의 컴포넌트에서 높이 정의 */
+/* Header 스타일 */
+:deep(header) {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 100;
+  height: 60px;
+}
+
+/* Footer 스타일 */
+:deep(footer) {
+  flex-shrink: 0;
+  width: 100%;
+}
 </style>

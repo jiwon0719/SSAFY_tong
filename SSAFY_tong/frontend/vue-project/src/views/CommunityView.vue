@@ -111,7 +111,8 @@ const toggleHold = async (categoryId) => {
 // 핫게시판 조회(TOP3)
 const fetchTopCategories = async () => {
   try {
-    const response = await axios.get(`http://192.168.210.55:5173/api/boardCategory/top-viewed`);
+    // const response = await axios.get(`http://192.168.210.55:5173/api/boardCategory/top-viewed`);
+    const response = await axios.get(`http://localhost:8080/api/boardCategory/top-viewed`);
     topCategories.value = response.data;
   } catch (error) {
     console.error('HOT 게시판을 불러오는데 실패했습니다:', error);
@@ -202,23 +203,24 @@ a{
 }
 
 .sidebar {
-  width: 300px;
-  background: white;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
-  padding: 25px;
-  position: fixed;
-  left: 0;
-  top: 10vh;
-  height: calc(100vh - 10vh);
-  overflow-y: auto;
-  z-index: 10;
+  width: 280px;               
+ background: white;              
+ border-right: 1px solid #e0e0e0; 
+ padding: 20px;               
+ left: 0;                   
+ /* top: 10vh;                    */
+ top: 0;   
+ /* height: calc(100vh + 10vh);   */
+ height: 100vh;  
+ overflow-y: auto;               
+ z-index: 10;                    
 }
 
 .sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .board-title {
@@ -310,6 +312,7 @@ a{
   margin-left: 300px;
   padding: 30px;
   background-color: #f8f9fa;
+  min-height: 100vh;        /* min-height 추가 */
 }
 
 .search-bar {

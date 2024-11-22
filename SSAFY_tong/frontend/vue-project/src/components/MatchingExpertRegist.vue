@@ -352,7 +352,8 @@
     min-height: 100%;
     max-width: 1200px;
     margin: 0 auto;
-  }
+    padding-bottom: 350px; /* 푸터 높이보다 약간 더 크게 설정 */
+}
   
   .expert-form {
     background: #fff;
