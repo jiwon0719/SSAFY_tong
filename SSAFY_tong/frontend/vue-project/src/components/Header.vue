@@ -18,11 +18,14 @@
           <span>Chat</span>
           <div class="chain-effect"></div>
         </router-link>
-        <div class="nav-item" @click="navigateToCalendar">
+        <router-link 
+          :to="userStore.userType === 'E' ? '/calendar/expert' : '/calendar'" 
+          class="nav-item"
+        >
           <v-icon>mdi-calendar-check</v-icon>
           <span>Calendar</span>
           <div class="chain-effect"></div>
-        </div>
+        </router-link>
         <router-link to="/matching" class="nav-item">
           <v-icon>mdi-handshake</v-icon>
           <span>Matching</span>

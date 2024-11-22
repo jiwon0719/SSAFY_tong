@@ -1,4 +1,96 @@
 <template>
+  <footer class="footer">
+    <img
+      src="https://image-resource.creatie.ai/142625939968981/142625939968983/e444649ac77c0d7952f2c62fdd0aaaf2.png"
+      class="rectangle-3dicons"
+    />
+    <div class="footer-content">
+      <div class="footertext">
+        <div class="text-ssafy-tong">(주)SSAFY_TONG</div>
+        <div class="text-address">대전시 유성구 대전 유성구 동서대로 98-39 교육동 2층</div>
+        <div class="text-address-eng">
+          2nd Floor, Education Building, 98-39 Dongseo-daero, Yuseong-gu, Daejeon, South Korea.
+        </div>
+        <div class="text-business-number">사업자 번호 : 추가 예정..</div>
+        <div class="email-hjw">hjw9265@naver.com</div>
+        <div class="email-tmdgh">tmdgh0124@naver.com</div>
+        <div class="text-copyright">
+          본 사이트의 컨텐츠는 저작권법의 보호를 받는 바 무단 전재, 복사, 배포 등을 금합니다.
+        </div>
+        <div class="copyright">Copyright © 2024~ TONG. All Rights Reserved.</div>
+      </div>
+    </div>
+  </footer>
+</template>
+
+<style lang="scss">
+.footer {
+  width: 100%;
+  height: 20vh;
+  background: #272629;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 2vh 0;
+  // position: fixed 제거
+}
+
+.footer-content {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  max-width: 1800px;
+  position: relative;
+}
+
+.footertext {
+  width: 100%;
+  color: white;
+  font-family: "Jockey One";
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1vh;
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.text-ssafy-tong,
+.text-address,
+.text-address-eng,
+.text-business-number,
+.email-hjw,
+.email-tmdgh,
+.text-copyright,
+.copyright {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.rectangle-3dicons {
+  width: 7vw;
+  height: auto;
+  transform: rotate(-49deg);
+  object-fit: cover;
+  margin-right: 2vw;
+  margin-left: 5%;
+}
+</style>
+
+<script>
+export default {
+  name: 'Footer',
+};
+</script>
+
+
+
+<!-- <template>
     <div class="footer">
       <img src="https://image-resource.creatie.ai/142625939968981/142625939968983/e444649ac77c0d7952f2c62fdd0aaaf2.png" class="rectangle-3dicons" />
       <div class="footer-content">
@@ -97,4 +189,4 @@
     name: 'Footer',
   };
   </script>
-  
+   -->
