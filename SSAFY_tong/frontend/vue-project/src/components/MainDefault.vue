@@ -1,5 +1,9 @@
 <template>
   <div class="main-container">
+    <BirthdayModal :user="{
+      name: userStore.getUserName,
+      birthday: userStore.getBirthday
+    }" /> <!-- 생일 축하 모달 -->
     <div class="quadrant quadrant-1">
       <div class="quadrant-header">
         <v-icon color="#333" class="mr-2">mdi-weather-partly-cloudy</v-icon>
@@ -39,6 +43,7 @@
 
 
 <script setup>
+import BirthdayModal from './BirthdayModal.vue';
 import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
 import ReservationMain from './ReservationMain.vue'
 import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
@@ -136,6 +141,9 @@ onMounted(async () => {
 
     // 유저 정보 가져오기
     await userStore.fetchUserInfo();
+
+    console.log('유저 생일:', userStore.getBirthday);
+    console.log('유저 이름:', userStore.getUserName);
 
     if (!userStore.getUserId) {
       router.push('/signUp');

@@ -58,4 +58,32 @@
 	</select>
 	
 	
+	<select id="findHoldByCategoryAndUser" resultType="map">
+	    SELECT *
+	    FROM board_category_hold
+	    WHERE category_id = #{categoryId} 
+	    AND user_id = #{userId}
+	</select>
+	
+	<insert id="insertHold">
+	   INSERT INTO board_category_hold (category_id, user_id, is_hold)
+	   VALUES (#{categoryId}, #{userId}, #{isHold})
+	</insert>
+	
+	<update id="updateHold">
+	   UPDATE board_category_hold 
+	      SET is_hold = #{isHold}
+	    WHERE category_id = #{categoryId} 
+	      AND user_id = #{userId}
+	</update>
+	
+	<select id="findHoldsByUser" resultType="BoardCategory">
+	    SELECT bc.*
+	    FROM board_category bc
+	    INNER JOIN board_category_hold bch ON bc.category_id = bch.category_id
+	    WHERE bch.user_id = #{userId} 
+	    AND bch.is_hold = 'O'
+	    ORDER BY bc.category_id
+	</select>
+
 </mapper>

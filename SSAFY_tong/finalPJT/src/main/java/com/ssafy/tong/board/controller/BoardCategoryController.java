@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ssafy.tong.board.model.Board;
@@ -84,6 +85,29 @@ public class BoardCategoryController {
 	@GetMapping("/top-viewed")
 	public ResponseEntity<List<CategoryViewResponse>> getTopViewedCategories() {
 		return ResponseEntity.ok(boardCategoryService.findTopViewedCategories());
+	}
+	
+	// 카테고리 찜 등록
+	@PostMapping("/hold/{categoryId}")
+	public ResponseEntity<String> toggleHold(@PathVariable Integer categoryId, @RequestParam String userId) {
+        System.out.println(categoryId);
+        System.out.println(userId);
+		try {
+            if (categoryId == null || userId == null || userId.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("잘못된 요청입니다.");
+            }
+        	boardCategoryService.toggleHold(categoryId, userId);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body("찜하기 처리 중 오류가 발생했습니다: " + e.getMessage());
+        }
+    }
+
+	// 카테고리 찜 조회
+	@GetMapping("/hold")
+	public ResponseEntity<List<BoardCategory>> getHoldsByUser(@RequestParam String userId) {
+	    return ResponseEntity.ok(boardCategoryService.getHoldsByUser(userId));
 	}
 	
 }

@@ -104,7 +104,7 @@ export const useBoardStore = defineStore('board', () => {
     try {
       await axios.delete(`${BOARD_API_URL}/${boardId}`)
       console.log("게시글 삭제 완료")
-      boardList.value = boardList.value.filter(board => board.id !== boardId)
+      boardList.value = boardList.value.filter(board => board.boardId !== boardId)
     } catch (error) {
       console.error("게시글 삭제에 실패했습니다:", error)
       throw error
