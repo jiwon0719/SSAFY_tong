@@ -81,7 +81,7 @@ export default {
     // 채팅 내역 불러오기
     const loadChatHistory = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/chat/history/${route.query.matchingId}`, {
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/chat/history/${route.query.matchingId}`, {
           headers: {
             'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
           }
@@ -95,7 +95,7 @@ export default {
 
     // WebSocket 연결
     const connectWebSocket = () => {
-      const socket = new SockJS('http://localhost:8080/tongChat');
+      const socket = new SockJS(`${import.meta.env.VITE_API_BASE_URL}/tongChat`);
       stompClient.value = Stomp.over(socket);
 
       stompClient.value.connect({}, () => {
@@ -137,7 +137,7 @@ export default {
     // 모든 메시지 읽음 처리
     const updateAllMessagesAsRead = async () => {
       try {
-        await axios.put(`http://localhost:8080/api/chat/read-all/${route.query.matchingId}`, null, {
+        await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/chat/read-all/${route.query.matchingId}`, null, {
           headers: {
             'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
           }
@@ -170,7 +170,7 @@ export default {
           );
         } else {
           // WebSocket이 연결되지 않은 경우에만 REST API 사용
-          await axios.post('http://localhost:8080/api/chat/message', message, {
+          await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/chat/message`, message, {
             headers: {
               'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
             }

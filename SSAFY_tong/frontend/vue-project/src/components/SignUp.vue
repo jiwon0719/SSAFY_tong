@@ -37,7 +37,7 @@
       <input 
         type="password" 
         v-model="password" 
-        placeholder="영문, 숫자, 특수문자 포함 8자 이상" 
+        placeholder="영문, 숫자, 특수문자 ��함 8자 이상" 
         :class="{ 'invalid': password && passwordError }"
       />
       <div v-if="passwordError" class="invalid-feedback">
@@ -502,7 +502,7 @@ const openPostcode = () => {
       }
 
       if (data.userSelectedType === 'R') {
-        if (data.bname !== '' && /[동|로|가]$/g.test(data.bname)) {
+        if (data.bname !== '' && /[동|로|���]$/g.test(data.bname)) {
           extraAddr += data.bname;
         }
         if (data.buildingName !== '' && data.apartment === 'Y') {
@@ -571,7 +571,7 @@ const registerUser = async () => {
 
 try {
   // POST 요청을 보내서 회원가입 진행
-  const response = await axios.post('http://localhost:8080/api/user/signUp', userData, {
+  const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/user/signUp`, userData, {
     headers: {
       'Content-Type': 'application/json', // ensure Content-Type header is set correctly
     }
@@ -603,7 +603,7 @@ const checkUserIdDuplicate = async () => {
 
   // 2. 중복 검사 (서버 요청 등)
   try {
-    const response = await axios.get(`http://localhost:8080/api/user/checkUserIdDuplicate?userId=${userId.value}`);
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/user/checkUserIdDuplicate?userId=${userId.value}`);
     if (response.data.duplicate) {
       alert('이미 사용 중인 아이디입니다.');
       isIdChecked.value = false;

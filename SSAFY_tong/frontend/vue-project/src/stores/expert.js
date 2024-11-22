@@ -20,7 +20,7 @@ export const useExpertStore = defineStore('expert', () => {
   // action
   // 이미지 URL 생성 함수
   const getImageUrl = (filePath, systemName) => {
-    return `http://localhost:8080/api/expert/image/${filePath}/${systemName}`
+    return `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${filePath}/${systemName}`
   }
 
   // 전문가 상세
@@ -36,9 +36,9 @@ export const useExpertStore = defineStore('expert', () => {
     try {
       // 병렬로 세 개의 API를 동시에 호출
       const [expertResponse, careersResponse, imagesResponse] = await Promise.all([
-        axios.get(`http://localhost:8080/api/expert/${expertId}`),
-        axios.get(`http://localhost:8080/api/expert/${expertId}/careers`),
-        axios.get(`http://localhost:8080/api/expert/${expertId}/images`)
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}`),
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/careers`),
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/images`)
       ])
       
       console.log('이미지 응답 데이터: ', imagesResponse.data);
@@ -50,7 +50,7 @@ export const useExpertStore = defineStore('expert', () => {
       console.log(expertCareers.value)
       // 이미지 데이터에 URL 추가
       expertImages.value = imagesResponse.data.map(img => {
-        const imageUrl = `http://localhost:8080/api/expert/image/${img.filePath}/${img.systemName}`;
+        const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${img.filePath}/${img.systemName}`;
         console.log('생성된 이미지 URL:', imageUrl);
         return {
           ...img,
@@ -114,7 +114,7 @@ export const useExpertStore = defineStore('expert', () => {
         formData.append('files', image.file)
       })
 
-      const response = await axios.post('http://localhost:8080/api/expert', formData, {
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/expert`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
@@ -165,7 +165,7 @@ export const useExpertStore = defineStore('expert', () => {
     error.value = null
 
     try {
-      const response = await axios.get('http://localhost:8080/api/expert/list')
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/list`)
       console.log('전문가 데이터 로드:', response.data) // 디버깅용
       experts.value = response.data
       

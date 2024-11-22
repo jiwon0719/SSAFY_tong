@@ -68,7 +68,7 @@ export default {
         const responses = await Promise.all(
           matchedRooms.value.map(room => 
             axios.get(
-              `http://localhost:8080/api/chat/unread/${room.matchingId}/${userId}`,
+              `${import.meta.env.VITE_API_BASE_URL}/api/chat/unread/${room.matchingId}/${userId}`,
               {
                 headers: {
                   'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
@@ -108,7 +108,7 @@ export default {
                 
                 // 서버에서 실제 읽지 않은 메시지 수 조회
                 const unreadResponse = await axios.get(
-                  `http://localhost:8080/api/chat/unread/${room.matchingId}/${userId}`,
+                  `${import.meta.env.VITE_API_BASE_URL}/api/chat/unread/${room.matchingId}/${userId}`,
                   {
                     headers: {
                       'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
@@ -143,7 +143,7 @@ export default {
         try {
           if (stompClient.value?.connected) return;
 
-          const socket = new SockJS('http://localhost:8080/tongChat');
+          const socket = new SockJS(`${import.meta.env.VITE_API_BASE_URL}/tongChat`);
           stompClient.value = Stomp.over(socket);
           
           await new Promise((resolve, reject) => {
@@ -196,7 +196,7 @@ export default {
         }
 
         const response = await axios.get(
-          `http://localhost:8080/api/chat/rooms/${userId}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/chat/rooms/${userId}`,
           {
             headers: {
               'Authorization': `Bearer ${userStore.token || userStore.kakaoToken}`
@@ -243,7 +243,7 @@ export default {
       try {
         // 서버에 읽음 처리 요청
         await axios.post(
-          `http://localhost:8080/api/chat/read/${room.matchingId}/${userId}`,
+          `${import.meta.env.VITE_API_BASE_URL}/api/chat/read/${room.matchingId}/${userId}`,
           null,
           {
             headers: {

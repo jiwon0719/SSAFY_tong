@@ -3,8 +3,8 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-const BOARD_API_URL = `http://localhost:8080/api/board`
-const REST_API_URL = `http://localhost:8080/api/boardCategory`
+const BOARD_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/board`
+const REST_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/boardCategory`
 // const BOARD_API_URL = `http://192.168.210.55:8080/api/board`
 // const REST_API_URL = `http://192.168.210.55:8080/api/boardCategory`
 

@@ -16,7 +16,7 @@ class StompService {
         }
 
         // SockJS 연결 생성
-        const socket = new SockJS('http://localhost:8080/tongChat');
+        const socket = new SockJS(`${import.meta.env.VITE_API_BASE_URL}/tongChat`);
         
         // STOMP 클라이언트 설정
         this.client = new Client({

@@ -125,7 +125,7 @@ const isFirstMount = ref(true);
 const goToList = async () => {
   try {
     if(selectCategoryId.value) {
-      const response = await axios.get(`http://localhost:8080/api/boardCategory/${selectCategoryId.value}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/boardCategory/${selectCategoryId.value}`);
       communityStore.boardList.value = response.data;
       router.push(`/community/${route.params.categoryId}`);
     } else {

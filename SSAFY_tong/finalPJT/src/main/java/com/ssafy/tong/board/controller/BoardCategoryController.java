@@ -22,7 +22,7 @@ import com.ssafy.tong.board.model.service.BoardCategoryService;
 
 @RestController
 @RequestMapping("/api/boardCategory")
-@CrossOrigin
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
 // 게시판 카테고리
 public class BoardCategoryController {
 	private final BoardCategoryService boardCategoryService;

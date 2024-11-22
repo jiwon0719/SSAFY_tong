@@ -4,10 +4,10 @@ import axios from 'axios'
 import { useCalendarStore } from '@/stores/calendar'
 import { useUserStore } from './user'
 
-const CALENDAR_EXPERT_API_URL = 'http://localhost:8080/api/calendar'
-const RESERVATION_API_URL =     'http://localhost:8080/api/expert/reservations'
-const QUEST_API_URL =           'http://localhost:8080/api/expert/quests'
-const MATCHING_API_URL =        `http://localhost:8080/api/matching`
+const CALENDAR_EXPERT_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/calendar`
+const RESERVATION_API_URL =     `${import.meta.env.VITE_API_BASE_URL}/api/expert/reservations`
+const QUEST_API_URL =           `${import.meta.env.VITE_API_BASE_URL}/api/expert/quests`
+const MATCHING_API_URL =        `${import.meta.env.VITE_API_BASE_URL}/api/matching`
 
 export const useExpertCalendarStore = defineStore('expertCalendar', () => {
   const store = useCalendarStore()
@@ -188,7 +188,7 @@ export const useExpertCalendarStore = defineStore('expertCalendar', () => {
       console.log('Original questData:', questData);
 
       // 백앤드 API 
-      const response = await axios.post(`http://localhost:8080/api/calendar/quest`, questData);
+      const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/calendar/quest`, questData);
       
       // 응답 데이터 확인
       console.log('Server response:', response.data);

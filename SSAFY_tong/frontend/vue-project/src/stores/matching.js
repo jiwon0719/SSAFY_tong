@@ -2,8 +2,8 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
 
-const MATCHING_API_URL = `http://localhost:8080/api/matching`
-const EXPERT_API_URL = `http://localhost:8080/api/expert`
+const MATCHING_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/matching`
+const EXPERT_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/expert`
 
 export const useMatchingStore = defineStore('matching', () => {
   const matchingList = ref([]) // (회원용) 전문가 매칭 리스트
@@ -187,7 +187,7 @@ export const useMatchingStore = defineStore('matching', () => {
 
 
           // 3. 채팅 메시지 전송
-          await axios.post('http://localhost:8080/api/chat/message', {
+          await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/chat/message`, {
             matchingId: matchingId,
             senderId: expertUserId,
             content: welcomeMessage,

@@ -71,7 +71,7 @@ export const useUserStore = defineStore('user', {
         let userName = null; // const를 let으로 변경
 
         if (this.kakaoToken != null) {
-          const kakaoResponse = await axios.get('http://localhost:8080/oauth2/kakao/user-info', {
+          const kakaoResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/oauth2/kakao/user-info`, {
             headers: { Authorization: `Bearer ${this.kakaoToken}` },
           });
 
@@ -114,7 +114,7 @@ export const useUserStore = defineStore('user', {
             router.push({ name: 'signUp', params: { kakaoUserInfo: kakaoResponse.data } });
           }
         } else if (this.token != null) {
-          const jwtResponse = await axios.get('http://localhost:8080/api/user/user-info', {
+          const jwtResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/user/user-info`, {
             headers: { Authorization: `Bearer ${this.token}` },
           });
 
@@ -154,7 +154,7 @@ export const useUserStore = defineStore('user', {
         }
     
         // userId를 이용해 서버에서 프로필 이미지를 요청
-        const response = await axios.get(`/api/user/profileImg/${this.userId}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/user/profileImg/${this.userId}`);
     
         if (response.status === 200) {
           this.setProfileImage(response.data.profileImage);
