@@ -22,8 +22,8 @@ public interface BoardCategoryDao {
 	List<CategoryViewResponse> selectTopViewedCategories();
 	// 카테고리 찜 등록
 	Map<String, Object> findHoldByCategoryAndUser(Integer categoryId, String userId);
-	void insertHold(Integer categoryId, String userId, String string);
-	void updateHold(Integer categoryId, String userId, String newStatus);
+	void insertHold(Integer categoryId, String userId, String isHold);
+	void updateHold(Integer categoryId, String userId, String isHold);
 	// 카테고리 찜 조회
 	List<BoardCategory> findHoldsByUser(String userId);
 }

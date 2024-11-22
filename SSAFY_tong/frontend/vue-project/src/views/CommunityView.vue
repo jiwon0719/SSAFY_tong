@@ -31,12 +31,6 @@
      </div>
      <div class="board-section" v-for="category in topCategories" :key="category.categoryId">
        <div class="info-board-wrapper">
-         <router-link :to="`/community/${category.categoryId}`">
-           <div class="hot-info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
-             <p class="category-title">🔥 {{ category.category }}</p>
-             <p class="board-desc">{{ category.description }}</p>
-           </div>
-         </router-link>
          <button 
            class="hold-btn"
            @click="toggleHold(category.categoryId)"
@@ -44,6 +38,12 @@
          >
            ★
          </button>
+         <router-link :to="`/community/${category.categoryId}`">
+           <div class="hot-info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
+             <p class="category-title">🔥 {{ category.category }}</p>
+             <p class="board-desc">{{ category.description }}</p>
+           </div>
+         </router-link>
        </div>
      </div>
 
@@ -53,12 +53,6 @@
       <!-- 일반 게시판 -->
       <div class="board-section" v-for="category in store.categoryList" :key="category.categoryId">
        <div class="info-board-wrapper">
-         <router-link :to="`/community/${category.categoryId}`">
-           <div class="info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
-             <p class="category-title">📌 {{ category.category }}</p>
-             <p class="board-desc">{{ category.description }}</p>
-           </div>
-         </router-link>
          <button 
            class="hold-btn"
            @click="toggleHold(category.categoryId)"
@@ -66,6 +60,12 @@
          >
            ★
          </button>
+         <router-link :to="`/community/${category.categoryId}`">
+           <div class="info-board" @click="fetchCategoryPosts(category.categoryId, category.category)">
+             <p class="category-title">📌 {{ category.category }}</p>
+             <p class="board-desc">{{ category.description }}</p>
+           </div>
+         </router-link>
        </div>
      </div>
     </aside>  
@@ -102,7 +102,7 @@ const isHeld = (categoryId) => {
  return store.categoryHolds.some(hold => hold.categoryId === categoryId);
 };
 
-// 찜 토글
+// 찜 등록
 const toggleHold = async (categoryId) => {
  await store.toggleHold(categoryId);
 };
@@ -262,11 +262,11 @@ a{
 }
 
 .info-board {
-  padding: 15px;
+  padding: 13px;
   background-color: white;
   border: 1px solid #edf2f7;
   border-radius: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 1px;
   transition: all 0.3s ease;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
