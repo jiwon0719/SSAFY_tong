@@ -28,6 +28,7 @@ import MainDefault from '@/components/MainDefault.vue'
 
 import ChatRoomList from '@/components/ChatRoomList.vue'
 import Chat from '@/components/Chat.vue';
+import ChatRoom from '@/components/ChatRoom.vue';
 
 import { useUserStore } from '@/stores/user'
 
@@ -36,6 +37,12 @@ const routes = [
     path: '/',
     name: 'start',
     component: StartView  // Start 페이지
+  },
+  //  ai 챗봇 채팅방
+  { 
+    path: '/AiChatRoom',
+    name: 'AiChatRoom',
+    component: ChatRoom,
   },
   {
     path: '/main',
