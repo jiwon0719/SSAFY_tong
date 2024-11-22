@@ -132,9 +132,16 @@ public class MatchingController {
     public ResponseEntity<?> getExpertInfo(@PathVariable String expertUserId) {
         try {
             Map<String, Object> expertInfo = matchingService.getExpertInfo(expertUserId);
+            if (expertInfo == null) {
+                return ResponseEntity.notFound().build();
+            }
             return ResponseEntity.ok(expertInfo);
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+            // 에러 로깅 추가
+            System.err.println("전문가 정보 조회 실패: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("전문가 정보 조회 중 오류 발생: " + e.getMessage());
         }
     }
 }

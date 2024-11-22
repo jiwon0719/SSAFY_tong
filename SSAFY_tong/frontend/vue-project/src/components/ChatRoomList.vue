@@ -134,7 +134,7 @@ export default {
       subscriptions.value.set(room.matchingId, subscription);
     };
 
-    // WebSocket 연결 함수 수정
+    // WebSocket 연결 함수
     const connectWebSocket = async () => {
       const maxRetries = 3;
       let retryCount = 0;
@@ -274,7 +274,7 @@ export default {
       await fetchMatchedRooms();
       await connectWebSocket();
       
-      // 백업용 주기적 업데이트 (5분으로 변경)
+      // 백업용 주기적 업데이트 (5분)
       updateInterval.value = setInterval(updateUnreadCounts, 300000);
     });
 

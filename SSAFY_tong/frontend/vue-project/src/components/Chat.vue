@@ -464,4 +464,9 @@ export default {
 .chatting-room.dark-mode .message-meta {
   color: #aaa;
 }
+
+.message-content .text {
+  white-space: pre-wrap;  /* 추가: 줄바꿈 보존 */
+  word-break: break-word; /* 추가: 긴 텍스트 줄바꿈 */
+}
 </style>

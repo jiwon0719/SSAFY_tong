@@ -603,15 +603,18 @@ const checkUserIdDuplicate = async () => {
 
   // 2. 중복 검사 (서버 요청 등)
   try {
-    const response = await axios.get(`/api/check-user-id?userId=${userId.value}`);
-    if (response.data.isDuplicate) {
+    const response = await axios.get(`http://localhost:8080/api/user/checkUserIdDuplicate?userId=${userId.value}`);
+    if (response.data.duplicate) {
       alert('이미 사용 중인 아이디입니다.');
+      isIdChecked.value = false;
     } else {
       alert('사용 가능한 아이디입니다.');
+      isIdChecked.value = true;
     }
   } catch (error) {
     console.error('아이디 중복 검사 중 오류 발생:', error);
     alert('아이디 중복 검사에 실패했습니다.');
+    isIdChecked.value = false;
   }
 };
 
