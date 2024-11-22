@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import { useUserStore } from './user'
 
-const REST_API_URL = `http://localhost:8080/api/boardCategory`
+const REST_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/boardCategory`
 
 export const useCommunityStore = defineStore('community', () => {
   const userStore = useUserStore();
@@ -13,6 +13,7 @@ export const useCommunityStore = defineStore('community', () => {
   const selectCategoryId = ref(null)
   const selectCategoryTitle = ref(null)
   const categoryHolds = ref([])
+  
 
   // 카테고리 찜 등록
   const toggleHold = async (categoryId) => {
@@ -125,6 +126,7 @@ const fetchPostsByCategory = async (categoryId, categoryTitle) => {
     toggleHold,
     fetchHolds,
     getcategoryList,
-    fetchPostsByCategory
+    fetchPostsByCategory,
+    createCategory
   }
 })

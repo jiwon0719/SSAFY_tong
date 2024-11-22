@@ -373,7 +373,7 @@ const login = async () => {
 
   try {
     const response = await axios.post(
-      "http://localhost:8080/api/user/signIn",
+      `${import.meta.env.VITE_API_BASE_URL}/api/user/signIn`,
       {
         userId: userId.value,
         password: userPassword.value,
@@ -404,7 +404,7 @@ const login = async () => {
 // 카카오 로그인 리다이렉트
 const redirectToKakaoLogin = () => {
   const { VITE_KAKAO_CLIENT_ID } = import.meta.env;
-  const REDIRECT_URI = 'http://localhost:8080/oauth2/kakao';
+  const REDIRECT_URI = `${import.meta.env.VITE_API_BASE_URL}/oauth2/kakao`;
   
   // 카카오 인가 코드 요청 URL 생성
   const kakaoAuthUrl = 'https://kauth.kakao.com/oauth/authorize';
@@ -427,7 +427,7 @@ const handleKakaoCallback = async (code) => {
 
   try {
     // 백엔드에 카카오 인가 코드 전송
-    const response = await axios.get(`http://localhost:8080/oauth2/kakao?code=${code}`);
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/oauth2/kakao?code=${code}`);
     
     console.log("response 출력 ", response)
 

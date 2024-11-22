@@ -5,8 +5,8 @@ import axios from 'axios'
 import { useMatchingStore } from './matching'
 import { useUserStore } from './user'
 
-const CALENDAR_API_URL = 'http://localhost:8080/api/calendar'
-const QUEST_API_URL = 'http://localhost:8080/api/quest'
+const CALENDAR_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/calendar`
+const QUEST_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/quest`
 
 export const useCalendarStore = defineStore('calendar', () => {
   // store

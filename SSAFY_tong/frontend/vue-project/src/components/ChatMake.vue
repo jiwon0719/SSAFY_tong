@@ -44,7 +44,7 @@ export default {
 
     const fetchRooms = async () => {
       try {
-        const response = await fetch('http://localhost:8080/chat/rooms');
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/rooms`);
         rooms.value = await response.json();
       } catch (error) {
         console.error('Error fetching rooms:', error);
@@ -55,7 +55,7 @@ export default {
       const roomName = prompt('채팅방 이름을 입력하세요:');
       if (roomName) {
         try {
-          const response = await fetch('http://localhost:8080/chat/rooms', {
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/rooms`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/x-www-form-urlencoded',
@@ -75,7 +75,7 @@ export default {
     const joinRoom = async () => {
       if (canJoin.value) {
         try {
-          const response = await fetch(`http://localhost:8080/chat/rooms/${selectedRoomId.value}`);
+          const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/chat/rooms/${selectedRoomId.value}`);
           const room = await response.json();
           selectedRoomName.value = room.name;
           joined.value = true;

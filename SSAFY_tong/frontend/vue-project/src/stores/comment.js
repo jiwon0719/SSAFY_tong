@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
-const COMMENT_API_URL = 'http://localhost:8080/api/comment'
+const COMMENT_API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/comment`
 
 export const useCommentStore = defineStore('comment',() => {
     const comments = ref([]); // 댓글과 대댓글의 구분 없이 모든 댓글 저장

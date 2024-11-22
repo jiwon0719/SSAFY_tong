@@ -111,7 +111,7 @@ const toggleHold = async (categoryId) => {
 // 핫게시판 조회(TOP3)
 const fetchTopCategories = async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/boardCategory/top-viewed`);
+    const response = await axios.get(`http://192.168.210.55:5173/api/boardCategory/top-viewed`);
     topCategories.value = response.data;
   } catch (error) {
     console.error('HOT 게시판을 불러오는데 실패했습니다:', error);

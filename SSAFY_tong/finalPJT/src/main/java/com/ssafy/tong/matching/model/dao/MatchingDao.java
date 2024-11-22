@@ -30,6 +30,7 @@ public interface MatchingDao {
 		@Param("userId") String userId, 
 		@Param("expertUserId") String expertUserId
 	);
+	
 	// 전문가 정보 조회
 	Map<String, Object> selectExpertInfo(@Param("expertUserId") String expertUserId);
 

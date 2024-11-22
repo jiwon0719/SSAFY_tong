@@ -68,7 +68,7 @@ const formatDateTime = () => {
 
 const fetchTopCategories = async () => {
   try {
-    const response = await axios.get(`http://localhost:8080/api/boardCategory/top-viewed`)
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/boardCategory/top-viewed`)
     categories.value = response.data
     currentTime.value = formatDateTime()
   } catch (err) {
