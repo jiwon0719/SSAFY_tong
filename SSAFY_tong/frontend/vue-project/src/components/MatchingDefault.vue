@@ -17,11 +17,12 @@
             :data-expert-id="expert.expertId"
             class="expert-card"
           >
-            <img 
-              :src="expert.userProfileImgPath || 'src/assets/images/기본프로필.jpg'" 
-              :alt="`${expert.name} 프로필`" 
-              class="expert-image"
-            />
+          <img 
+            :src="expert.expertImages?.[0]?.imageUrl || 'src/assets/images/기본프로필.jpg'" 
+            :alt="`${expert.name} 프로필`" 
+            class="expert-image"
+            @error="handleImageError"
+          />
             <div class="expert-info">
               <div class="expert-header">
                 <span class="expert-name">{{ expert.name }} 선생님</span>
@@ -54,11 +55,45 @@ import { useRouter } from 'vue-router'
 import { useExpertStore } from '@/stores/expert'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
+import { mapState } from 'pinia'
 import defaultProfileImg from '@/assets/images/기본프로필.jpg'
 
 export default {
     name: 'MatchingDefault',
-    
+    computed: {
+      ...mapState(useExpertStore, ['experts'])
+    },
+
+    methods: {
+      handleImageError(event) {
+        event.target.src = 'src/assets/images/기본프로필.jpg'
+      }
+    },
+
+    async mounted() {
+      const expertStore = useExpertStore()
+      await expertStore.fetchExperts()
+      
+      // 디버깅용 로그 추가
+      console.log('expertStore에서 직접 확인:', expertStore.experts)
+      console.log('computed에서 experts 데이터:', this.experts)
+      
+      if (expertStore.experts?.length > 0) {
+        console.log('첫 번째 전문가 정보:', expertStore.experts[0])
+        console.log('첫 번째 전문가의 이미지 데이터:', expertStore.experts[0].expertImages)
+        if (expertStore.experts[0].expertImages?.length > 0) {
+          console.log('첫 번째 전문가의 첫 번째 이미지 URL:', expertStore.experts[0].expertImages[0].imageUrl)
+        }
+      }
+      
+      // 카카오맵 로드
+      await loadKakaoMap();
+      // 전문가 데이터가 있으면 마커 생성
+      if (experts.value?.length > 0) {
+        await addExpertMarkers(experts.value);
+      }
+    },
+     
     setup() {
       // 전문가 등록 페이지 이동
         const router = useRouter();
@@ -302,6 +337,11 @@ export default {
             });
         };
 
+        // 이미지 로드 실패 시 기본 이미지로 대체하는 함수
+        const handleImageError = (event) => {
+          event.target.src = 'src/assets/images/기본프로필.jpg'  // 기본 이미지로 대체
+        }
+
         onMounted(async () => {
           // 전문가 데이터 로드  
           await expertStore.fetchExperts();
@@ -327,7 +367,8 @@ export default {
             experts: visibleExperts, // 보이는 전문가만 반환
             loading,
             userType, 
-            navigateToExpertForm
+            navigateToExpertForm, 
+            handleImageError
         };
     }
 }

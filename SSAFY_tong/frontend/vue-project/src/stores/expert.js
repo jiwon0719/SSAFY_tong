@@ -166,8 +166,23 @@ export const useExpertStore = defineStore('expert', () => {
 
     try {
       const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/list`)
-      console.log('전문가 데이터 로드:', response.data) // 디버깅용
-      experts.value = response.data
+      console.log('API 응답 데이터:', response.data)  // API 응답 확인
+      
+      // 각 전문가의 이미지 URL 추가
+      experts.value = response.data.map(expert => {
+        console.log('개별 전문가 데이터:', expert)  // 각 전문가 데이터 확인
+        console.log('전문가의 이미지 데이터:', expert.expertImages)  // 이미지 데이터 확인
+        
+        return {
+          ...expert,
+          expertImages: expert.expertImages?.map(img => ({
+            ...img,
+            imageUrl: getImageUrl(img.filePath, img.systemName)
+          }))
+        }
+      })
+      
+      console.log('변환된 experts 데이터:', experts.value)  // 최종 변환된 데이터 확인
       
       return { success: true }
     } catch (err) {
