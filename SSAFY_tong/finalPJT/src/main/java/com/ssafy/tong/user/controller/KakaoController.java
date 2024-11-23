@@ -74,14 +74,13 @@ public class KakaoController {
     
     
     @GetMapping("/user-info")
-    public ResponseEntity<Object> getUserInfo(@RequestHeader("Authorization") String authorization) {
+    public ResponseEntity<KakaoUserInfo> getUserInfo(@RequestHeader("Authorization") String authorization) {
         try {
-            // 헤더 설정
             HttpHeaders headers = new HttpHeaders();
             headers.add("Authorization", authorization);
+            headers.add("Accept", "application/json");
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            // 카카오 API 호출
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<String> userResponse = restTemplate.exchange(
                     "https://kapi.kakao.com/v2/user/me",
@@ -90,50 +89,45 @@ public class KakaoController {
                     String.class
             );
 
-            // 요청 실패 시 처리
             if (!userResponse.getStatusCode().is2xxSuccessful()) {
-                return new ResponseEntity<>(Collections.singletonMap("message", "Kakao token invalid"), HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
 
-            // 사용자 정보 추출
             String userInfo = userResponse.getBody();
-            System.out.println("userInfo : " + userInfo);
             JSONObject userJson = new JSONObject(userInfo);
-
-            // 필요한 사용자 정보 추출 (id, nickname, email, profile_image)
-            String kakaoId = String.valueOf(userJson.getLong("id"));
-            String nickname = userJson.getJSONObject("properties").getString("nickname");
-            String email = userJson.getJSONObject("kakao_account").getString("email");
-            String profileImage = userJson.getJSONObject("properties").optString("profile_image", "");
+            String kakaoId = String.valueOf(userJson.getLong("id")) + "a!";
             
-            System.out.println(kakaoId);
-            System.out.println(nickname);
-            System.out.println(email);
-            System.out.println(profileImage);
-
-            // 사용자 정보 조회
-            // 회원가입시 아이디 보안을 위해 js에서 까다롭게 해서 그냥 숫자인 kakaoId 값은 제대로 구현되지 못한다. 그래서 a! 추가시켰다 
-            kakaoId = kakaoId+"a!";
-            System.out.println(kakaoId);
+            // 사용자 존재 여부 확인
             User user = userService.findUserByUserId(kakaoId);
-            System.out.println("user : "+ user);
-            
             
             if (user == null) {
-            	System.out.println("user==null 케이스");
-            	// 데이터베이스에 해당 사용자가 없으면 카카오 정보를 반환
-                KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(kakaoId, nickname, email, profileImage);
-                return new ResponseEntity<>(kakaoUserInfo, HttpStatus.valueOf(201)); 
+                // 신규 사용자
+                KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(
+                    kakaoId,
+                    userJson.getJSONObject("properties").getString("nickname"),
+                    userJson.getJSONObject("kakao_account").getString("email"),
+                    userJson.getJSONObject("properties").optString("profile_image", ""),
+                    null  // 신규 사용자는 아직 userType이 없음
+                );
+                return new ResponseEntity<>(kakaoUserInfo, HttpStatus.CREATED);
             } else {
-                // 사용자가 있으면 정상 처리
-            	char userType = user.getUserType(); // (추가) 사용자 정보 추출 : userType
-                return ResponseEntity.ok().body(new KakaoUserInfo(kakaoId, nickname, email, profileImage, userType));
+                // 기존 사용자
+                KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(
+                    kakaoId,
+                    user.getName(),
+                    user.getEmail(),
+                    user.getUserProfileImgPath(),
+                    user.getUserType()  // 기존 사용자의 userType 포함
+                );
+                
+                System.out.println("kakaoUserInfo : "  + kakaoUserInfo);
+                return new ResponseEntity<>(kakaoUserInfo, HttpStatus.OK);
             }
         } catch (Exception e) {
-        	System.out.println("비정상반환");
-            return new ResponseEntity<>(Collections.singletonMap("message", "Error retrieving user info"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+   
     
     
     // 카카오 로그아웃
@@ -159,7 +153,7 @@ public class KakaoController {
                 return new ResponseEntity<>(Collections.singletonMap("message", "Failed to log out"), HttpStatus.UNAUTHORIZED);
             }
 
-            // 응답 처리
+            // 응답 처��
             String responseBody = logoutResponse.getBody();
             JSONObject responseJson = new JSONObject(responseBody);
             long userId = responseJson.getLong("id"); // 로그아웃된 사용자 ID

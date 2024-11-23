@@ -90,10 +90,10 @@ public class User {
 	public void setIsKakaoMember(char isKakaoMember) {
 		this.isKakaoMember = isKakaoMember;
 	}
-	public String getUser_profile_img_path() {
+	public String getUserProfileImgPath() {
 		return userProfileImgPath;
 	}
-	public void setUser_profile_img_path(String userProfileImgPath) {
+	public void setUserProfileImgPath(String userProfileImgPath) {
 		this.userProfileImgPath = userProfileImgPath;
 	}
 	@Override

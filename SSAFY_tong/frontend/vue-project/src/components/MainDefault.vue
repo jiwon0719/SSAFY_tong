@@ -141,11 +141,13 @@ onMounted(async () => {
 
     // 유저 정보 가져오기
     await userStore.fetchUserInfo();
-
+    
+    
     console.log('유저 생일:', userStore.getBirthday);
     console.log('유저 이름:', userStore.getUserName);
 
     if (!userStore.getUserId) {
+      console.log('MainDefault.vue에서 유저 ID가 없어서 회원가입으로 이동');
       router.push('/signUp');
       return;
     }

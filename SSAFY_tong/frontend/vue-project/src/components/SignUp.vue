@@ -25,38 +25,40 @@
   </div>
 </div>
 
+<!-- 비밀번호 입력 -->
+<div v-if="!userStore.getKakaoUserInfo">
+  <div>
+    <label>비밀번호</label>
+    <input 
+      type="password" 
+      v-model="password" 
+      placeholder="영문, 숫자, 특수문자 포함 8자 이상" 
+      :class="{ 'invalid': password && passwordError }"
+    />
+    <div v-if="passwordError" class="invalid-feedback">
+      {{ passwordError }}
+    </div>
+  </div>
 
-<!-- 사용자 정보가 있으면 화면에 보이지 않음 -->
-<div v-if="userStore.getKakaoUserInfo" style="display:none">
-  <!-- 내부적으로는 사용됨 -->
-  <input v-model="userId" type="hidden"/>
+  <div>
+    <label>비밀번호 확인</label>
+    <input 
+      type="password" 
+      v-model="passwordConfirm" 
+      placeholder="비밀번호 확인"
+      :class="{ 'invalid': passwordConfirm && !passwordMatch }"
+    />
+    <div v-if="passwordConfirm" :class="passwordMatchClass">
+      {{ passwordMatch }}
+    </div>
+  </div>
 </div>
 
-    <div>
-      <label>비밀번호</label>
-      <input 
-        type="password" 
-        v-model="password" 
-        placeholder="영문, 숫자, 특수문자 ��함 8자 이상" 
-        :class="{ 'invalid': password && passwordError }"
-      />
-      <div v-if="passwordError" class="invalid-feedback">
-        {{ passwordError }}
-      </div>
-    </div>
-
-    <div>
-      <label>비밀번호 확인</label>
-      <input 
-        type="password" 
-        v-model="passwordConfirm" 
-        placeholder="비밀번호 확인"
-        :class="{ 'invalid': passwordConfirm && !passwordMatch }"
-      />
-      <div v-if="passwordConfirm" :class="passwordMatchClass">
-        {{ passwordMatch }}
-      </div>
-    </div>
+<!-- 카카오 사용자를 위한 hidden 비밀번호 필드 -->
+<div v-if="userStore.getKakaoUserInfo" style="display:none">
+  <input v-model="password" type="hidden"/>
+  <input v-model="passwordConfirm" type="hidden"/>
+</div>
 
     <!-- 이름 필드 -->
 <div>
@@ -409,23 +411,19 @@ onMounted(async () => {
     console.log("kakaoUserInfo after fetch:", kakaoUserInfo);
     
     if (kakaoUserInfo) {
-
-      console.log("kakaoUserInfo :",kakaoUserInfo);
-
-      // 아이디 설정 (카카오 ID 사용)
+      // 기존 카카오 정보 설정
       userId.value = kakaoUserInfo.kakaoId;
-
-      console.log(userId.value);
-      
-      // 이름 설정 (카카오 닉네임 사용)
       name.value = kakaoUserInfo.nickname;
       
-      // 이메일 처리
+      // 카카오 로그인 사용자의 기본 비밀번호 설정
+      password.value = "12345678hwang!@";
+      passwordConfirm.value = "12345678hwang!@";
+      
+      // 나머지 기존 코드...
       if (kakaoUserInfo.email) {
         const [emailId, domain] = kakaoUserInfo.email.split('@');
         email.value = emailId;
         
-        // 도메인 처리
         const knownDomains = ['ssafy.com', 'naver.com', 'daum.net', 'gmail.com'];
         if (knownDomains.includes(domain)) {
           emailDomain.value = domain;
@@ -435,7 +433,6 @@ onMounted(async () => {
         }
       }
       
-      // 프로필 이미지 설정
       if (kakaoUserInfo.profileImage) {
         userProfileImgPath.value = kakaoUserInfo.profileImage;
       }
@@ -502,7 +499,7 @@ const openPostcode = () => {
       }
 
       if (data.userSelectedType === 'R') {
-        if (data.bname !== '' && /[동|로|���]$/g.test(data.bname)) {
+        if (data.bname !== '' && /[동|로|]$/g.test(data.bname)) {
           extraAddr += data.bname;
         }
         if (data.buildingName !== '' && data.apartment === 'Y') {
@@ -571,11 +568,16 @@ const registerUser = async () => {
 
 try {
   // POST 요청을 보내서 회원가입 진행
-  const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/user/signUp`, userData, {
-    headers: {
-      'Content-Type': 'application/json', // ensure Content-Type header is set correctly
+  const response = await axios.post(
+    `${import.meta.env.VITE_API_BASE_URL}/api/user/signUp`, 
+    userData, 
+    {
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
     }
-  });
+  );
 
   console.log(response);
 

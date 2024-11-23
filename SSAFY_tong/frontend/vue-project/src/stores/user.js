@@ -79,9 +79,7 @@ export const useUserStore = defineStore('user', {
 
           if (kakaoResponse.status === 200) {
             userId = kakaoResponse.data.kakaoId;
-            userType = kakaoResponse.data.userType; // 구현  필요
             userName = kakaoResponse.data.nickname;
-            console.log('kakaoResponse.data.userId :', userId);
 
             if (kakaoResponse.data.birthdate) {
               this.setBirthday(kakaoResponse.data.birthdate);
@@ -95,11 +93,12 @@ export const useUserStore = defineStore('user', {
               profileImage: kakaoResponse.data.profileImage,
             });
 
-            // store.js에 기본정보 저장
-           this.setUserId(userId);
-           this.setUserType(userType);
-           this.setUserName(userName);
+        
+            this.setUserId(userId);
+            this.setUserName(userName);
 
+            // userType 설정
+            this.setUserType(kakaoResponse.data.userType);
 
             // 프로필 이미지 설정
             this.setProfileImage(kakaoResponse.data.profileImage);
