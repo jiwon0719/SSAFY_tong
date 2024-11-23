@@ -388,8 +388,13 @@ const login = async () => {
     );
 
     if (response.data && response.data["access-token"]) {
-      alert("로그인 성공!");
+      // 토큰 저장
       userStore.saveTokenToStorage(response.data["access-token"]);
+      
+      // 사용자 정보 가져오기
+      await userStore.fetchUserInfo();
+      
+      alert("로그인 성공!");
       router.push({ name: "main" });
     } else {
       alert(response.data.message || "로그인 실패. 아이디와 비밀번호를 확인하세요.");
@@ -422,37 +427,54 @@ const redirectToKakaoLogin = () => {
 
 // 카카오 로그인 콜백 처리 함수
 const handleKakaoCallback = async (code) => {
-
-  console.log("handleKakaoCallback 호출 되었습니다.")
-
   try {
-    // 백엔드에 카카오 인가 코드 전송
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/oauth2/kakao?code=${code}`);
-    
-    console.log("response 출력 ", response)
-
-    if (response.data) {
-      try {
-        // JSON 문자열을 파싱
-        const responseData = typeof response.data === 'string' 
-          ? JSON.parse(response.data) 
-          : response.data;
-
-        // 카카오 액세스 토큰 저장
-        if (responseData.access_token) {
-          // sessionStorage에 카카오 액세스 토큰 저장
-          sessionStorage.setItem('kakao-access-token', responseData.access_token);
-          // userStore를 통한 저장도 함께 수행
-          userStore.saveKakaoTokenToStorage(responseData.access_token);
-          console.log('카카오 액세스 토큰이 저장되었습니다.');
+    const response = await axios.get(
+      `${import.meta.env.VITE_API_BASE_URL}/oauth2/kakao?code=${code}`,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
         }
+      }
+    );
+    
+    if (response.data) {
+      const responseData = typeof response.data === 'string' 
+        ? JSON.parse(response.data) 
+        : response.data;
 
+      if (responseData.access_token) {
+        userStore.saveKakaoTokenToStorage(responseData.access_token);
+        
+        try {
+          const userInfoResponse = await axios.get(
+            `${import.meta.env.VITE_API_BASE_URL}/oauth2/kakao/user-info`,
+            {
+              headers: {
+                'Authorization': `Bearer ${responseData.access_token}`,
+                'Accept': 'application/json'
+              }
+            }
+          );
 
-        // 메인 페이지로 리다이렉트
-        router.push({ name: "main" });
-      } catch (parseError) {
-        console.error("응답 데이터 파싱 오류:", parseError);
-        alert("로그인 처리 중 오류가 발생했습니다.");
+          console.log('카카오 사용자 정보:', userInfoResponse.data);
+
+          if (userInfoResponse.status === 201) {
+            router.push({ name: "signUp" });
+          } else {
+            // userType 설정
+            const userType = userInfoResponse.data.userType;
+            if (userType) {
+              userStore.setUserType(userType);
+              console.log('설정된 userType:', userType); // 디버깅용
+            }
+            await userStore.fetchUserInfo();
+            router.push({ name: "main" });
+          }
+        } catch (userInfoError) {
+          console.error("사용자 정보 조회 오류:", userInfoError);
+          router.push({ name: "signUp" });
+        }
       }
     }
   } catch (error) {
