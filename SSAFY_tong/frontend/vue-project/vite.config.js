@@ -3,6 +3,8 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import vuetify from 'vite-plugin-vuetify'
+import { createHtmlPlugin } from 'vite-plugin-html'
+
 
 export default defineConfig({
   server: {
@@ -41,6 +43,7 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     vuetify({ autoImport: true }),
+    createHtmlPlugin({})
   ],
   css: {
     preprocessorOptions: {

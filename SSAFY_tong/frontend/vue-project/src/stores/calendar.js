@@ -31,16 +31,6 @@ export const useCalendarStore = defineStore('calendar', () => {
     '09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00'
   ]
 
-  // computed: 필터링된 예약  / 퀘스트 목록
-  // const reservations = computed(() => {
-  //   if (!calendarData.value?.reservations) return []
-  //   return calendarData.value.reservations.filter(item => item.reservationId)
-  // })
-  
-  // const quests = computed(() => {
-  //   if (!calendarData.value?.quests) return []
-  //   return calendarData.value.quests
-  // })
   const reservations = computed(() => {
     return calendarData.value?.reservations || []
   })
@@ -49,8 +39,16 @@ export const useCalendarStore = defineStore('calendar', () => {
     return calendarData.value?.quests || []
   })
 
+  // 정렬된 퀘스트와 예약 computed 추가
+  const sortedReservations = computed(() => {
+    return [...reservations.value].sort((a, b) => a.time.localeCompare(b.time))
+  })
 
-
+  const sortedQuests = computed(() => {
+    return [...quests.value].sort((a, b) => 
+      new Date(a.pickDate) - new Date(b.pickDate)
+    )
+  })
 
   // 매칭된 전문가 목록 조회
   const fetchMatchingExperts = async (userId) => {
@@ -229,8 +227,12 @@ export const useCalendarStore = defineStore('calendar', () => {
     isLoading,
     matchingExperts,
     availableTimes,
+    
+    // computed
     reservations,
-    quests, 
+    quests,
+    sortedReservations,  // 새로 추가
+    sortedQuests,        // 새로 추가
     
     // 메서드
     fetchMatchingExperts,
@@ -238,8 +240,8 @@ export const useCalendarStore = defineStore('calendar', () => {
     createReservation,
     getReservationStatus,
     resetForm,
-    formatDate, 
-    updateQuestStatus, 
-    loadInitialData, 
+    formatDate,
+    updateQuestStatus,
+    loadInitialData,
   }
 })

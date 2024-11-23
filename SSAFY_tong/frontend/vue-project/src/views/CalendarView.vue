@@ -127,8 +127,8 @@
               당신의 트레이너가 정해준 퀘스트를 확인하세요!
             </v-card-subtitle>
             <v-card-text>
-              <v-list v-if="quests.length > 0">
-                <v-list-item v-for="quest in quests" :key="quest.questId">
+              <v-list v-if="sortedQuests.length > 0">
+                <v-list-item v-for="quest in sortedQuests" :key="quest.questId">
                   <v-list-item-title class="d-flex align-center justify-space-between text-subtitle-1 my-2">
                     <div class="d-flex align-center">
                       <v-icon color="#E2495B" class="mr-2">mdi-trophy-outline</v-icon>
@@ -391,10 +391,7 @@ const getStatusText = (status) => {
   }
 }
 
-const sortedReservations = computed(() => {
- return [...store.reservations].sort((a, b) => a.time.localeCompare(b.time))
-})
-
+const { sortedReservations, sortedQuests } = storeToRefs(store)
 
 // 퀘스트 상태 관련 함수
 const getQuestStatusColor = (completionStatus) => {

@@ -58,6 +58,11 @@
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+  color: black;
+}
+
 /* community-layout의 스타일을 수정 */
 .community-layout {
   display: flex;

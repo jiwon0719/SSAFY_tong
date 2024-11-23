@@ -2,17 +2,6 @@
   <div class="matching-container">
     <div class="expert-section">
       <div class="search-bar">
-        <button class="btn btn-primary">
-          <i class="ri-hospital-line"></i>
-          <span>병원</span>
-        </button>
-        <button class="btn btn-primary">
-          <i class="material-symbols-exercise-outline"></i>
-          <span>PT</span>
-        </button>
-        <button class="btn btn-outline">
-          <span>내 위치로 검색하기</span>
-        </button>
         <button v-if="userType === 'E'" class="btn btn-outline" @click="navigateToExpertForm()">
           <span>전문가 등록하기</span>
         </button>
@@ -393,8 +382,10 @@ export default {
 // 매칭 관련
 .matching-container {
   display: flex;
-  height: 100%;
+  // height: calc(100vh - 64px); // Adjust based on your header height
+  height: 100vh;
   width: 100%;
+  overflow: hidden;
 
   .expert-section {
     width: 30%;
@@ -431,17 +422,20 @@ export default {
 
   .map-section {
     flex: 1;
-    height: 100%;
-    position: relative;
+  height: 100%;
+  position: relative;
+  padding: 20px; // Add padding around the map
+  background: #f9f9f9; // Optional: light background
     
 
     #kakao-map {
       width: 100%;
-      height: 80%;
-      position: absolute;
-      top: 0;
-      left: 0;
-    }
+    height: 80%;
+    position: relative; // Change from absolute to relative
+    border-radius: 12px; // Add rounded corners
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Add subtle shadow
+    margin: 20px 0; // Add margin to top and bottom
+  }
   }
 }
 
