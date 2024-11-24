@@ -1,6 +1,6 @@
 <template>
   <div class="mypagedefault" v-if="userMatchingList">
-    <div class="page-title">매칭 신청 목록</div>
+    <div class="page-title">나의 매칭 회원</div>
     
     <!-- 로딩 상태 표시 -->
     <div v-if="loading" class="loading">데이터를 불러오는 중...</div>
@@ -10,7 +10,7 @@
     
     <!-- 전체 리스트 정보 표시 -->
     <div class="debug-info" style="margin-bottom: 20px;">
-        총 매칭 신청 수: {{ userMatchingList.length }}
+        총 매칭 수: {{ userMatchingList.length }}
     </div>
 
     <!-- 유저 리스트 영역 -->
@@ -28,8 +28,9 @@
               <span class="request-type">{{ user.requestType }}</span>
             </div>
             <div class="matching-info">
-              <div class="status">{{ user.status === 'O' ? '매칭됨' : '매칭 대기중' }}</div>
-              <div class="date">[ 신청일시 : {{ formatDate(user.createAt) }} ]</div>
+              <div :class="['status', user.status === 'O' ? 'status-matched' : 'status-waiting']">
+                {{ user.status === 'O' ? '매칭 완료' : '매칭 대기중' }}</div>
+              <div class="date">[신청일: {{ formatDate(user.createAt) }}]</div>
             </div>
             <div class="action-buttons">
               <button 
@@ -46,9 +47,6 @@
               >
                 거절하기
               </button>
-              <span v-else-if="user.status === 'O'" class="matched-status">
-                매칭 완료
-              </span>
             </div>
           </div>
         </div>
@@ -123,17 +121,20 @@ const handleMatchingResponse = async (user, response) => {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .page-title {
   font-size: 24px;
   font-weight: 500;
   margin-bottom: 20px;
+  color: #333;
 }
 
 .loading, .error-message, .no-data {
   text-align: center;
   padding: 20px;
+  font-family: 'Noto Sans KR', sans-serif;
 }
 
 .error-message {
@@ -141,75 +142,143 @@ const handleMatchingResponse = async (user, response) => {
 }
 
 .user-card {
+  display: block;
+  padding: 14px;
   background: rgba(217, 217, 217, 0.32);
   border-radius: 5px;
-  padding: 15px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
   margin-bottom: 20px;
+  min-height: 140px;
 
   .user-content {
     display: flex;
-    gap: 20px;
+    gap: 17px;
+    height: 100%;
   }
 
   .user-image {
+    margin-top: 4px;
     width: 106px;
     height: 98px;
     border-radius: 5px;
     object-fit: cover;
+    transition: transform 0.4s ease;
   }
 
   .user-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 
     .user-header {
       display: flex;
-      gap: 10px;
       align-items: center;
-      margin-bottom: 10px;
+      gap: 8px;
 
       .user-name {
-        font-size: 16px;
+        margin-top: 2px;
+        font-size: 20px;
         font-weight: 500;
+        color: #000;
+        transition: color 0.4s ease;
       }
 
       .request-type {
-        color: #B0B0B0;
-        font-size: 14px;
+        margin-top: 4px;
+        margin-left: -2px;
+        font-weight: 500;
+        font-size: 16.5px;
+        color: #777777;
       }
     }
 
     .matching-info {
-      color: #8A8A8A;
-      font-size: 12px;
-      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      
+      .status {
+        font-size: 18.5px;
+        font-weight: 500;
+        color: #777777;
+        transition: color 0.3s ease-in-out;
+       
+        &.status-matched {
+          color: #4CAF50;  // 매칭 완료 시 초록색
+        }
+
+        &.status-waiting {
+          color: #E2495B;  // 매칭 대기/거절 시 붉은색
+        }
+      }
+
+      .date {
+        margin-bottom: -2px;
+        font-size: 15px;
+        color: #777;
+      }
     }
 
     .action-buttons {
+      margin-top: 10px;
+      min-height: 36px;
       display: flex;
-      gap: 10px;
+      align-items: flex-end;
+      gap: 12px;
 
       button {
-        border: none;
-        border-radius: 7px;
-        padding: 6px 12px;
-        font-size: 12px;
-        cursor: pointer;
-      }
-
-      .accept-button {
         background: #E2495B;
         color: white;
-      }
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(226, 73, 91, 0.2);
 
-      .reject-button {
-        background: #8A8A8A;
-        color: white;
+        &:hover {
+          background-color: #ff6b81;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(226, 73, 91, 0.3);
+        }
+
+        &.reject-button {
+          background: #8A8A8A;
+          box-shadow: 0 2px 4px rgba(138, 138, 138, 0.2);
+
+          &:hover {
+            background-color: #999999;
+            box-shadow: 0 4px 8px rgba(138, 138, 138, 0.3);
+          }
+        }
       }
 
       .matched-status {
-        color: #4CAF50;
-        font-size: 14px;
+        font-size: 16px;
         font-weight: 500;
+        color: #4CAF50;
+        padding: 8px 16px;
+      }
+    }
+  }
+
+  &:hover {
+    background: rgba(217, 217, 217, 0.5);
+    border-color: #E2495B;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(226, 73, 91, 0.1);
+
+    .user-info {
+      .matching-info {
+        .status {
+          font-weight: bold;
+        }
       }
     }
   }

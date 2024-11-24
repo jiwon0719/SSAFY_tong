@@ -18,12 +18,56 @@ export const useExpertStore = defineStore('expert', () => {
   })
 
   // action
-  // 이미지 URL 생성 함수
-  const getImageUrl = (filePath, systemName) => {
-    return `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${filePath}/${systemName}`
-  }
-
   // 전문가 상세
+  // const fetchExpertDetail = async (expertId) => {
+  //   if (!expertId) {
+  //     error.value = '전문가 ID가 필요합니다.'
+  //     return { success: false, error: error.value }
+  //   }
+    
+  //   loading.value = true
+  //   error.value = null
+  
+  //   try {
+  //     // 병렬로 세 개의 API를 동시에 호출
+  //     const [expertResponse, careersResponse, imagesResponse] = await Promise.all([
+  //       axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}`),
+  //       axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/careers`),
+  //       axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/images`)
+  //     ])
+      
+  //     console.log('이미지 응답 데이터: ', imagesResponse.data);
+
+  //     // 각 응답 데이터 설정
+  //     expertDetail.value = expertResponse.data
+  //     console.log(expertDetail.value)
+  //     expertCareers.value = careersResponse.data
+  //     console.log(expertCareers.value)
+  //     // 이미지 데이터에 URL 추가
+  //     expertImages.value = imagesResponse.data.map(img => {
+  //       const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${img.filePath}/${img.systemName}`;
+  //       console.log('생성된 이미지 URL:', imageUrl);
+  //       return {
+  //         ...img,
+  //         imageUrl
+  //       }
+  //     })
+  
+  //     console.log('최종 이미지 데이터: ', expertImages.value)
+
+  //     return { success: true }
+  //   } catch (err) {
+  //     console.error('전문가 상세 정보 로딩 에러:', err)
+  //     error.value = err?.message || '전문가 정보를 불러오는데 실패했습니다.'
+  //     return {
+  //       success: false,
+  //       error: error.value
+  //     }
+  //   } finally {
+  //     loading.value = false
+  //   }
+  // }
+
   const fetchExpertDetail = async (expertId) => {
     if (!expertId) {
       error.value = '전문가 ID가 필요합니다.'
@@ -34,32 +78,47 @@ export const useExpertStore = defineStore('expert', () => {
     error.value = null
   
     try {
-      // 병렬로 세 개의 API를 동시에 호출
-      const [expertResponse, careersResponse, imagesResponse] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}`),
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/careers`),
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/images`)
-      ])
-      
-      console.log('이미지 응답 데이터: ', imagesResponse.data);
-
-      // 각 응답 데이터 설정
-      expertDetail.value = expertResponse.data
-      console.log(expertDetail.value)
-      expertCareers.value = careersResponse.data
-      console.log(expertCareers.value)
-      // 이미지 데이터에 URL 추가
-      expertImages.value = imagesResponse.data.map(img => {
-        const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${img.filePath}/${img.systemName}`;
-        console.log('생성된 이미지 URL:', imageUrl);
-        return {
-          ...img,
-          imageUrl
-        }
-      })
+      // 각 API 호출을 개별적으로 시도
+      try {
+        const expertResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}`)
+        expertDetail.value = expertResponse.data
+        console.log('전문가 기본 정보:', expertDetail.value)
+      } catch (e) {
+        console.error('전문가 기본 정보 로딩 실패:', e)
+      }
   
-      console.log('최종 이미지 데이터: ', expertImages.value)
-
+      try {
+        const careersResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/careers`)
+        expertCareers.value = careersResponse.data
+        console.log('전문가 경력 정보:', expertCareers.value)
+      } catch (e) {
+        console.error('전문가 경력 정보 로딩 실패:', e)
+        expertCareers.value = [] // 실패시 빈 배열로 초기화
+      }
+  
+      try {
+        const imagesResponse = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/expert/${expertId}/images`)
+        console.log('이미지 응답 데이터:', imagesResponse.data)
+        
+        expertImages.value = imagesResponse.data.map(img => {
+          const imageUrl = `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${img.filePath}/${img.systemName}`
+          console.log('생성된 이미지 URL:', imageUrl)
+          return {
+            ...img,
+            imageUrl
+          }
+        })
+        console.log('최종 이미지 데이터:', expertImages.value)
+      } catch (e) {
+        console.error('전문가 이미지 정보 로딩 실패:', e)
+        expertImages.value = [] // 실패시 빈 배열로 초기화
+      }
+  
+      // 기본 정보가 없으면 실패로 처리
+      if (!expertDetail.value) {
+        throw new Error('전문가 기본 정보를 불러올 수 없습니다.')
+      }
+  
       return { success: true }
     } catch (err) {
       console.error('전문가 상세 정보 로딩 에러:', err)
@@ -159,6 +218,17 @@ export const useExpertStore = defineStore('expert', () => {
     return errors
   }
 
+  // 이미지 URL 생성 함수
+  const getImageUrl = (filePath, systemName) => {
+    return `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${filePath}/${systemName}`
+  }
+
+// 프로필 이미지 URL 생성 함수 추가
+const getProfileImageUrl = (userId, profileImgPath) => {
+  if (!profileImgPath) return 'src/assets/images/기본프로필.jpg'
+  return `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${userId}/${profileImgPath}`
+}
+
   // 전문가 목록 조회
   const fetchExperts = async () => {
     loading.value = true
@@ -171,14 +241,15 @@ export const useExpertStore = defineStore('expert', () => {
       // 각 전문가의 이미지 URL 추가
       experts.value = response.data.map(expert => {
         console.log('개별 전문가 데이터:', expert)  // 각 전문가 데이터 확인
-        console.log('전문가의 이미지 데이터:', expert.expertImages)  // 이미지 데이터 확인
         
         return {
           ...expert,
           expertImages: expert.expertImages?.map(img => ({
             ...img,
             imageUrl: getImageUrl(img.filePath, img.systemName)
-          }))
+          })),
+          // 프로필 이미지 URL 추가
+        userProfileImgPath: getProfileImageUrl(expert.userId, expert.userProfileImgPath)
         }
       })
       
