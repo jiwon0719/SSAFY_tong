@@ -8,13 +8,24 @@
       <hr>
       <br>
 
-      <router-link to="/mypage" class="text-none">
+      <router-link to="/main/mypage" class="text-none">
         <div class="board-section" >
           <div class="info-board">
             <span>🧐 나의 매칭 현황</span>
           </div>
           <div class="board-item">
             <span class="board-desc">내 전문가/유저 확인</span>
+          </div>
+        </div>
+      </router-link>
+
+      <router-link to="/main/mypage/aichat" class="text-none">
+        <div class="board-section">
+          <div class="info-board">
+            <span>🤖 AI 챗봇</span>
+          </div>
+          <div class="board-item">
+            <span class="board-desc">AI 어시스턴트와 대화하기</span>
           </div>
         </div>
       </router-link>
@@ -45,16 +56,28 @@
 
     <!-- 오른쪽 메인 컨텐츠 영역 -->
     <main class="main-content">
-    <router-view></router-view>
-
+      <!-- ChatRoom이 활성화될 때 마스코트와 채팅방을 감싸는 컨테이너 추가 -->
+      <div v-if="isChatRoute" class="chat-layout">
+        <div class="mascot-wrapper">
+          <Mascot />
+        </div>
+        <div class="chat-wrapper">
+          <router-view></router-view>
+        </div>
+      </div>
+      <router-view v-else></router-view>
     </main>
-
 
   </div>
 </template>
 
 <script setup>
-// 컴포넌트 로직
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import Mascot from '@/components/mascot.vue';
+
+const route = useRoute();
+const isChatRoute = computed(() => route.path.includes('/mypage/aichat'));
 </script>
 
 <style scoped>
@@ -145,6 +168,7 @@ a {
   min-height: 100vh;
   position: relative;
   box-sizing: border-box;
+  overflow-x: hidden; /* 가로 스크롤 방지 */
 }
 
 .content-container {
@@ -305,5 +329,30 @@ a {
 
 .text-none {
   text-decoration: none;
+}
+
+.chat-layout {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  height: calc(100vh - 100px);
+}
+
+.mascot-wrapper {
+  width: 800px;
+  height: 1000px;
+  margin-top: 20px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.chat-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: flex-start;
+  margin-right: 20px;
+  overflow-y: auto;
 }
 </style>

@@ -59,3 +59,18 @@ nav a:first-of-type {
   border: 0;
 } */
 </style>
+
+<style>
+#app {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  width: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+</style>

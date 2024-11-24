@@ -107,7 +107,8 @@ public class KakaoController {
                     userJson.getJSONObject("properties").getString("nickname"),
                     userJson.getJSONObject("kakao_account").getString("email"),
                     userJson.getJSONObject("properties").optString("profile_image", ""),
-                    null  // 신규 사용자는 아직 userType이 없음
+                    null,  // 신규 사용자는 아직 userType이 없음
+                    null   // 신규 사용자는 아직 생일 없음
                 );
                 return new ResponseEntity<>(kakaoUserInfo, HttpStatus.CREATED);
             } else {
@@ -117,7 +118,8 @@ public class KakaoController {
                     user.getName(),
                     user.getEmail(),
                     user.getUserProfileImgPath(),
-                    user.getUserType()  // 기존 사용자의 userType 포함
+                    user.getUserType(), 
+                    user.getBirthdate()
                 );
                 
                 System.out.println("kakaoUserInfo : "  + kakaoUserInfo);

@@ -61,6 +61,18 @@
             <a class="link">Help</a>
             <a class="link">Legal</a>
           </div>
+
+          <!-- 새로운 TONG 애니메이션 섹션 추가 -->
+          <div class="tong-animation-wrapper">
+            <div class="bouncing-text">
+              <div class="letter-container chewy-regular">
+                <span class="letter">T</span>
+                <span class="letter">O</span>
+                <span class="letter">N</span>
+                <span class="letter">G</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -71,6 +83,7 @@
 
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Chewy&display=swap');
 
 .footer {
   width: 100%;
@@ -165,6 +178,80 @@
   }
 }
 
+.tong-animation-wrapper {
+  position: relative;
+  width: 100%;
+  height: 30vh; // 높이 살짝 조정
+  overflow: hidden;
+  margin-top: auto;
+}
+
+.bouncing-text {
+  position: absolute;
+  bottom: -20%; // 하단 잘림을 15%로 증가
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(10%); // 전체적으로 더 아래로 이동
+  
+  .letter-container {
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    font-family: 'Chewy', cursive;
+  }
+  
+  .letter {
+    display: inline-block;
+    font-size: 22vw; // 글자 크기 살짝 증가
+    color: #939393;
+    animation: puddingBounce 2.5s ease-in-out infinite;
+    transform-origin: center bottom;
+    font-weight: 400;
+    line-height: 0.8;
+    margin: 0 -0.8vw; // 글자 간격 조정
+    
+    &:nth-child(1) { animation-delay: 0.0s; }
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+    &:nth-child(4) { animation-delay: 0.6s; }
+  }
+}
+
+// 애니메이션 높이 조정
+@keyframes puddingBounce {
+  0%, 100% {
+    transform: scale3d(1, 1, 1) translateY(0);
+  }
+  15% {
+    transform: scale3d(1.4, 0.55, 1) translateY(0);
+  }
+  25% {
+    transform: scale3d(0.8, 1.3, 1) translateY(-30px); // 튀어오르는 높이 조정
+  }
+  35% {
+    transform: scale3d(1.2, 0.8, 1) translateY(0);
+  }
+  45% {
+    transform: scale3d(0.9, 1.1, 1) translateY(-15px);
+  }
+  55% {
+    transform: scale3d(1.05, 0.95, 1) translateY(0);
+  }
+  65% {
+    transform: scale3d(0.98, 1.02, 1) translateY(-8px);
+  }
+  75% {
+    transform: scale3d(1.02, 0.98, 1) translateY(0);
+  }
+  85% {
+    transform: scale3d(1, 1, 1) translateY(-4px);
+  }
+  95% {
+    transform: scale3d(1, 1, 1) translateY(0);
+  }
+}
+
 @media (max-width: 1200px) {
   .footer-container {
     flex-direction: column;
@@ -174,6 +261,10 @@
 
   .large-logo-section {
     flex: 0 0 150px;
+  }
+
+  .bouncing-text .letter {
+    font-size: 6rem;
   }
 }
 
@@ -202,6 +293,29 @@
 
     .section-text {
       font-size: 0.85rem; 
+    }
+  }
+
+  .tong-animation-wrapper {
+    height: 18vh;
+  }
+  
+  .bouncing-text {
+    bottom: -18%; // 모바일에서는 더 많이 잘림
+    
+    .letter {
+      font-size: 24vw;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .bouncing-text {
+    height: 80px;
+    margin-bottom: -10px;
+    
+    .letter {
+      font-size: 4rem;
     }
   }
 }

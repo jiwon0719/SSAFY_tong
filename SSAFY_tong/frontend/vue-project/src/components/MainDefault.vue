@@ -28,14 +28,27 @@
     <div class="quadrant quadrant-4">
       <div class="quadrant-header">
         <v-icon color="#333" class="mr-2">mdi-message-text</v-icon>
-        <span>Messages</span>
+        <span>Chatbot</span>
       </div>
       <div class="messages-container">
-        <!-- 이모지 컴포넌트 -->
-        <div class="emoji-container">
-          <EyeFollowingEmoji />
+        <div class="split-container">
+          <!-- 왼쪽 소개 패널 -->
+          <div class="intro-panel">
+            <h3 class="assistant-title">AI 챗봇 상담가</h3>
+            <div class="assistant-name">TONGKEY</div>
+            <p class="assistant-intro">
+              푸히히히힝~ <br>
+              안녕하세요! 저는 여러분의 AI 상담가 통키입니다. <br>
+              개인정보 유출 걱정없이 솔직한 대화를 할 수 있어요!
+            </p>
+          </div>
+          <!-- 오른쪽 마스코트 영역 -->
+          <div class="mascot-area">
+            <div class="emoji-container">
+              <Mascot />
+            </div>
+          </div>
         </div>
-        <!-- 메시지 컨텐츠는 여기에 추가 -->
       </div>
     </div>
   </div>
@@ -55,6 +68,7 @@ import WeatherForecastMain from '@/components/WeatherForcastMain.vue';
 import ReservationMain from './ReservationMain.vue'
 import TopBaordCategoriesMain from './TopBaordCategoriesMain.vue';
 import EyeFollowingEmoji from './EyeFollowingEmoji.vue';
+import Mascot from '@/components/mascot.vue';
 
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
@@ -140,6 +154,7 @@ onMounted(async () => {
     
     // 토큰 로드
     userStore.loadTokenFromStorage();
+    console.log('카카오 토큰:', userStore.kakaoToken);
 
     // 인증 확인
     if (!userStore.isAuthenticated) {
@@ -149,9 +164,15 @@ onMounted(async () => {
 
     // 유저 정보 가져오기
     await userStore.fetchUserInfo();    
-    console.log('유저 생일:', userStore.getBirthday);
-    console.log('유저 이름:', userStore.getUserName);
-
+    
+    // 디버깅용 로그 추가
+    console.log('유저 스토어 전체 상태:', userStore);
+    console.log('유저 정보:', {
+      birthday: userStore.getBirthday,
+      name: userStore.getUserName,
+      kakaoToken: userStore.kakaoToken
+    });
+    
     if (!userStore.getUserId) {
       console.log('MainDefault.vue에서 유저 ID가 없어서 회원가입으로 이동');
       router.push('/signUp');
@@ -225,7 +246,48 @@ onMounted(async () => {
 .messages-container {
   padding: 20px;
   height: calc(100% - 60px);
+}
+
+.split-container {
+  display: flex;
+  height: 100%;
+  gap: 20px;
+}
+
+.intro-panel {
+  flex: 1;
+  padding: 24px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  border-right: 1px solid #eee;
+}
+
+.assistant-title {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.assistant-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #E2495B;
+  margin-bottom: 16px;
+}
+
+.assistant-intro {
+  color: #5c6b7a;
+  line-height: 1.6;
+  font-size: 1.5rem;
+}
+
+.mascot-area {
+  flex: 1;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .emoji-container {
@@ -233,5 +295,16 @@ onMounted(async () => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+@media screen and (max-width: 768px) {
+  .split-container {
+    flex-direction: column;
+  }
+  
+  .intro-panel {
+    border-right: none;
+    border-bottom: 1px solid #eee;
+  }
 }
 </style>

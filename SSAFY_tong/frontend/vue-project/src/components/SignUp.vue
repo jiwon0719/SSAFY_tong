@@ -394,7 +394,7 @@ const birthdate = ref('');
 const phoneFirst = ref('010');
 const phoneMiddle = ref('');
 const phoneLast = ref('');
-const userProfileImgPath = ref('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMwAAADACAMAAAB/Pny7AAAAHlBMVEX5vfHwpeb6vPLyrerwp+f4ufD0sOz2tO7yqun2tu5u9qVmAAACfElEQVR4nO3aC5KjMAxF0eA/+9/wAElmOh0CImNKEnXPCnhlWbaxbzcAAAAAAAAAAAAAAAAAAABAWZhpf0QPIddaYpnUMftOlGtsaXhILdas/UVfy7ENv7TiM04u6XeUJU51WGz1bVT+xvE2OKF8ijJPHl+Ds5nFWZqdLHMa7U+UqztZJm7SjKtt7JWXLhA+9rGXNNqfKbM3YR6K9ndKZEGRuSk04cC4GJosmjHL0NhfbARt+SGN2t+6J0RxGPt1Jq+yYYjW60yyYD6Z72f1SmHWT2TrzG83CWOVeP33EOZIA7hUmGZ9C3CpdebQDsB6mEvtzY7smq3Pf/lB08V5Rl5n9qvsYv8ALvV35hZEQ+NgxiwkDS25KLKZoNDst+Wn/Y5WnBTZLMTteeMpy3w3u5Em+coyjc3Hs0BqfubLUxjXByf5vDwPtb3FSdHTdeaLPJafeVIro9coizzWEltrMfp/PLMIl3nWBAAwJdxCnlbNu3FeM30uN/eV/22bOW0Fpp2An0QhzG9mt45maWil5pv5SFOQIvt1nmLJposujMIk9zjTMc3s1vPTcWzLdCjQ/uxVh0blZxx7J8/8XZQljrXD53jgjumdrSu08etheQyOnZkTjrxkWGfmFq1DFjOP0LtksTI2R54xbKYxMG/kF7J79O8F83/15FdRO0yfCfOgXGhHXpfsU77n7Fhkg3ZH6zswyj2g64wZdIemZyu7U3y33Wu9/Eexzo68LhVSq7MjD+Wk1C6ie/eymdqkkT/6k1ObNGeEUds7nxJGqQOcMf/VOsClwvRf/zXDnNCZ1XpzLi32p/d8K5xAKwsAAAAAAAAAAAAAAAAAAFD2B3vkGDsXKoABAAAAAElFTkSuQmCC');
+const userProfileImgPath = ref('/src/assets/images/default-profile.png');
 
 onMounted(async () => {
   loadDaumPostcodeScript();
