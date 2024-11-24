@@ -97,17 +97,18 @@ export const useCalendarStore = defineStore('calendar', () => {
     try {
       let formattedDate
       if (date instanceof Date) {
-        formattedDate = date.toISOString().split('T')[0]
+        formattedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate())
+          .toISOString()
+          .split('T')[0]
       } else if (typeof date === 'string') {
-        // 문자열이 이미 'YYYY-MM-DD' 형식인지 확인
-        // 날짜 파싱
-        // 자바스크립트는 Date 객체에서 월이 0부터 시작함!
+        // 문자열을 Date 객체로 변환할 때 시간대 고려
         const [year, month, day] = date.split('-')
-        const newDate = new Date(year, month - 1, day)
-        formattedDate = newDate.toISOString().split('T')[0]
+        formattedDate = new Date(year, month - 1, day)
+          .toISOString()
+          .split('T')[0]
       }
       
-      const userId = userStore.userId; 
+      const userId = userStore.userId
       console.log('Fetching calendar for:', userId, formattedDate)
       const response = await axios.get(`${CALENDAR_API_URL}/${userId}/${formattedDate}`)
       console.log('API Response:', response.data)
@@ -180,7 +181,7 @@ export const useCalendarStore = defineStore('calendar', () => {
     
     if (format === 'api') {
         // API 요청용 YYYY-MM-DD 형식
-        return new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()))
+        return new Date(d.getFullYear(), d.getMonth(), d.getDate())
             .toISOString()
             .split('T')[0]
     }

@@ -4,6 +4,7 @@
       <v-row>
         <!-- 좌측: 캘린더 또는 예약 폼 -->
         <v-col cols="12" sm="6" class="my-2 px-1">
+          <!-- 캘린더 영역 -->
           <v-card v-if="!showReservationForm" class="pa-4" color="white">
             <div class="text-h6 mb-4" style="color: #E2495B">Calendar</div>
             <v-date-picker
@@ -50,17 +51,6 @@
                 <div class="text-subtitle-1" style="color: #E2495B">{{ formatDate(date) }}</div>
               </template>
             </v-date-picker>
-            
-            <v-btn
-              block
-              color="#E2495B"
-              @click="handleReservation"
-              :disabled="!store.selectedTime || !store.selectedExpertId"
-              :loading="store.isLoading"
-              class="white--text"
-            >
-              예약 신청하기
-            </v-btn>
 
             <!-- 전문가 선택 -->
             <v-select
@@ -101,6 +91,17 @@
               class="mb-4"
               color="#E2495B"
             ></v-select>
+
+            <v-btn
+              block
+              color="#E2495B"
+              @click="handleReservation"
+              :disabled="!store.selectedTime || !store.selectedExpertId"
+              :loading="store.isLoading"
+              class="white--text"
+            >
+              예약 신청하기
+            </v-btn>
           </v-card>
         </v-col>
 
@@ -108,7 +109,7 @@
         <v-col cols="12" sm="6" class="my-2 px-1">
           <!-- 퀘스트 섹션 -->
           <v-card class="mb-4" color="white">
-            <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B" >
+            <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B">
               Quest
               <span class="text-subtitle-1 ml-2" style="color: rgba(226, 73, 91, 0.7)">
                 {{ store.pickerDate ? new Date(store.pickerDate).toLocaleDateString('ko-KR', {
@@ -122,7 +123,7 @@
                 }) }}
               </span>
             </v-card-title>
-            <v-card-subtitle style="color: black">
+            <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
               당신의 트레이너가 정해준 퀘스트를 확인하세요!
             </v-card-subtitle>
             <v-card-text>
@@ -150,7 +151,7 @@
                           color="success"
                           class="mr-1"
                           @click="updateQuestStatus(quest.questId, 'O')"
-                          
+                          variant="tonal"
                         >
                           성공
                         </v-btn>
@@ -158,7 +159,7 @@
                           size="small"
                           color="error"
                           @click="updateQuestStatus(quest.questId, 'F')"
-                          
+                          variant="tonal"
                         >
                           실패
                         </v-btn>
@@ -189,7 +190,7 @@
                 }) }}
               </span>
             </v-card-title>
-            <v-card-subtitle style="color: black">
+            <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
               운동 일정을 확인하세요!
             </v-card-subtitle>
             <v-card-text>
@@ -433,11 +434,24 @@ const updateQuestStatus = async (questId, newStatus) => {
 
 </script>
 
-<style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
-/* 컴포넌트 전역 폰트 설정 */
-:deep(*) {
+<style scoped>
+/* 컴포넌트 전체에 폰트 적용 */
+:deep(.v-application) {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* 모든 텍스트 요소에 폰트 적용 */
+:deep(.text-h6),
+:deep(.text-subtitle-1),
+:deep(.v-list-item-title),
+:deep(.v-list-item-subtitle),
+:deep(.v-card-title),
+:deep(.v-card-subtitle),
+:deep(.v-card-text),
+:deep(.v-btn),
+:deep(.v-chip) {
   font-family: 'Noto Sans KR', sans-serif !important;
 }
 
@@ -447,18 +461,20 @@ const updateQuestStatus = async (questId, newStatus) => {
 
 /* 캘린더 커스텀 스타일 */
 :deep(.custom-calendar) {
-  /* 캘린더 헤더 */
   .v-date-picker-header {
     padding: 4px 8px;
+    font-family: 'Noto Sans KR', sans-serif !important;
   }
   
   .v-date-picker-header__value {
     color: #E2495B;
+    font-family: 'Noto Sans KR', sans-serif !important;
   }
 
   /* 날짜 버튼 기본 스타일 */
   .v-date-picker-month button {
     color: #666;
+    font-family: 'Noto Sans KR', sans-serif !important;
   }
 
   /* 선택된 날짜 스타일 */
@@ -480,26 +496,5 @@ const updateQuestStatus = async (questId, newStatus) => {
   .v-date-picker-table {
     height: auto;
   }
-}
-
-/* Vuetify 컴포넌트 폰트 재정의 */
-:deep(.v-application) {
-  [class*='text-'] {
-    font-family: 'Noto Sans KR', sans-serif !important;
-  }
-}
-
-/* 버튼, 입력 필드 등 기타 Vuetify 컴포넌트 */
-:deep(.v-btn),
-:deep(.v-input),
-:deep(.v-label),
-:deep(.v-chip),
-:deep(.v-list-item),
-:deep(.v-card-title),
-:deep(.v-card-subtitle),
-:deep(.v-card-text),
-:deep(.v-select__selection),
-:deep(.v-snackbar) {
-  font-family: 'Noto Sans KR', sans-serif !important;
 }
 </style>
