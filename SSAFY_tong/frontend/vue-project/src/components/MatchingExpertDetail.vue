@@ -29,7 +29,7 @@
           </div>
           <div class="profile-info">
             <h2>{{ expertDetail?.companyName }} <span class="grade">/ {{ expertDetail?.grade }}</span></h2>
-            <div class="rating">평점: {{ averageScore }}점</div>
+            <div class="rating">⭐ {{ averageScore }}점</div>
           </div>
         </div>
 
@@ -37,9 +37,9 @@
         <div class="info-section">
           <h3>Information</h3>
           <div class="content">
-            <p> 🦾 {{ expertDetail?.companyName }} </p>
-            <p>🏠위치 : {{ expertDetail?.address }}</p>
-            <p>🎓설명 : {{ expertDetail?.introduction }}</p>
+            <p style="font-weight: bold;"> 🦾 {{ expertDetail?.companyName }} </p>
+            <p>🏠 위치 : {{ expertDetail?.address }}</p>
+            <p>🎓본인소개 : {{ expertDetail?.introduction }}</p>
           </div>
         </div>
 
@@ -66,6 +66,7 @@
         <!-- 매칭 신청 버튼 -->
         <div class="actions">
           <button @click="handleJoinRequest" class="join-btn">매칭 신청</button>
+          <button @click="goToList" class="gotoList-btn">  목록으로</button>
           <p class="join-notice">신청 후, 전문가 승인 시 채팅이 갈꺼에요. 조금만 기다려주세요.</p>
         </div>
       </section>
@@ -120,6 +121,11 @@ const stopAutoSlide = () => {
 const resetAutoSlide = () => {
   stopAutoSlide();
   startAutoSlide();
+};
+
+// 전문가 목록 페이지 이동
+const goToList = () => {
+  router.push('/matching');
 };
 
 // 매칭 신청 핸들러
@@ -262,6 +268,7 @@ onBeforeUnmount(() => {
   background: #f8f8f8;
   padding: 1.5rem;
   border-radius: 8px;
+  font-size: 18.5px;
 }
 
 .career-item {
@@ -281,18 +288,30 @@ onBeforeUnmount(() => {
 }
 
 .join-btn {
-  background: #E2495B;
+  padding: 15px 16px;
+  background-color: #ff4757;
   color: white;
+  border-radius: 8px;
+  font-size: 1.3rem;
   border: none;
-  padding: 1rem 3rem;
-  border-radius: 25px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(255, 71, 87, 0.2);
+  margin-right: 10px;
+}
+
+.gotoList-btn {
+  padding: 15px 16px;
+  background-color: #d0d0d0;
+  color: white;
+  border-radius: 8px;
+  font-size: 1.3rem;
+  border: none;
 }
 
 .join-btn:hover {
-  background: #c01c52;
+  background-color: #ff6b81;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);
 }
 
 .join-notice {

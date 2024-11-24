@@ -203,7 +203,7 @@
                     </div>
                     <div class="d-flex align-center">
                       <v-icon color="#E2495B" class="mr-2">mdi-account</v-icon>
-                      {{ reservation.expertUserId }}
+                      {{ getExpertName(reservation.expertUserId) }} 선생님
                       <v-chip
                         :color="getStatusColor(reservation.status)"
                         size="small"
@@ -357,6 +357,11 @@ const today = computed(() => {
   return new Date().toISOString().split('T')[0]
 })
 
+// 전문가 ID로 이름을 찾는 함수
+const getExpertName = (expertId) => {
+  const expert = store.matchingExperts.find(expert => expert.userId === expertId)
+  return expert ? expert.name : expertId // 전문가를 찾지 못하면 ID를 표시
+}
 
 onMounted(async () => {
   try {

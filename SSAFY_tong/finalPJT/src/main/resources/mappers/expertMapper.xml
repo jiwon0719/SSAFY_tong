@@ -7,7 +7,7 @@
 	
 	<!-- 전체 조회 : ExpertList(user + expert 조인) -->
 	<select id="selectExpertList" resultType="ExpertList">
-		SELECT e.expert_id, e.user_id, u.name, e.address, e.grade, u.userProfileImgPath
+		SELECT e.expert_id, e.user_id, u.name, e.address, e.grade, u.userProfileImgPath, e.total_score, e.total_score_cnt
 		FROM expert e
 		JOIN user u ON e.user_id = u.user_id
 	</select>
