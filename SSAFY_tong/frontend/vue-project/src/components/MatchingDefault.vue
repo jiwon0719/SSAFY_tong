@@ -1,14 +1,25 @@
 <template>
   <div class="matching-container">
     <div class="expert-section">
-      <div class="search-bar">
-        <button v-if="userType === 'E'" class="btn btn-outline" @click="navigateToExpertForm()">
+      <!-- 전문가 회원일때 보이는 메세지 -->
+      <div class="search-bar" v-if="userType === 'E'">
+        <h2>🔎 {{ userName }} 님의 회원 찾기 🔎</h2>
+        <span> 📢 아직 나의 프로필이 없다면? 📢 전문가 회원만 등록이 가능해요!</span>
+        <button class="btn btn-outline" @click="navigateToExpertForm()">
           <span>전문가 등록하기</span>
         </button>
       </div>
+      <!-- 일반 회원일때 보이는 메세지 -->
+      <div class="search-bar" v-if="userType === 'U'">
+        <h2>🔎 {{ userName }} 님의 전문가 찾기 🔎</h2>
+        <span> 📢 나만의 전문가가 궁금하다면? 📢 마이페이지에서 확인 가능해요!</span>
+        <button class="btn btn-outline" @click="goToMyPage()">
+          <span>마이페이지로 이동</span>
+        </button>
+      </div>
+
 
       <div class="expert-list-container">
-        <h2 class="section-title">전문가 목록</h2>
         <div class="expert-list" v-if="!loading">
           <router-link 
             v-for="expert in experts" 
@@ -17,21 +28,22 @@
             :data-expert-id="expert.expertId"
             class="expert-card"
           >
-            <img 
-              :src="expert.userProfileImgPath || 'src/assets/images/기본프로필.jpg'" 
-              :alt="`${expert.name} 프로필`" 
-              class="expert-image"
-            />
+          <img 
+            :src="expert.userProfileImgPath || 'src/assets/images/기본프로필.jpg'" 
+            :alt="`${expert.name} 프로필`" 
+            class="expert-image"
+            @error="e => e.target.src = 'src/assets/images/기본프로필.jpg'"
+          />
             <div class="expert-info">
               <div class="expert-header">
                 <span class="expert-name">{{ expert.name }} 선생님</span>
                 <span class="expert-type">{{ expert.grade }}</span>
               </div>
-              <div class="expert-location">{{ expert.location }}</div>
+              <div class="expert-location">{{ expert.address }}</div>
               <div class="expert-rating">
                 <i class="star-icon"></i>
                 <!-- 평균 평점 표시 -->
-                <span>{{ expert.totalScoreCnt > 0 ? `${(expert.totalScore / expert.totalScoreCnt).toFixed(1)} (${expert.totalScoreCnt}개)` : '신규' }}</span>
+                <span> ⭐ {{ expert.totalScoreCnt > 0 ? `${(expert.totalScore / expert.totalScoreCnt).toFixed(1)} (${expert.totalScoreCnt}명)` : '신규' }}</span>
               </div>
             </div>
           </router-link>
@@ -54,11 +66,45 @@ import { useRouter } from 'vue-router'
 import { useExpertStore } from '@/stores/expert'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
+import { mapState } from 'pinia'
 import defaultProfileImg from '@/assets/images/기본프로필.jpg'
 
 export default {
     name: 'MatchingDefault',
-    
+    computed: {
+      ...mapState(useExpertStore, ['experts'])
+    },
+
+    methods: {
+      handleImageError(event) {
+        event.target.src = 'src/assets/images/기본프로필.jpg'
+      }
+    },
+
+    async mounted() {
+      const expertStore = useExpertStore()
+      await expertStore.fetchExperts()
+      
+      // 디버깅용 로그 추가
+      console.log('expertStore에서 직접 확인:', expertStore.experts)
+      console.log('computed에서 experts 데이터:', this.experts)
+      
+      if (expertStore.experts?.length > 0) {
+        console.log('첫 번째 전문가 정보:', expertStore.experts[0])
+        console.log('첫 번째 전문가의 이미지 데이터:', expertStore.experts[0].expertImages)
+        if (expertStore.experts[0].expertImages?.length > 0) {
+          console.log('첫 번째 전문가의 첫 번째 이미지 URL:', expertStore.experts[0].expertImages[0].imageUrl)
+        }
+      }
+      
+      // 카카오맵 로드
+      await loadKakaoMap();
+      // 전문가 데이터가 있으면 마커 생성
+      if (experts.value?.length > 0) {
+        await addExpertMarkers(experts.value);
+      }
+    },
+     
     setup() {
       // 전문가 등록 페이지 이동
         const router = useRouter();
@@ -72,6 +118,21 @@ export default {
             });
         };
 
+        const goToMyPage = async () => {
+          if (!userStore.userType) {
+            await userStore.fetchUserInfo();
+          }
+
+          if (userStore.userType === 'E') {
+            router.push({ name: 'mypageDefaultExpert' });
+          } else {
+            router.push({ name: 'mypageDefault' });
+          }
+
+          isPanelOpen.value = false;
+        };
+
+
         const mapContainer = ref(null)
         const mapInstance = ref(null)
 
@@ -84,7 +145,7 @@ export default {
         const expertStore = useExpertStore()
         const userStore = useUserStore()
         const { experts, loading } = storeToRefs(expertStore)
-        const { userType } = storeToRefs(userStore)
+        const { userName, userType } = storeToRefs(userStore)
         
         let activeInfoWindow = null // 현재 활성화된 정보창 추적
 
@@ -165,8 +226,8 @@ export default {
                             <div class="expert-type">${expert.grade || '전문가'}</div>
                             <div class="rating">
                                 ${expert.totalScoreCnt > 0 
-                                    ? `★ ${(expert.totalScore / expert.totalScoreCnt).toFixed(1)} (${expert.totalScoreCnt}개)`
-                                    : '신규'}
+                                    ? `⭐ ${(expert.totalScore / expert.totalScoreCnt).toFixed(1)} (${expert.totalScoreCnt}개)`
+                                    : '⭐신규'}
                             </div>
                         `;
 
@@ -302,6 +363,11 @@ export default {
             });
         };
 
+        // 이미지 로드 실패 시 기본 이미지로 대체하는 함수
+        const handleImageError = (event) => {
+          event.target.src = 'src/assets/images/기본프로필.jpg'  // 기본 이미지로 대체
+        }
+
         onMounted(async () => {
           // 전문가 데이터 로드  
           await expertStore.fetchExperts();
@@ -327,7 +393,10 @@ export default {
             experts: visibleExperts, // 보이는 전문가만 반환
             loading,
             userType, 
-            navigateToExpertForm
+            userName,
+            navigateToExpertForm, 
+            goToMyPage, 
+            handleImageError
         };
     }
 }
@@ -338,6 +407,12 @@ export default {
 <style lang="scss">
 // 폰트 관련 CSS
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+// 전역 폰트 설정
+* {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
 .v-date-picker,
 .v-list-item,
 .v-date-picker-header,
@@ -352,23 +427,28 @@ export default {
 :deep(.custom-calendar) {
   .v-date-picker-header {
     padding: 4px 8px;
+    font-family: 'Noto Sans KR', sans-serif;
   }
   
   .v-date-picker-header__value {
     color: #E2495B;
+    font-family: 'Noto Sans KR', sans-serif;
   }
 
   .v-btn--active {
     background-color: #E2495B !important;
     color: white !important;
+    font-family: 'Noto Sans KR', sans-serif;
   }
 
   .v-btn:not(.v-btn--active) {
     color: #666;
+    font-family: 'Noto Sans KR', sans-serif;
   }
 
   .v-date-picker-table {
     height: auto;
+    font-family: 'Noto Sans KR', sans-serif;
   }
 }
 
@@ -378,14 +458,13 @@ export default {
   margin-bottom: 8px;
 }
 
-
 // 매칭 관련
 .matching-container {
   display: flex;
-  // height: calc(100vh - 64px); // Adjust based on your header height
   height: 100vh;
   width: 100%;
   overflow: hidden;
+  font-family: 'Noto Sans KR', sans-serif;
 
   .expert-section {
     width: 30%;
@@ -396,15 +475,21 @@ export default {
     .search-bar {
       padding: 20px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
       border-bottom: 1px solid #eee;
+
+      h2 {
+        margin: 0;
+        margin-bottom: 8px;
+      }
     }
 
     .expert-list-container {
       padding: 20px;
-      height: 100%; // 높이 설정
-      overflow-y: auto; // 스크롤 가능하도록 설정
+      height: 100%;
+      overflow-y: auto;
 
       .section-title {
         margin-bottom: 20px;
@@ -422,20 +507,19 @@ export default {
 
   .map-section {
     flex: 1;
-  height: 100%;
-  position: relative;
-  padding: 20px; // Add padding around the map
-  background: #f9f9f9; // Optional: light background
-    
+    height: 100%;
+    position: relative;
+    padding: 20px;
+    background: #f9f9f9;
 
     #kakao-map {
       width: 100%;
-    height: 80%;
-    position: relative; // Change from absolute to relative
-    border-radius: 12px; // Add rounded corners
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); // Add subtle shadow
-    margin: 20px 0; // Add margin to top and bottom
-  }
+      height: 80%;
+      position: relative;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin: 20px 0;
+    }
   }
 }
 
@@ -443,21 +527,23 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
-  border-radius: 12px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-
-  &-primary {
-    background: #E2495B;
-    color: white;
-  }
-
+  font-family: 'Noto Sans KR', sans-serif;
+  
   &-outline {
-    border: 2px solid #E2495B;
-    background: transparent;
-    color: #000;
+    padding: 10px 16px;
+    background-color: #ff4757;
+    color: white;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(255, 71, 87, 0.2);
+
+    &:hover {
+      background-color: #ff6b81;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 71, 87, 0.3);
+    }
   }
 }
 
@@ -470,8 +556,8 @@ export default {
   color: inherit;
   border: 1px solid transparent;
   cursor: pointer;
-  // 전환 시간을 0.4초로 늘림
   transition: all 0.4s ease-in-out;
+  font-family: 'Noto Sans KR', sans-serif;
 
   &:hover {
     background: rgba(217, 217, 217, 0.5);
@@ -492,6 +578,23 @@ export default {
     }
   }
 
+    // Active 상태 스타일 추가
+    &.active {
+    // background: rgba(226, 73, 91, 0.1);
+    border-color: #E2495B;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(226, 73, 91, 0.1);
+    transition: all 0.4s ease-in-out;
+
+    .expert-name {
+      color: #E2495B;
+    }
+
+    .expert-rating {
+      color: #E2495B;
+    }
+  }
+
   .expert-image {
     width: 106px;
     height: 98px;
@@ -501,7 +604,7 @@ export default {
   }
 
   .expert-info {
-    margin-left: 12px;
+    margin-left: 17px;
     flex: 1;
   }
 
@@ -511,39 +614,38 @@ export default {
     gap: 8px;
 
     .expert-name {
-      font-size: 16px;
+      font-size: 19px;
       font-weight: 400;
+      font-weight: 500;
       color: #000;
       transition: color 0.4s ease;
     }
 
     .expert-type {
-      font-size: 14px;
-      color: #B0B0B0;
+      margin-top: 4px;
+      margin-left: -2px;
+      font-weight: 500;
+      font-size: 16.5px;
+      color: #777777;
     }
   }
 
   .expert-location {
-    margin-top: 8px;
-    font-size: 12px;
-    color: #8A8A8A;
+    margin-top: 4px;
+    font-size: 15.5px;
+    font-weight: 500;
+    color: #777777;
   }
 
   .expert-rating {
     display: flex;
     align-items: center;
     gap: 4px;
-    margin-top: 8px;
-    font-size: 12px;
+    margin-top: 13px;
+    margin-left: px;
+    font-size: 17.5px;
     transition: color 0.4s ease;
   }
-}
-
-.expert-card.active {
-  background: rgba(226, 73, 91, 0.1);
-  border-color: #E2495B;
-    // active 상태 전환도 동일하게 0.4초
-  transition: all 0.4s ease-in-out;
 }
 
 // 마커 관련 스타일
@@ -556,23 +658,23 @@ export default {
     min-width: 150px;
     text-align: center;
     pointer-events: none;
-    display: none; // 초기 상태 숨김
-    // position: absolute; // 위치 고정
-    // transform: translate(-50%, -100%); // 중앙 정렬
+    display: none;
     z-index: 2;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 .marker-container {
     position: relative;
-    width: 46px;
-    height: 56px;
+    width: 67px;  
+    height: 74px;
     cursor: pointer;
     z-index: 1;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 .marker-image-container {
-    width: 46px;
-    height: 46px;
+    width: 66px; 
+    height: 66px; 
     background-color: #E2495B;
     border-radius: 50%;
     box-shadow: 0 2px 6px rgba(226, 73, 91, 0.3);
@@ -585,8 +687,8 @@ export default {
 }
 
 .marker-image {
-    width: 42px;
-    height: 42px;
+    width: 60px;  
+    height: 60px; 
     border-radius: 50%;
     border: 2px solid white;
     object-fit: cover;
@@ -599,48 +701,9 @@ export default {
     transform: translateX(-50%);
     width: 0;
     height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 10px solid #E2495B;
+    border-left: 8px solid transparent;   // 8px에서 6px로 수정
+    border-right: 6px solid transparent;  // 8px에서 6px로 수정
+    border-top: 8px solid #E2495B;       // 10px에서 8px로 수정
     filter: drop-shadow(0 2px 2px rgba(226, 73, 91, 0.3));
-}
-
-.marker-info .expert-name {
-    font-size: 14px;
-    font-weight: 500;
-    color: #000;
-    margin-bottom: 4px;
-}
-
-.marker-info .expert-type {
-    font-size: 12px;
-    color: #8A8A8A;
-    margin-bottom: 4px;
-}
-
-.marker-info .rating {
-    font-size: 12px;
-    color: #E2495B;
-}
-
-.expert-card.active {
-    background: rgba(226, 73, 91, 0.1);
-    border: 1px solid #E2495B;
-    transition: all 0.3s ease;
-}
-
-// 맵 컨테이너 스타일
-.map-section {
-  flex: 1;
-  height: 100%;
-  position: relative;
-
-  #kakao-map {
-    width: 100%;
-    height: 80%;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
 }
 </style>

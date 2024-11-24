@@ -19,7 +19,7 @@
         <div v-for="expert in matchingList" :key="expert.expertId" class="expert-card">
           <div class="expert-content">
             <img 
-              :src="expert.userProfileImgPath || '/src/assets/images/기본프로필.jpg'" 
+              :src="expert.userProfileImgUrl || '/src/assets/images/기본프로필.jpg'" 
               class="expert-image" 
               alt="전문가 프로필"
             />
@@ -29,17 +29,20 @@
                 <span class="expert-department">{{ expert.grade }}</span>
               </div>
               <div class="matching-info">
-                <div class="status">{{ expert.status === 'O' ? '매칭됨' : '매칭 대기중' }}</div>
-                <div class="date">[ 요청 시점 : {{ formatDate(expert.createAt) }} ]</div>
+                <div :class="['status', expert.status === 'O' ? 'status-matched' : 'status-waiting']">
+                  {{ expert.status === 'O' ? '매칭 완료' : '매칭 대기중' }}</div>
+                <div class="date"> [요청일: {{ formatDate(expert.createAt) }}]</div>
               </div>
-              <button 
-                v-if="expert.status === 'O'"
-                class="score-button" 
-                @click="openScoreModal(expert)"
-                :disabled="expert.score"
-              >
-                {{ expert.score ? '평가완료' : '점수주기' }}
-              </button>
+              <div class="button-container">
+                <button 
+                  v-if="expert.status === 'O'"
+                  class="score-button" 
+                  @click="openScoreModal(expert)"
+                  :disabled="expert.score"
+                >
+                  {{ expert.score ? '평가완료' : '점수주기' }}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -187,17 +190,20 @@ const formatDate = (date) => {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    font-family: 'Noto Sans KR', sans-serif;
   }
   
   .page-title {
     font-size: 24px;
     font-weight: 500;
     margin-bottom: 20px;
+    color: #333;
   }
   
   .loading, .error-message, .no-data {
     text-align: center;
     padding: 20px;
+    font-family: 'Noto Sans KR', sans-serif;
   }
   
   .error-message {
@@ -205,60 +211,131 @@ const formatDate = (date) => {
   }
   
   .expert-card {
+    display: block;
+    padding: 14px;
     background: rgba(217, 217, 217, 0.32);
     border-radius: 5px;
-    padding: 15px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.4s ease-in-out;
     margin-bottom: 20px;
+    min-height: 140px;
   
     .expert-content {
       display: flex;
-      gap: 20px;
+      gap: 17px;
+      height: 100%;
     }
   
     .expert-image {
+      margin-top: 4px;
       width: 106px;
       height: 98px;
       border-radius: 5px;
       object-fit: cover;
+      transition: transform 0.4s ease;
     }
   
     .expert-info {
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
   
       .expert-header {
         display: flex;
-        gap: 10px;
         align-items: center;
-        margin-bottom: 10px;
+        gap: 8px;
   
         .expert-name {
-          font-size: 16px;
+          margin-top: 2px;
+          font-size: 20px;
           font-weight: 500;
+          color: #000;
+          transition: color 0.4s ease;
         }
   
         .expert-department {
-          color: #B0B0B0;
-          font-size: 14px;
+          margin-top: 4px;
+          margin-left: -2px;
+          font-weight: 500;
+          font-size: 16.5px;
+          color: #777777;
         }
       }
   
       .matching-info {
-        color: #8A8A8A;
-        font-size: 12px;
-        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        
+        .status {
+          font-size: 18.5px;
+          font-weight: 500;
+          color: #777777;
+          transition: color 0.3s ease-in-out;
+
+          &.status-matched {
+            color: #4CAF50;  // 매칭 완료 시 초록색
+          }
+
+          &.status-waiting {
+            color: #E2495B;  // 매칭 대기/거절 시 붉은색
+          }
+        }
+  
+        .date {
+          margin-bottom: -2px;
+          font-size: 15px;
+          color: #777;
+        }
+      }
+  
+      .button-container {
+        margin-top: 10px;
+        min-height: 36px;
+        display: flex;
+        align-items: flex-end;
       }
   
       .score-button {
         background: #E2495B;
         color: white;
         border: none;
-        border-radius: 7px;
-        padding: 6px 12px;
-        font-size: 12px;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-size: 14px;
         cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(226, 73, 91, 0.2);
+  
+        &:hover:not(:disabled) {
+          background-color: #ff6b81;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(226, 73, 91, 0.3);
+        }
   
         &:disabled {
           background: #cccccc;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+      }
+    }
+  
+    &:hover {
+      background: rgba(217, 217, 217, 0.5);
+      border-color: #E2495B;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(226, 73, 91, 0.1);
+  
+      .expert-info {
+        .matching-info {
+          .status {
+            font-weight: bold;
+          }
         }
       }
     }
@@ -281,6 +358,14 @@ const formatDate = (date) => {
       padding: 30px;
       border-radius: 10px;
       width: 400px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  
+      h3 {
+        text-align: center;
+        font-size: 20px;
+        color: #333;
+        margin-bottom: 20px;
+      }
   
       .rating {
         display: flex;
@@ -294,36 +379,63 @@ const formatDate = (date) => {
   
           .star {
             cursor: pointer;
+            transition: color 0.3s ease;
             
             &.active {
               color: #FFD700;
             }
+  
+            &:hover {
+              color: #FFD700;
+            }
           }
+        }
+  
+        .score-text {
+          margin-top: 10px;
+          font-size: 16px;
+          color: #666;
         }
       }
   
       .modal-actions {
         display: flex;
         justify-content: center;
-        gap: 10px;
+        gap: 12px;
   
         button {
-          padding: 8px 20px;
-          border-radius: 5px;
+          padding: 10px 24px;
+          border-radius: 8px;
           border: none;
           cursor: pointer;
+          font-size: 14px;
+          transition: all 0.3s ease;
   
           &.submit-button {
             background: #E2495B;
             color: white;
+            box-shadow: 0 2px 4px rgba(226, 73, 91, 0.2);
             
+            &:hover:not(:disabled) {
+              background: #ff6b81;
+              transform: translateY(-1px);
+            }
+  
             &:disabled {
               background: #cccccc;
+              cursor: not-allowed;
+              box-shadow: none;
             }
           }
   
           &.cancel-button {
             background: #eee;
+            color: #666;
+  
+            &:hover {
+              background: #e0e0e0;
+              transform: translateY(-1px);
+            }
           }
         }
       }

@@ -64,30 +64,37 @@
 	    <!-- expert 테이블의 total_score와 total_score_cnt 업데이트 -->
 	    <!-- 동일한 테이블을 UPDATE와 하위 쿼리에서 동시에 참조할 때 발생하는 제약사항있으므로 임시 테이블로 우회 -->
 		UPDATE matching m
-		JOIN expert e ON m.expert_user_id = e.user_id  /* expert의 user_id와 matching의 expert_user_id 연결 */
-		SET m.score = #{score},
+		JOIN expert e ON m.expert_user_id = e.user_id
+		SET 
+		    m.score = #{score},
 		    e.total_score = (
-		        SELECT total
+		        SELECT SUM(temp_scores.new_total) 
 		        FROM (
-		            SELECT COALESCE(SUM(m2.score), 0) as total
+		            SELECT 
+		                CASE 
+		                    WHEN m2.expert_user_id = e.user_id 
+		                    AND m2.user_id = #{userId} THEN #{score}
+		                    ELSE COALESCE(m2.score, 0)
+		                END as new_total
 		            FROM matching m2
-		            JOIN expert e2 ON m2.expert_user_id = e2.user_id  /* 같은 전문가의 모든 점수 합계를 위한 조인 */
-		            WHERE e2.expert_id = e.expert_id
-		            AND m2.score IS NOT NULL
-		        ) as temp
+		            WHERE m2.expert_user_id = e.user_id
+		            AND (m2.score IS NOT NULL OR 
+		                (m2.expert_user_id = e.user_id AND m2.user_id = #{userId}))
+		        ) temp_scores
 		    ),
 		    e.total_score_cnt = (
-		        SELECT cnt
+		        SELECT COUNT(*) 
 		        FROM (
-		            SELECT COUNT(*) as cnt
+		            SELECT 1
 		            FROM matching m2
-		            JOIN expert e2 ON m2.expert_user_id = e2.user_id  /* 같은 전문가의 점수 개수를 위한 조인 */
-		            WHERE e2.expert_id = e.expert_id
-		            AND m2.score IS NOT NULL
-		        ) as temp2
+		            WHERE m2.expert_user_id = e.user_id
+		            AND (m2.score IS NOT NULL OR 
+		                (m2.expert_user_id = e.user_id AND m2.user_id = #{userId}))
+		        ) temp_cnt
 		    )
 		WHERE e.expert_id = #{expertId}
 		AND m.user_id = #{userId}
+		AND m.expert_user_id = e.user_id;
 	</update>
 	
 	<!-- 매칭 수락 / 거절(상태 업데이트) : updateMatchingStatus -->

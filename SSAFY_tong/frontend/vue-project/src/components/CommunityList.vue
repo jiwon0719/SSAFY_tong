@@ -3,7 +3,7 @@
         <div class="content-container">
           <!-- 게시판 카테고리 이름  -->
           <div class="category-title">
-            {{ store.selectCategoryTitle }}
+            {{ store.selectCategoryTitle }} 게시판
           </div>
           <!-- 상단 검색 영역 -->
           <div class="search-bar">

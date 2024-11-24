@@ -394,7 +394,11 @@ const birthdate = ref('');
 const phoneFirst = ref('010');
 const phoneMiddle = ref('');
 const phoneLast = ref('');
+<<<<<<< HEAD
 const userProfileImgPath = ref('/src/assets/images/default-profile.png');
+=======
+const userProfileImgPath = ref('null');
+>>>>>>> 44b74540417b23ee5e637a525e6f7a086718d3ad
 
 onMounted(async () => {
   loadDaumPostcodeScript();

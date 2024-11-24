@@ -9,12 +9,17 @@ import com.ssafy.tong.expert.model.ExpertCareer;
 import com.ssafy.tong.expert.model.ExpertImage;
 import com.ssafy.tong.expert.model.ExpertList;
 import com.ssafy.tong.expert.model.dao.ExpertDao;
+import com.ssafy.tong.user.model.User;
+import com.ssafy.tong.user.model.dao.UserDao;
 
 @Service
 public class ExpertServiceImpl implements ExpertService {
+	private final UserDao userDao;
+	
 	private final ExpertDao expertDao;
-	public ExpertServiceImpl(ExpertDao expertDao) {
+	public ExpertServiceImpl(ExpertDao expertDao, UserDao userDao) {
 		this.expertDao = expertDao;
+		this.userDao = userDao;
 	}
 	// 전제 조회
 	@Override
@@ -53,6 +58,14 @@ public class ExpertServiceImpl implements ExpertService {
 		List<ExpertImage> expertImages = expert.getExpertImage();
 
 		if(expertImages != null && generatedExpertId > 0) {
+			// 첫 번째 이미지의 system_name을 사용자 프로필 이미지로 설정
+			ExpertImage firstImage = expertImages.get(0); 
+			User user = new User(); 
+			user.setUserId(expert.getUserId());
+			user.setUserProfileImgPath(firstImage.getSystemName());
+			userDao.updateUserProfileImage(user);
+			
+			// 기존 로직
 			for(ExpertImage expertImage : expertImages) {
 				expertImage.setExpertId(generatedExpertId);
 				expertDao.insertExportImage(expertImage);

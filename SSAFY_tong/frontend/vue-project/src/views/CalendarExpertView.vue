@@ -22,14 +22,71 @@
                 <div class="text-subtitle-1" style="color: #E2495B">{{ formatDate(date) }}</div>
               </template>
             </v-date-picker>
+
+            <!-- 퀘스트 생성 버튼 -->
+            <v-btn
+              color="#E2495B"
+              class="mt-4 white--text"
+              block
+              @click="showQuestForm = !showQuestForm"
+              v-if="!showQuestForm"
+            >
+              퀘스트 생성하기
+            </v-btn>
+          </v-card>
+
+          <!-- 퀘스트 생성 폼 -->
+          <v-card v-if="showQuestForm" class="mt-4 pa-4" color="white">
+            <div class="d-flex justify-space-between align-center mb-4">
+              <div class="text-h6" style="color: #E2495B">Create Quest</div>
+              <v-btn icon @click="showQuestForm = false" color="#E2495B">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </div>
+            
+            <v-form ref="questForm" v-model="isFormValid">
+              <v-select
+                v-model="newQuest.userId"
+                :items="store.userMatchingList"
+                item-title="name"
+                item-value="userId"
+                label="매칭된 회원 선택"
+                required
+                :rules="[v => !!v || '회원을 선택해주세요']"
+              ></v-select>
+              
+              <v-text-field
+                v-model="newQuest.title"
+                label="퀘스트 제목"
+                required
+                :rules="[v => !!v || '제목을 입력해주세요']"
+              ></v-text-field>
+              
+              <v-textarea
+                v-model="newQuest.description"
+                label="퀘스트 내용"
+                required
+                :rules="[v => !!v || '내용을 입력해주세요']"
+              ></v-textarea>
+
+              <v-btn
+                color="#E2495B"
+                class="white--text"
+                @click="createQuest"
+                :disabled="!isFormValid"
+              >
+                퀘스트 생성
+              </v-btn>
+            </v-form>
           </v-card>
         </v-col>
  
-        <!-- 우측: 예약 관리 -->
+        <!-- 우측: 예약 및 퀘스트 관리 -->
         <v-col cols="12" sm="6" class="my-2 px-1">
+          <!-- 예약 -->
           <v-card color="white">
-            <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B">
-              Reservation Requests
+            <v-card-title class="text-h6 d-flex align-center" style="color: #E2495B" >
+              Reservation
               <span class="text-subtitle-1 ml-2" style="color: rgba(226, 73, 91, 0.7)">
                 {{ store.pickerDate ? new Date(store.pickerDate).toLocaleDateString('ko-KR', {
                   year: 'numeric', 
@@ -38,144 +95,102 @@
                 }) : '' }}
               </span>
             </v-card-title>
-            <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
-              예약 요청을 관리하세요
+            <v-card-subtitle style="color: black">
+              예약 요청을 확인하세요!
             </v-card-subtitle>
             <v-card-text>
               <v-list v-if="filteredReservations.length > 0">
-                <v-list-item v-for="reservation in filteredReservations" 
-                           :key="reservation.reservationId"
-                           :class="{'grey lighten-4': reservation.status !== 'X'}">
-                  <v-list-item-content>
-                    <v-list-item-title class="d-flex justify-space-between align-center">
-                      <div>
-                        <v-icon color="#E2495B" class="mr-2">mdi-clock-outline</v-icon>
-                        {{ reservation.time }}
-                      </div>
-                      <div class="d-flex align-items-center">
-                        <v-icon color="#E2495B" class="mr-2">mdi-account</v-icon>
-                        {{ reservation.userId }}
-                        <v-chip
-                          :color="reservation.status === 'O' ? STATUS_COLORS.ACCEPTED : 
-                                 (reservation.status === 'R' ? STATUS_COLORS.REJECTED : STATUS_COLORS.PENDING)"
-                          small
-                          class="ml-2 white--text"
-                        >
-                          {{ reservation.status === 'O' ? '수락됨' : (reservation.status === 'R' ? '거절됨' : '신청 중') }}
-                        </v-chip>
-                      </div>
-                    </v-list-item-title>
-                    
-                    <!-- 버튼 -->
-                    <div class="d-flex justify-end mt-2" v-if="reservation.status === 'X'">
-                      <v-btn
-                        :color="STATUS_COLORS.ACCEPTED"
-                        small
-                        class="mr-2"
-                        @click="handleStatusChange(reservation.reservationId, 'O')"
-                      >
-                        수락
-                      </v-btn>
-                      <v-btn
-                        :color="STATUS_COLORS.REJECTED"
-                        small
-                        @click="handleStatusChange(reservation.reservationId, 'R')"
-                      >
-                        거절
-                      </v-btn>
+              <v-list-item v-for="reservation in filteredReservations" 
+                          :key="reservation.reservationId"
+                          :class="{'grey lighten-4': reservation.status !== 'X'}">
+                <v-list-item-content>
+                  <v-list-item-title class="d-flex justify-space-between align-center">
+                    <div class="d-flex align-center">
+                      <v-icon color="#E2495B" class="mr-2">mdi-clock-outline</v-icon>
+                      {{ reservation.time }}
                     </div>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
+                    <div class="d-flex align-center">
+                      <div class="d-flex align-center mr-4">
+                        <v-icon color="#E2495B" class="mr-2">mdi-account</v-icon>
+                        {{ getUserName(reservation.userId) }}
+                      </div>
+                      <v-chip
+                        :color="reservation.status === 'O' ? STATUS_COLORS.ACCEPTED : 
+                                (reservation.status === 'R' ? STATUS_COLORS.REJECTED : STATUS_COLORS.PENDING)"
+                        small
+                        class="mr-4 white--text"
+                      >
+                        {{ reservation.status === 'O' ? '수락됨' : (reservation.status === 'R' ? '거절됨' : '신청 중') }}
+                      </v-chip>
+                      <div v-if="reservation.status === 'X'" class="d-flex">
+                        <v-btn
+                          :color="STATUS_COLORS.ACCEPTED"
+                          size="small"
+                          class="mr-2"
+                          @click="handleStatusChange(reservation.reservationId, 'O')"
+                        >
+                          수락
+                        </v-btn>
+                        <v-btn
+                          :color="STATUS_COLORS.REJECTED"
+                          size="small"
+                          @click="handleStatusChange(reservation.reservationId, 'R')"
+                        >
+                          거절
+                        </v-btn>
+                      </div>
+                    </div>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
               <div v-else class="text-center pa-4 text-subtitle-1">
                 예약 요청이 없습니다.
               </div>
             </v-card-text>
           </v-card>
-
+          
           <!-- 퀘스트 관리 카드 -->
           <v-card color="white" class="mt-4">
             <v-card-title class="text-h6" style="color: #E2495B">
-              Quest Management
+              Quest
+              <span class="text-subtitle-1 ml-2" style="color: rgba(226, 73, 91, 0.7)">
+                  {{ store.pickerDate ? new Date(store.pickerDate).toLocaleDateString('ko-KR', {
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric'
+                  }) : '' }}
+                </span>
             </v-card-title>
-            <v-card-subtitle style="color: rgba(226, 73, 91, 0.7)">
-              매칭된 회원에게 퀘스트를 생성하고 관리하세요
+            <v-card-subtitle style="color: black">
+              당신의 회원에게 퀘스트를 생성하고 관리하세요!
             </v-card-subtitle>
 
             <v-card-text>
-              <v-expansion-panels>
-                <v-expansion-panel>
-                  <v-expansion-panel-header>
-                    <v-icon color="#E2495B" class="mr-2">mdi-plus</v-icon>
-                    새 퀘스트 생성
-                  </v-expansion-panel-header>
-                  <v-expansion-panel-content>
-                    <v-form ref="questForm" v-model="isFormValid">
-                      <v-select
-                        v-model="newQuest.userId"
-                        :items="store.userMatchingList"
-                        item-title="name"
-                        item-value="userId"
-                        label="매칭된 회원 선택"
-                        required
-                        :rules="[v => !!v || '회원을 선택해주세요']"
-                      ></v-select>
-                      
-                      <v-text-field
-                        v-model="newQuest.title"
-                        label="퀘스트 제목"
-                        required
-                        :rules="[v => !!v || '제목을 입력해주세요']"
-                      ></v-text-field>
-                      
-                      <v-textarea
-                        v-model="newQuest.description"
-                        label="퀘스트 내용"
-                        required
-                        :rules="[v => !!v || '내용을 입력해주세요']"
-                      ></v-textarea>
-
-                      <v-btn
-                        color="#E2495B"
-                        class="white--text"
-                        @click="createQuest"
-                        :disabled="!isFormValid"
-                      >
-                        퀘스트 생성
-                      </v-btn>
-                    </v-form>
-                  </v-expansion-panel-content>
-                </v-expansion-panel>
-              </v-expansion-panels>
-
               <!-- 퀘스트 목록 -->
-              <v-list v-if="store.quests.length > 0" class="mt-4">
+              <v-list v-if="store.quests.length > 0">
                 <v-list-item v-for="quest in store.quests" :key="quest.questId" class="mb-2">
                   <v-list-item-content>
-                    <v-list-item-title class="d-flex justify-space-between align-center">
-                      <div>
-                        <v-icon color="#E2495B" class="mr-2">mdi-trophy-outline</v-icon>
-                        {{ quest.questTitle }}
-                      </div>
-                      <v-chip
-                        :color="getQuestStatusColor(quest.completionStatus)"
-                        small
-                        class="white--text"
-                      >
-                        {{ getQuestStatusText(quest.completionStatus) }}
-                      </v-chip>
-                    </v-list-item-title>
-                    
-                    <v-list-item-subtitle class="mt-2">
+                    <v-list-item-title class="d-flex align-center justify-space-between">
                       <div class="d-flex align-center">
-                        <v-icon small color="grey" class="mr-1">mdi-account</v-icon>
-                        {{ getUserName(quest.userId) }}
+                        <v-icon color="#E2495B" class="mr-2">mdi-trophy-outline</v-icon>
+                        <span>{{ quest.questTitle }}</span>
                       </div>
-                    </v-list-item-subtitle>
-                    
-                    <v-list-item-subtitle class="mt-2 grey--text">
-                      {{ quest.questDetail }}
-                    </v-list-item-subtitle>
+                      <div class="d-flex align-center">
+                        <span class="grey--text mx-4 text-truncate">{{ quest.questDetail }}</span>
+                        <div class="d-flex align-center mx-4">
+                          <v-icon small color="grey" class="mr-1">mdi-account</v-icon>
+                          {{ getUserName(quest.userId) }}
+                        </div>
+                        <v-chip
+                          :color="getQuestStatusColor(quest.completionStatus)"
+                          small
+                          class="white--text"
+                        >
+                          {{ getQuestStatusText(quest.completionStatus) }}
+                        </v-chip>
+                      </div>
+                    </v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -186,7 +201,7 @@
           </v-card>
         </v-col>
       </v-row>
- 
+
       <!-- 스낵바 -->
       <v-snackbar v-model="snackbar.show" :color="snackbar.color">
         {{ snackbar.message }}
@@ -204,6 +219,16 @@ const store = useExpertCalendarStore()
 const userStore = useUserStore();
 
 const expertId = userStore.userId;
+
+const showQuestForm = ref(false)       // 퀘스트 폼 표시 여부
+const isFormValid = ref(false)         // 폼 유효성 상태
+const questForm = ref(null)            // 폼 참조
+
+const newQuest = ref({
+  userId: '',
+  title: '',
+  description: ''
+})
 
 // 색상 상수 정의
 const STATUS_COLORS = {
@@ -239,15 +264,6 @@ const events = computed(() => {
   ))]
 })
 
-// Quest Management
-const isFormValid = ref(false)
-const questForm = ref(null)
-
-const newQuest = ref({
-  userId: '',
-  title: '',
-  description: ''
-})
 
 // 스낵바 메시지 추가
 const showMessage = (message, color = 'success') => {
@@ -340,6 +356,10 @@ const createQuest = async () => {
       title: '',
       description: ''
     }
+    // 폼 닫기 (추가된 부분)
+    showQuestForm.value = false
+    
+    await store.fetchQuests()
     
     // 퀘스트 목록 새로고침
     await store.fetchQuests()
@@ -398,17 +418,21 @@ onMounted(async () => {
 })
 </script>
 
+<style scoped>
+/* 구글 폰트 - Noto Sans KR 불러오기 */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
 
-<style scoped>
-* {
-  font-family: 'Noto Sans KR', sans-serif;
+/* 컴포넌트 내의 모든 요소에 Noto Sans KR 폰트 적용 */
+:deep(*) {
+  font-family: 'Noto Sans KR', sans-serif !important;
 }
 
+/* 달력 기본 스타일 */
 .v-date-picker {
   width: 100%;
 }
 
+/* 커스텀 달력 스타일 */
 :deep(.custom-calendar) {
   .v-date-picker-header {
     padding: 4px 8px;
@@ -432,9 +456,39 @@ onMounted(async () => {
   }
 }
 
+/* 리스트 아이템 스타일 */
 .v-list-item {
-  border: 1px solid #eee;
-  border-radius: 8px;
   margin-bottom: 8px;
 }
+
+/* Vuetify 특정 컴포넌트들에 대한 폰트 강제 적용 */
+:deep(.v-application) {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+:deep(.v-btn) {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+:deep(.v-list-item),
+:deep(.v-card-title),
+:deep(.v-card-subtitle),
+:deep(.v-card-text) {
+  font-family: 'Noto Sans KR', sans-serif !important;
+}
+
+/* 리스트 아이템 내 요소들 정렬 */
+.list-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.list-item-actions {
+  display: flex;
+  align-items: center;
+}
+
+
 </style>

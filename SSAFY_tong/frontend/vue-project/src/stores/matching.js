@@ -76,24 +76,57 @@ export const useMatchingStore = defineStore('matching', () => {
   }
 
   // 유저별 칭 목록 조회 (ExpertList 형태로 반환)
+  // const getUserMatchings = async (userId) => {
+  //   try {
+  //     loading.value = true
+  //     console.log('매칭 목록 요청 시작 - userId:', userId);
+
+  //     const response = await axios.get(`${MATCHING_API_URL}/user/${userId}`)
+  //     console.log('매칭 목록 API 응답 데이터:', response);
+  //     console.log('매칭 목록 데이터:', response.data);
+
+  //     // 응답 데이터 배열인지 확인
+  //     if (!Array.isArray(response.data)) {
+  //       console.error('API 응답이 배열 형태가 아닙니다:', response.data);
+  //       matchingList.value = [];
+  //     } else {
+  //       matchingList.value = response.data;
+  //     }      
+
+  //     return response.data
+  //   } catch (error) {
+  //     console.error("매칭 목록을 가져오는데 실패했습니다:", error)
+  //     console.error("에러 상세: ", error.response?.data);
+  //     matchingList.value = [];
+  //     throw error
+  //   } finally {
+  //     loading.value = false
+  //   }
+  // }
   const getUserMatchings = async (userId) => {
     try {
       loading.value = true
       console.log('매칭 목록 요청 시작 - userId:', userId);
-
+  
       const response = await axios.get(`${MATCHING_API_URL}/user/${userId}`)
       console.log('매칭 목록 API 응답 데이터:', response);
       console.log('매칭 목록 데이터:', response.data);
-
+  
       // 응답 데이터 배열인지 확인
       if (!Array.isArray(response.data)) {
         console.error('API 응답이 배열 형태가 아닙니다:', response.data);
         matchingList.value = [];
       } else {
-        matchingList.value = response.data;
+        // 프로필 이미지 URL 생성 로직 추가
+        matchingList.value = response.data.map(matching => ({
+          ...matching,
+          userProfileImgUrl: matching.userProfileImgPath 
+            ? `${import.meta.env.VITE_API_BASE_URL}/api/expert/image/${matching.userId}/${matching.userProfileImgPath}`
+            : null
+        }));
       }      
-
-      return response.data
+  
+      return matchingList.value
     } catch (error) {
       console.error("매칭 목록을 가져오는데 실패했습니다:", error)
       console.error("에러 상세: ", error.response?.data);

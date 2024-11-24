@@ -29,6 +29,9 @@ public interface UserDao {
 	// 아이디로 이미지 가져오기
 	public String getProfileImageByUserId(String userId);
 
+	// 전문가 등록시, 첫 번째 이미지의 system_name을 사용자 프로필 이미지로 설정
+	public void updateUserProfileImage(User user);
+
 
 	
 	
