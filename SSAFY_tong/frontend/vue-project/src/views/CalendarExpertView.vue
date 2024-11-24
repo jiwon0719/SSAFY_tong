@@ -112,7 +112,7 @@
                     <div class="d-flex align-center">
                       <div class="d-flex align-center mr-4">
                         <v-icon color="#E2495B" class="mr-2">mdi-account</v-icon>
-                        {{ reservation.userId }}
+                        {{ getUserName(reservation.userId) }}
                       </div>
                       <v-chip
                         :color="reservation.status === 'O' ? STATUS_COLORS.ACCEPTED : 
