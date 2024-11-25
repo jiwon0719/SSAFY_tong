@@ -50,7 +50,7 @@
                                 회원가입
                             </div>
                     </router-link>
-                    <div class="text--with-kakao" @click="redirectToKakaoLogin" style="z-index: 1; position: relative;">
+                    <div class="text--with-kakao" @click="redirectToKakaoLogin" style="z-index: 1; position: relative; cursor: pointer;">
                         회원가입 with KAKAO
                     </div>
                 </div>
