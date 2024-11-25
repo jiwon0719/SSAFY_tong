@@ -29,6 +29,7 @@ import MainDefault from '@/components/MainDefault.vue'
 import ChatRoomList from '@/components/ChatRoomList.vue'
 import Chat from '@/components/Chat.vue';
 import ChatRoom from '@/components/ChatRoom.vue';
+import Mascot from '@/components/mascot.vue';
 
 import { useUserStore } from '@/stores/user'
 
@@ -38,11 +39,10 @@ const routes = [
     name: 'start',
     component: StartView  // Start 페이지
   },
-  //  ai 챗봇 채팅방
-  { 
-    path: '/AiChatRoom',
-    name: 'AiChatRoom',
-    component: ChatRoom,
+  {
+    path: '/mascot',  
+    name: 'mascot',
+    component: Mascot,
   },
   {
     path: '/main',
@@ -82,7 +82,7 @@ const routes = [
         component: CalendarExpertView,
       },
       {
-        path: '/mypage',
+        path: 'mypage',
         name: 'mypage',
         component: MypageView,
         meta: { requiresAuth: true }, 
@@ -93,6 +93,11 @@ const routes = [
             component: MypageDefault,
           },
           {
+            path: 'aichat',
+            name: 'aiChatRoom',
+            component: ChatRoom,
+          },
+          {
             path: 'expert',
             name: 'mypageDefaultExpert',
             component: MypageDefaultExpert,
@@ -100,7 +105,7 @@ const routes = [
           {
             path: '/chat',
             name: 'chatRooms',
-            component: ChatRoomList, // 채팅방 목록
+            component: ChatRoomList, 
           },
           {
             path: '/chat/:roomId',
@@ -121,8 +126,9 @@ const routes = [
             path: 'updateUserInfo',
             name: 'updateUserInfo',
             component: UpdateUserInfo,
-          },
+          },  
         ],
+        
       },
       {
         path: '/community',

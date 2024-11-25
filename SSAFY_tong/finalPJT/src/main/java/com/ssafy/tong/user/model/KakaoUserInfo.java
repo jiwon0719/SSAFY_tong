@@ -8,6 +8,17 @@ public class KakaoUserInfo implements Serializable {
     private String email;
     private String profileImage;
     private Character userType;
+    private String birthdate;
+	public KakaoUserInfo(String kakaoId, String nickname, String email, String profileImage, Character userType,
+			String birthdate) {
+		super();
+		this.kakaoId = kakaoId;
+		this.nickname = nickname;
+		this.email = email;
+		this.profileImage = profileImage;
+		this.userType = userType;
+		this.birthdate = birthdate;
+	}
 	public String getKakaoId() {
 		return kakaoId;
 	}
@@ -38,19 +49,17 @@ public class KakaoUserInfo implements Serializable {
 	public void setUserType(Character userType) {
 		this.userType = userType;
 	}
-	public KakaoUserInfo(String kakaoId, String nickname, String email, String profileImage, Character userType) {
-		super();
-		this.kakaoId = kakaoId;
-		this.nickname = nickname;
-		this.email = email;
-		this.profileImage = profileImage;
-		this.userType = userType;
+	public String getBirthdate() {
+		return birthdate;
 	}
+	public void setBirthdate(String birthdate) {
+		this.birthdate = birthdate;
+	}
+	
 	@Override
 	public String toString() {
 		return "KakaoUserInfo [kakaoId=" + kakaoId + ", nickname=" + nickname + ", email=" + email + ", profileImage="
-				+ profileImage + ", userType=" + userType + "]";
+				+ profileImage + ", userType=" + userType + ", birthdate=" + birthdate + "]";
 	}
-
     
 }

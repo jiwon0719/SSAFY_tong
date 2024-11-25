@@ -182,7 +182,7 @@ export default {
         
         if (!userStore.token && !userStore.kakaoToken) {
           error.value = '로그인이 필요합니다.';
-          router.push('/login');
+          router.push('/signIn');
           return;
         }
 

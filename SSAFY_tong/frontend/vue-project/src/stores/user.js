@@ -58,8 +58,8 @@ export const useUserStore = defineStore('user', {
     setProfileImage(imageUrl) {
       this.profileImage = imageUrl;
     },
-    setBirthday(biethday) {
-      this.birthday = biethday;
+    setBirthday(birthday) {
+      this.birthday = birthday;
     },
 
     async fetchUserInfo() {
@@ -82,7 +82,12 @@ export const useUserStore = defineStore('user', {
             userName = kakaoResponse.data.nickname;
 
             if (kakaoResponse.data.birthdate) {
-              this.setBirthday(kakaoResponse.data.birthdate);
+              const birthdate = kakaoResponse.data.birthdate;
+              // 만약 카카오에서 받은 생일 형식이 MMDD라면 현재 연도를 추가
+              const formattedBirthdate = birthdate.length === 4 
+                ? `${new Date().getFullYear()}-${birthdate.slice(0,2)}-${birthdate.slice(2,4)}`
+                : birthdate;
+              this.setBirthday(formattedBirthdate);
             }
 
             // 카카오 사용자 정보 저장
@@ -99,6 +104,7 @@ export const useUserStore = defineStore('user', {
 
             // userType 설정
             this.setUserType(kakaoResponse.data.userType);
+           
 
             // 프로필 이미지 설정
             this.setProfileImage(kakaoResponse.data.profileImage);

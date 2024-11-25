@@ -34,11 +34,13 @@ const getDateString = (date) => {
   return `${month}${day}`
 }
 
-// 저장 키 생성 함수
+// 저장 키 생성 함수를 더 구체적으로 수정
 const getStorageKey = () => {
   const today = new Date()
   const year = today.getFullYear()
-  return `birthday_check_${year}`
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  return `birthday_check_${year}${month}${day}` // 매일 새로운 키 생성
 }
 
 const closeModal = () => {
@@ -46,26 +48,57 @@ const closeModal = () => {
 }
 
 const checkBirthday = () => {
+  console.log('전달받은 유저 정보:', props.user);
+  console.log('생일 확인 시작:', props.user?.birthday);
+
   if (!props.user?.birthday) {
-    return
+    console.log('생일 데이터 없음');
+    return;
   }
 
-  const storageKey = getStorageKey()
-  const alreadyShown = localStorage.getItem(storageKey)
+  const storageKey = getStorageKey();
+  const alreadyShown = localStorage.getItem(storageKey);
+  console.log('이미 표시 여부:', alreadyShown);
 
   // 오늘 날짜와 생일 비교
-  const today = new Date()
-  const todayString = getDateString(today)
+  const today = new Date();
+  const todayString = getDateString(today);
   
-  // 생일 문자열 추출 (MMDD 형식)
-  const birthDate = props.user.birthday.replace(/-/g, '').slice(4, 8)
-  
-  if (todayString === birthDate && !alreadyShown) {
-    modalTimer.value = setTimeout(() => {
-      isOpen.value = true
-      localStorage.setItem(storageKey, 'shown')
-    }, 700)
+  let birthString;
+  try {
+    const birthDate = new Date(props.user.birthday);
+    birthString = getDateString(birthDate);
+  } catch (error) {
+    console.error('생일 날짜 변환 실패:', error);
+    return;
   }
+  
+  console.log('날짜 비교:', {
+    today: todayString,
+    birthday: birthString
+  });
+  
+  if (todayString === birthString && !alreadyShown) {
+    console.log('생일 일치! 모달 표시 예정');
+    modalTimer.value = setTimeout(() => {
+      isOpen.value = true;
+      localStorage.setItem(storageKey, 'shown');
+    }, 700);
+  }
+}
+
+// localStorage 초기화 함수 추가
+const clearOldStorageKeys = () => {
+  const today = new Date();
+  const currentKey = getStorageKey();
+  
+  // localStorage에서 birthday_check로 시작하는 모든 키를 찾아서
+  // 오늘 날짜의 키가 아닌 것들은 삭제
+  Object.keys(localStorage).forEach(key => {
+    if (key.startsWith('birthday_check_') && key !== currentKey) {
+      localStorage.removeItem(key);
+    }
+  });
 }
 
 onBeforeUnmount(() => {
@@ -86,7 +119,8 @@ watch(
 )
 
 onMounted(() => {
-  checkBirthday()
+  clearOldStorageKeys(); // 컴포넌트 마운트 시 이전 저장 데이터 정리
+  checkBirthday();
 })
 </script>
 
