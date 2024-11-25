@@ -3,10 +3,11 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, computed, onUnmounted } from 'vue'
+import { onMounted, ref, reactive, computed, onUnmounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import * as THREE from 'three'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'
+import gsap from 'gsap'
 
 const router = useRouter()
 const route = useRoute()
@@ -45,6 +46,19 @@ const jumpAnimation = reactive({
   onComplete: null  // 애니메이션 완료 후 실행할 콜백 추가
 })
 
+// 생각하는 포즈 애니메이션 상태 수정
+const thinkingAnimation = reactive({
+  active: false,
+  time: 0,
+  duration: 1.0,
+  headRotation: 0.3,
+  neckRotation: 0.2,
+  spineRotation: 0.1,
+  armLiftHeight: 0.8,
+  basePosition: -5, // 기본 y 위치 저장
+  idleAmplitude: 0.1 // 상하 움직임 크기
+})
+
 // 본 참조 저장용 객체
 const bones = {
   leftThigh: null,
@@ -62,6 +76,113 @@ const bones = {
 
 // MypageView 체크
 const isMypageView = computed(() => route.path.includes('/mypage/aichat'))
+
+// props 추가
+const props = defineProps({
+  isLoading: {
+    type: Boolean,
+    default: false
+  }
+})
+
+// watch 수정
+watch(() => props.isLoading, (newValue) => {
+  console.log('Loading state changed:', newValue, 'Horse:', horse, 'Bones:', bones) // 디버깅 강화
+  
+  if (!horse || !bones.spine) return // 모델이 로드되지 않았으면 리턴
+
+  if (newValue) {
+    console.log('Transitioning to thinking pose') // 디버깅
+    // 로딩 시작 - 걷기 애니메이션 즉시 중지
+    walkAnimation.active = false
+    thinkingAnimation.active = true
+    
+    // 회전 초기화
+    rotation.targetX = 0
+    rotation.targetY = 0
+    rotation.currentX = 0
+    rotation.currentY = 0
+    
+    // 생각하는 포즈로 강한 전환
+    gsap.to(horse.rotation, {
+      duration: 0.5,
+      x: 0,
+      y: 0,
+      ease: "power2.inOut"
+    })
+    
+    
+    // 왼쪽 팔 들기
+    if (bones.leftUpperarm) {
+      gsap.to(bones.leftUpperarm.rotation, {
+        duration: 0.5,
+        x: -Math.PI * 0.5, // 더 확실한 움직임
+        z: Math.PI * 0.15,
+        ease: "power2.inOut"
+      })
+      
+      // 왼쪽 아래팔도 구부리기
+      if (bones.leftForearm) {
+        gsap.to(bones.leftForearm.rotation, {
+          duration: 0.5,
+          x: -Math.PI * 0.4,
+          ease: "power2.inOut"
+        })
+      }
+    }
+    
+    // 오른쪽 팔도 살짝 움직이기
+    if (bones.rightUpperarm) {
+      gsap.to(bones.rightUpperarm.rotation, {
+        duration: 0.5,
+        x: -Math.PI * 0.15,
+        ease: "power2.inOut"
+      })
+    }
+  } else {
+    console.log('Transitioning back to walking') // 디버깅
+    // 로딩 종료 - 원래 상태로 복귀
+    thinkingAnimation.active = false
+    
+    // 모든 회전 초기화
+    gsap.to(horse.rotation, {
+      duration: 0.5,
+      x: 0,
+      y: 0,
+      ease: "power2.inOut"
+    })
+    
+    
+    if (bones.leftUpperarm) {
+      gsap.to(bones.leftUpperarm.rotation, {
+        duration: 0.5,
+        x: 0,
+        z: 0,
+        ease: "power2.inOut"
+      })
+      
+      if (bones.leftForearm) {
+        gsap.to(bones.leftForearm.rotation, {
+          duration: 0.5,
+          x: 0,
+          ease: "power2.inOut"
+        })
+      }
+    }
+    
+    if (bones.rightUpperarm) {
+      gsap.to(bones.rightUpperarm.rotation, {
+        duration: 0.5,
+        x: 0,
+        z: 0,
+        ease: "power2.inOut",
+        onComplete: () => {
+          walkAnimation.active = true
+        }
+      })
+    }
+  }
+})
 
 onMounted(() => {
   // Camera 설정
@@ -171,16 +292,40 @@ onMounted(() => {
     requestAnimationFrame(animate)
     
     if (horse) {
-      // 마우스 회전 로직
-      rotation.currentX += (rotation.targetX - rotation.currentX) * 0.05
-      rotation.currentY += (rotation.targetY - rotation.currentY) * 0.05
-      
-      // 회전 적용 (기본 각도 제거)
-      horse.rotation.x = rotation.currentX
-      horse.rotation.y = rotation.currentY
-      
-      // 걷기 애니메이션
-      if (walkAnimation.active) {
+      if (thinkingAnimation.active) {
+        // 생각하는 동작일 때의 움직임
+        const time = Date.now() * 0.001
+        
+        // 전체적인 상하 움직임
+        const baseY = thinkingAnimation.basePosition
+        const idleMovement = Math.sin(time * 1.5) * thinkingAnimation.idleAmplitude
+        horse.position.y = baseY + idleMovement
+        
+        // 미세한 회전 움직임
+        const idleRotation = Math.sin(time * 0.8) * 0.05
+        horse.rotation.y = idleRotation
+        
+        // 팔 미세 움직임
+        if (bones.leftUpperarm) {
+          const armMovement = Math.sin(time * 1.2) * 0.05
+          bones.leftUpperarm.rotation.x += armMovement
+        }
+        
+        // 척추 미세 움직임
+        if (bones.spine) {
+          const spineMovement = Math.sin(time * 1.0) * 0.02
+          bones.spine.rotation.x += spineMovement
+        }
+        
+      } else if (walkAnimation.active) {
+        // 마우스 회전 로직
+        rotation.currentX += (rotation.targetX - rotation.currentX) * 0.05
+        rotation.currentY += (rotation.targetY - rotation.currentY) * 0.05
+        
+        horse.rotation.x = rotation.currentX
+        horse.rotation.y = rotation.currentY
+        
+        // 걷기 애니메이션
         walkAnimation.time += walkAnimation.speed
         
         // 본 움직임 디버깅
@@ -279,15 +424,13 @@ onMounted(() => {
   window.addEventListener('mouseout', handleMouseLeave)
 })
 
-// 전역 마우스 이벤트 핸들러 수정
+// handleGlobalMouseMove 수정
 const handleGlobalMouseMove = (e) => {
-  if (!horse) return
+  if (!horse || thinkingAnimation.active) return // thinking 중에는 마우스 추적 비활성화
   
-  // 화면 중앙 기준으로 계산
   const centerX = window.innerWidth / 2
   const centerY = window.innerHeight / 2
   
-  // 회전 각도 계산 수정
   rotation.targetY = ((e.clientX - centerX) / (window.innerWidth / 2)) * (Math.PI / 2)
   rotation.targetX = ((e.clientY - centerY) / (window.innerHeight / 2)) * (Math.PI / 4)
 }

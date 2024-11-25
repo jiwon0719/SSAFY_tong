@@ -1,5 +1,6 @@
 <template>
   <div class="chat-container">
+    <Mascot :is-loading="isLoading" />
     <div class="chat-messages" ref="messageContainer">
       <div v-for="(message, index) in messages" :key="index" 
            :class="['message', message.role === 'user' ? 'user-message' : 'ai-message']">
@@ -23,6 +24,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import axios from 'axios'
+import Mascot from './mascot.vue'
 
 const messages = ref([])
 const userInput = ref('')
@@ -47,7 +49,7 @@ const sendMessage = async () => {
     
     messages.value[loadingMessageIndex] = { 
       role: 'assistant', 
-      content: response.data.response 
+      content: response.data.response
     }
   } catch (error) {
     console.error('Error details:', {
@@ -58,7 +60,7 @@ const sendMessage = async () => {
     
     messages.value.push({ 
       role: 'assistant', 
-      content: error.response?.data?.response || '죄송합니다. 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' 
+      content: '죄송합니다. 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' 
     })
   } finally {
     isLoading.value = false

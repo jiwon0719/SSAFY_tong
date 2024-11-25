@@ -394,6 +394,7 @@ const birthdate = ref('');
 const phoneFirst = ref('010');
 const phoneMiddle = ref('');
 const phoneLast = ref('');
+
 const userProfileImgPath = ref('/src/assets/images/default-profile.png');
 
 onMounted(async () => {

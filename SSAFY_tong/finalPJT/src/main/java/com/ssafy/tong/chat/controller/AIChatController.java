@@ -29,7 +29,7 @@ import com.ssafy.tong.chat.model.AIChatResponse;
 public class AIChatController {
     
     private static final Logger logger = LoggerFactory.getLogger(AIChatController.class);
-    
+
     @PostMapping("/message")
     public ResponseEntity<?> sendMessage(@RequestBody AIChatRequest request) {
         try {
@@ -41,11 +41,29 @@ public class AIChatController {
             jsonRequest.put("model", "hf.co/QuantFactory/Llama-3-MAAL-8B-Instruct-v0.1-GGUF:Q8_0");
             
             ArrayNode messages = mapper.createArrayNode();
-            ObjectNode message = mapper.createObjectNode();
-            message.put("role", "user");
-            message.put("content", request.getMessage());
-            messages.add(message);
+            
+            // 시스템 메시지 추가
+            ObjectNode systemMessage = mapper.createObjectNode();
+            systemMessage.put("role", "system");
+            systemMessage.put("content","You are a friendly and cute donkey character named '통키'."
+            		+ "Please respond with the following characteristics:\n"
+            		+ "1. Always use a kind and polite tone.\\"
+            		+ "2. Randomly insert donkey sounds like '히히힝~' in the middle or end of your responses.\n"
+            		+ "3. You are the main mascot of TONG, a service that matches users with exercise experts.\n"
+            		+ "4. Keep your responses concise and easy to understand.\n"
+            		+ "5. Transform negative content into positive explanations.\n"
+            		+ "6. Communicate in Korean with a friendly tone.\n"
+            		+ "7. Show respect and empathy towards the conversation partner.\n");
+            messages.add(systemMessage);
+            
+            // 사용자 메시지 추가
+            ObjectNode userMessage = mapper.createObjectNode();
+            userMessage.put("role", "user");
+            userMessage.put("content", request.getMessage());
+            messages.add(userMessage);
+            
             jsonRequest.set("messages", messages);
+            jsonRequest.put("stream", false);  // 스트리밍 비활성화
             
             String jsonRequestString = mapper.writeValueAsString(jsonRequest);
             logger.info("요청 JSON: {}", jsonRequestString);
@@ -55,9 +73,11 @@ public class AIChatController {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
+            conn.setConnectTimeout(5000);
+            conn.setReadTimeout(30000);
             conn.setDoOutput(true);
             
-            // 요청 데이터 전송
+            // 요청 전송
             try (OutputStream os = conn.getOutputStream()) {
                 byte[] input = jsonRequestString.getBytes("utf-8");
                 os.write(input, 0, input.length);
@@ -75,18 +95,11 @@ public class AIChatController {
                         String content = jsonResponse.get("message").get("content").asText();
                         fullResponse.append(content);
                     }
-                    if (jsonResponse.has("done") && jsonResponse.get("done").asBoolean()) {
-                        break;
-                    }
                 }
             }
             
-            if (fullResponse.length() == 0) {
-                throw new RuntimeException("AI 모델로부터 응답을 받지 못했습니다.");
-            }
-            
             logger.info("최종 응답: {}", fullResponse.toString());
-            return ResponseEntity.ok(new AIChatResponse(fullResponse.toString()));
+            return ResponseEntity.ok(fullResponse.toString());
             
         } catch (Exception e) {
             logger.error("AI 채팅 처리 중 오류 발생: ", e);
@@ -95,3 +108,4 @@ public class AIChatController {
         }
     }
 }
+   
