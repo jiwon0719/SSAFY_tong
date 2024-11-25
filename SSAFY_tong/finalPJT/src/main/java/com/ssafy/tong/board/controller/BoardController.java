@@ -19,7 +19,7 @@ import com.ssafy.tong.board.model.service.BoardService;
 
 @RestController
 @RequestMapping("/api/board")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
+@CrossOrigin(origins = "http://192.168.210.55:5173", allowCredentials = "true", allowedHeaders = "*")
 // 게시판
 public class BoardController {
 	private final BoardService boardService;
