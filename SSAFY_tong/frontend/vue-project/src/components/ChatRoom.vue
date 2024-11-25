@@ -9,7 +9,7 @@
       </div>
       <button @click="toggleDarkMode" class="toggle-btn">
         <i class="fas" :class="darkMode ? 'fa-sun' : 'fa-moon'"></i>
-        {{ darkMode ? "라이트 모드" : "다크 모드" }}
+        {{ darkMode ? "Light Mode" : "Dark Mode" }}
       </button>
     </div>
 
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, nextTick, computed } from 'vue'
+import { ref, onMounted, nextTick, computed, watch } from 'vue'
 import axios from 'axios'
 
 const messages = ref([])
@@ -75,28 +75,57 @@ const toggleDarkMode = () => {
   darkMode.value = !darkMode.value
 }
 
+// isLoading 상태 변화 감지
+watch(() => isLoading.value, (newValue) => {
+  console.log('ChatRoom - Loading state changed:', newValue)
+})
+
 const sendMessage = async () => {
   if (!userInput.value.trim() || isLoading.value) return
   
-  const userMessage = userInput.value
+  const userMessage = userInput.value.trim()
   messages.value.push({ role: 'user', content: userMessage })
   userInput.value = ''
   isLoading.value = true
 
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/ai-chat/message`, {
+    const loadingMessageIndex = messages.value.length
+    messages.value.push({ 
+      role: 'assistant', 
+      content: '답변을 생성중입니다...',
+      isTyping: true 
+    })
+
+    const response = await axios.post('http://localhost:8080/api/ai-chat/message', {
       message: userMessage
     })
     
-    messages.value.push({ role: 'assistant', content: response.data })
-  } catch (error) {
-    console.error('Error:', error)
-    messages.value.push({ role: 'assistant', content: '죄송합니다. 오류가 발생했습니다.' })
-  }
+    console.log('Server response:', response.data) // 응답 데이터 확인
 
-  isLoading.value = false
-  await nextTick()
-  scrollToBottom()
+    // response.data 구조에 따라 올바른 값을 가져옴
+    const aiResponse = response.data.response || response.data
+    
+    messages.value[loadingMessageIndex] = { 
+      role: 'assistant', 
+      content: aiResponse,
+      isTyping: false
+    }
+  } catch (error) {
+    console.error('Error details:', {
+      message: error.message,
+      status: error.response?.status,
+      data: error.response?.data
+    })
+    
+    messages.value.push({ 
+      role: 'assistant', 
+      content: '죄송합니다. 오류가 발생했습니다. 잠시 후 다시 시도해주세요.' 
+    })
+  } finally {
+    isLoading.value = false
+    await nextTick()
+    scrollToBottom()
+  }
 }
 
 const scrollToBottom = () => {
@@ -219,6 +248,8 @@ const formatTime = () => {
   margin-bottom: 20px;
   gap: 8px;
   width: 100%;
+  transition: all 0.3s ease;
+  opacity: 1;
 }
 
 .message.mine {
@@ -231,6 +262,10 @@ const formatTime = () => {
   padding-right: 20%;
 }
 
+.message.typing {
+  opacity: 0.7;
+}
+
 .message-content {
   padding: 12px 16px;
   border-radius: 18px;
@@ -238,6 +273,7 @@ const formatTime = () => {
   position: relative;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   word-break: break-word;
+  min-height: 20px;
 }
 
 .mine .message-content {
@@ -458,5 +494,43 @@ input:focus {
 
 .dark-mode .message.other .avatar {
   margin-right: 8px;
+}
+
+/* 타이핑 효과 스타일 */
+.typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.typing span {
+  width: 8px;
+  height: 8px;
+  background: #666;
+  border-radius: 50%;
+  animation: typing 1s infinite ease-in-out;
+}
+
+.typing span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* 메시지 전환 애니메이션 */
+.message {
+  transition: all 0.3s ease;
+  opacity: 1;
+}
+
+.message.typing {
+  opacity: 0.7;
 }
 </style>
