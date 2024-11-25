@@ -72,7 +72,7 @@ public class ExpertController {
 	
     // 전문가 이미지 파일 제공
     @GetMapping("/image/{userId}/{fileName}")
-    @CrossOrigin(origins = "http://localhost:5173")  // 개별 메서드에도 추가
+    @CrossOrigin(origins = "http://192.168.210.55:5173")  // 개별 메서드에도 추가
     public ResponseEntity<Resource> getImage(@PathVariable String userId, 
                                            @PathVariable String fileName) {
         System.out.println("=== 이미지 요청 시작 ===");

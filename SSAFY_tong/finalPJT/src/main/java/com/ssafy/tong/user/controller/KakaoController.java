@@ -22,7 +22,7 @@ import com.ssafy.tong.user.model.KakaoUserInfo;
 import com.ssafy.tong.user.model.User;
 import com.ssafy.tong.user.model.service.UserService;
 
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
+@CrossOrigin(origins = "http://192.168.210.55:5173", allowCredentials = "true", allowedHeaders = "*")
 @RestController
 @RequestMapping("/oauth2/kakao")
 public class KakaoController {
@@ -46,7 +46,8 @@ public class KakaoController {
         StringBuilder params = new StringBuilder();
         params.append("grant_type=authorization_code");
         params.append("&client_id=").append(apiKey);
-        params.append("&redirect_uri=http://localhost:8080/oauth2/kakao");
+//        params.append("&redirect_uri=http://localhost:8080/oauth2/kakao");
+        params.append("&redirect_uri=http://192.168.210.55:8080/oauth2/kakao");
         params.append("&code=").append(code);
 
         RestTemplate restTemplate = new RestTemplate();

@@ -25,7 +25,7 @@ import com.ssafy.tong.chat.service.ChatService;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
+@CrossOrigin(origins = "http://192.168.210.55:5173", allowCredentials = "true", allowedHeaders = "*")
 public class ChatController {
     
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);

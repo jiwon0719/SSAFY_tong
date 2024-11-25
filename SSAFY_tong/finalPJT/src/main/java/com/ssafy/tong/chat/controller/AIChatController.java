@@ -25,7 +25,7 @@ import com.ssafy.tong.chat.model.AIChatResponse;
 
 @RestController
 @RequestMapping("/api/ai-chat")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true", allowedHeaders = "*")
+@CrossOrigin(origins = "http://192.168.210.55:5173", allowCredentials = "true", allowedHeaders = "*")
 public class AIChatController {
     
     private static final Logger logger = LoggerFactory.getLogger(AIChatController.class);
