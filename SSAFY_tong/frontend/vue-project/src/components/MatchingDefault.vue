@@ -181,7 +181,7 @@ export default {
             if (!mapContainer.value) return;
             
             const options = {
-                center: new window.kakao.maps.LatLng(36.355339, 127.297577),
+                center: new window.kakao.maps.LatLng(36.353636, 127.341674),
                 level: 3
             }
             
