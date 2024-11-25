@@ -397,7 +397,6 @@ const phoneLast = ref('');
 
 const userProfileImgPath = ref('/src/assets/images/default-profile.png');
 
-
 onMounted(async () => {
   loadDaumPostcodeScript();
   

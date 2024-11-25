@@ -279,7 +279,7 @@ onMounted(async () => {
 .assistant-intro {
   color: #5c6b7a;
   line-height: 1.6;
-  font-size: 1.5rem;
+  font-size: 1.2rem;
 }
 
 .mascot-area {
