@@ -129,14 +129,14 @@
 
 .footer-section {
   .section-title {
-    font-size: 1.25rem; // 1.4rem에서 축소
+    font-size: 1.25rem;
     font-weight: 700;
     margin-bottom: 0.8rem;
     color: #fff;
   }
 
   .section-text {
-    font-size: 0.95rem; // 1.05rem에서 축소
+    font-size: 0.95rem;
     line-height: 1.5;
     color: rgba(255, 255, 255, 0.7);
     font-weight: 400;
@@ -145,7 +145,7 @@
 
 .company-info {
   .company-name {
-    font-size: 1.4rem; // 1.8rem에서 축소
+    font-size: 1.4rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
   }
@@ -154,7 +154,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
-    font-size: 0.9rem; // 1rem에서 축소
+    font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.7);
     
     p {
@@ -173,7 +173,7 @@
   .link {
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
-    font-size: 0.95rem; // 1.1rem에서 축소
+    font-size: 0.95rem;
     font-weight: 500;
   }
 }
@@ -181,35 +181,38 @@
 .tong-animation-wrapper {
   position: relative;
   width: 100%;
-  height: 30vh; // 높이 살짝 조정
+  height: 30vh;
   overflow: hidden;
   margin-top: auto;
 }
 
 .bouncing-text {
   position: absolute;
-  bottom: -20%; // 하단 잘림을 15%로 증가
+  bottom: -20%;
   left: 0;
   width: 100%;
   text-align: center;
-  transform: translateY(10%); // 전체적으로 더 아래로 이동
+  transform: translateY(10%);
   
   .letter-container {
     display: inline-flex;
     justify-content: center;
     width: 100%;
-    font-family: 'Chewy', cursive;
+    font-family: 'Chewy', 'Arial', cursive;
+    font-weight: normal;
+    font-display: swap;
   }
   
   .letter {
     display: inline-block;
-    font-size: 22vw; // 글자 크기 살짝 증가
+    font-size: 22vw;
     color: #939393;
     animation: puddingBounce 2.5s ease-in-out infinite;
     transform-origin: center bottom;
-    font-weight: 400;
-    line-height: 0.8;
-    margin: 0 -0.8vw; // 글자 간격 조정
+    font-weight: normal;
+    line-height: 1;
+    margin: 0 -0.8vw;
+    font-family: 'Chewy', 'Arial', cursive;
     
     &:nth-child(1) { animation-delay: 0.0s; }
     &:nth-child(2) { animation-delay: 0.2s; }
@@ -218,7 +221,6 @@
   }
 }
 
-// 애니메이션 높이 조정
 @keyframes puddingBounce {
   0%, 100% {
     transform: scale3d(1, 1, 1) translateY(0);
@@ -227,7 +229,7 @@
     transform: scale3d(1.4, 0.55, 1) translateY(0);
   }
   25% {
-    transform: scale3d(0.8, 1.3, 1) translateY(-30px); // 튀어오르는 높이 조정
+    transform: scale3d(0.8, 1.3, 1) translateY(-30px);
   }
   35% {
     transform: scale3d(1.2, 0.8, 1) translateY(0);
@@ -292,7 +294,7 @@
     }
 
     .section-text {
-      font-size: 0.85rem; 
+      font-size: 0.85rem;
     }
   }
 
@@ -301,7 +303,7 @@
   }
   
   .bouncing-text {
-    bottom: -18%; // 모바일에서는 더 많이 잘림
+    bottom: -18%;
     
     .letter {
       font-size: 24vw;
@@ -316,6 +318,7 @@
     
     .letter {
       font-size: 4rem;
+      font-family: 'Chewy', 'Arial', cursive;
     }
   }
 }

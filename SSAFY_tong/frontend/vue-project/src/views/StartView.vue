@@ -23,9 +23,9 @@
         <div class="step-content">
           <div class="step-label" :class="{ 'fade-in': currentStep === 2 }">STEP 02</div>
           <div class="text-group">
-            <div class="text-main" :class="{ 'slide-in': currentStep === 2 }">전문가 매칭</div>
-            <div class="text-sub" :class="{ 'slide-in delay-1': currentStep === 2 }">지도로 찾는 주변의 전문가</div>
-            <div class="text-sub" :class="{ 'slide-in delay-2': currentStep === 2 }">내가 보고 고르는 매칭</div>
+            <div class="text-main" :class="{ 'slide-in': currentStep === 2 }">커뮤니티</div>
+            <div class="text-sub" :class="{ 'slide-in delay-1': currentStep === 2 }">직접 만드는 자유로운 게시판</div>
+            <div class="text-sub" :class="{ 'slide-in delay-2': currentStep === 2 }">인증된 전문가들의 답변</div>
           </div>
         </div>
       </div>
@@ -33,9 +33,9 @@
         <div class="step-content">
           <div class="step-label" :class="{ 'fade-in': currentStep === 3 }">STEP 03</div>
           <div class="text-group">
-            <div class="text-main" :class="{ 'slide-in': currentStep === 3 }">달력을 통한 일정관리</div>
-            <div class="text-sub" :class="{ 'slide-in delay-1': currentStep === 3 }">전문가가 내주는 퀘스트</div>
-            <div class="text-sub" :class="{ 'slide-in delay-2': currentStep === 3 }">내가 신청하는 예약</div>
+            <div class="text-main" :class="{ 'slide-in': currentStep === 3 }">전문가 매칭</div>
+            <div class="text-sub" :class="{ 'slide-in delay-1': currentStep === 3 }">지도로 찾는 주변의 전문가</div>
+            <div class="text-sub" :class="{ 'slide-in delay-2': currentStep === 3 }">내가 보고 고르는 매칭</div>
           </div>
         </div>
       </div>
@@ -43,9 +43,19 @@
         <div class="step-content">
           <div class="step-label" :class="{ 'fade-in': currentStep === 4 }">STEP 04</div>
           <div class="text-group">
-            <div class="text-main gradient-text" :class="{ 'slide-in': currentStep === 4 }">채팅</div>
-            <div class="text-sub" :class="{ 'slide-in delay-1': currentStep === 4 }">부담없이 언제라도</div>
-            <div class="text-sub" :class="{ 'slide-in delay-2': currentStep === 4 }">사소한 질문이라도</div>
+            <div class="text-main" :class="{ 'slide-in': currentStep === 4 }">달력을 통한 일정관리</div>
+            <div class="text-sub" :class="{ 'slide-in delay-1': currentStep === 4 }">전문가가 내주는 퀘스트</div>
+            <div class="text-sub" :class="{ 'slide-in delay-2': currentStep === 4 }">내가 신청하는 예약</div>
+          </div>
+        </div>
+      </div>
+      <div class="step-slide" :class="{ 'active': currentStep === 5, 'prev': currentStep > 5, 'next': currentStep < 5 }">
+        <div class="step-content">
+          <div class="step-label" :class="{ 'fade-in': currentStep === 5 }">STEP 05</div>
+          <div class="text-group">
+            <div class="text-main gradient-text" :class="{ 'slide-in': currentStep === 5 }">채팅</div>
+            <div class="text-sub" :class="{ 'slide-in delay-1': currentStep === 5 }">부담없이 언제라도</div>
+            <div class="text-sub" :class="{ 'slide-in delay-2': currentStep === 5 }">사소한 질문이라도</div>
           </div>
         </div>
       </div>
@@ -183,7 +193,7 @@
       <div class="ai-content" :class="{ 'blur': selectedPanel !== null }">
         <div class="ai-intro">
           <h2 class="gradient-text">AI 챗봇 통키를 소개합니다</h2>
-          <p class="ai-description">Llama3 기반의 인공지능 모델 활용한<br>한국ㅇ 언어모델 서비스</p>
+          <p class="ai-description">Llama3 기반의 인공지능 모델 활용한<br>한국어 언어모델 서비스</p>
           <div class="ai-features">
             <div class="feature">
               <span class="feature-icon">🎯</span>
@@ -240,6 +250,23 @@
           </div>
         </div>
       </div>
+
+      <router-link to="/main">
+          <button class="main-btn" :class="{ 'hidden': selectedPanel !== null }">Main →</button>
+      </router-link>
+
+    </section>
+    <!-- Template에 추가할 섹션 -->
+    <section class="slide final-slide">
+      <div class="ball-container">
+        <div class="ball"></div>
+      </div>
+      <router-link to="/main">
+        <button class="final-btn" :class="{ 'show': ballAnimationEnd }">
+          시작하기
+          <span class="arrow">→</span>
+        </button>
+      </router-link>
     </section>
   </div>
 </template>
@@ -253,7 +280,8 @@ export default {
       isAnimating: false,
       wheelAccumulator: 0,
       wheelThreshold: 100,
-      selectedPanel: null
+      selectedPanel: null, 
+      ballAnimationEnd: false
     }
   },
   mounted() {
@@ -265,6 +293,12 @@ export default {
     this.typeTextWithColor(textParts, '.typing-content', 0, 0, 100);
     
     this.setupWheelListener();
+
+    // 볼 애니메이션이 끝나면 버튼 표시
+    const ball = document.querySelector('.ball');
+    ball.addEventListener('animationend', () => {
+      this.ballAnimationEnd = true;
+    });
   },
   methods: {
     typeTextWithColor(textParts, selector, partIndex, charIndex, speed) {
@@ -320,7 +354,7 @@ export default {
       }
     },
     nextStep() {
-      if (this.currentStep < 4 && !this.isAnimating) {
+      if (this.currentStep < 5 && !this.isAnimating) {
         this.isAnimating = true;
         this.currentStep++;
         
@@ -372,6 +406,12 @@ export default {
 </script>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+* {
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
 .start-container {
   width: 100%;
   min-height: 100vh;
@@ -411,10 +451,10 @@ export default {
 }
 
 .typing-text {
-  font-size: 100px;
+  font-size: 110px;
   color: white;
   white-space: pre-line;
-  line-height: 240px;
+  line-height: 210px;
   overflow: hidden;
 }
 
@@ -465,6 +505,7 @@ export default {
 .step-slide:nth-child(2) { background-image: url('@/assets/images/step02.png'); }
 .step-slide:nth-child(3) { background-image: url('@/assets/images/step03.png'); }
 .step-slide:nth-child(4) { background-image: url('@/assets/images/step04.png'); }
+.step-slide:nth-child(5) { background-image: url('@/assets/images/step05.png'); }
 
 .step-slide {
   transform: translateX(100%);
@@ -495,9 +536,9 @@ export default {
 }
 
 .step-label {
-  color: #E2495B;
-  font-family: "Jockey One", sans-serif;
-  font-size: 50px;
+  color: #EEB5B5;
+  font-size: 45px;
+  font-weight: 900;
   margin-bottom: 30px;
   opacity: 0;
 }
@@ -509,20 +550,21 @@ export default {
 }
 
 .text-main {
-  color: #EEB5B5;
-  font-family: "Jockey One", sans-serif;
-  font-size: 60px;
+  color: #E2495B;
+  margin-top: -80px;
+  font-size: 55px;
+  font-weight: 600;
   line-height: 150px;
-  font-weight: 400;
   opacity: 0;
+  margin-bottom: 50px;
 }
 
 .text-sub {
   color: #999999;
-  font-family: "Jockey One", sans-serif;
   font-size: 50px;
+  margin-top: -17px;
   line-height: 60px;
-  font-weight: 400;
+  font-weight: 500;
   opacity: 0;
 }
 
@@ -864,6 +906,7 @@ export default {
 .model-panels {
   position: absolute;
   left: 5%;
+  right: 5%;
   top: 10%;
   transform: none;
   display: flex;
@@ -1129,7 +1172,7 @@ export default {
 .model-panel.expanded .panel-inner {
   /* 기존 스타일 유지 */
   scrollbar-width: thin;  /* Firefox를 위한 설정 */
-  scrollbar-color: #E2495B #f0f0f0;  /* Firefox를 위한 설정 */
+  scrollbar-color:  #777, #777;  /* Firefox를 위한 설정 */
 }
 
 /* Webkit (Chrome, Safari, Edge) 브라우저를 위한 스크롤바 스타일링 */
@@ -1143,20 +1186,20 @@ export default {
 }
 
 .model-panel.expanded .panel-inner::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #E2495B, #EEB5B5);  /* 그라���이션 적용 */
+  background: linear-gradient(135deg,  #777, #777);  /* 그라���이션 적용 */
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 .model-panel.expanded .panel-inner::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #d13a4c, #e5a3a3);  /* 호버 시 더 진한 색상 */
+  background: linear-gradient(135deg,  #777, #777);  /* 호버 시 더 진한 색상 */
 }
 
 /* 패널 디테일 영역의 스크롤바도 동일하게 스타일링 */
 .panel-details {
   scrollbar-width: thin;
-  scrollbar-color: #E2495B #f0f0f0;
+  scrollbar-color: #777, #777;
 }
 
 .panel-details::-webkit-scrollbar {
@@ -1169,13 +1212,152 @@ export default {
 }
 
 .panel-details::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #E2495B, #EEB5B5);
+  background: linear-gradient(135deg, #777, #777);
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: padding-box;
 }
 
 .panel-details::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #d13a4c, #e5a3a3);
+  background: linear-gradient(135deg,#777, #777);
 }
+
+/* 메인 버튼 스타일 */
+.main-btn.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(20px);
+}
+
+
+.main-btn {
+  position: absolute;
+  left: 50%;            /* 왼쪽에서 50% */
+  bottom: 100px;         /* 아래에서 50px */
+  transform: translateX(-50%); /* X축으로 버튼 너비의 절반만큼 이동 */
+  padding: 20px 80px;
+  font-size: 40px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #E2495B, #EEB5B5);
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.main-btn:hover {
+  transform: translateX(-50%) translateY(-3px); /* 중앙 정렬을 유지하면서 위로 이동 */
+  box-shadow: 0 6px 20px rgba(226, 73, 91, 0.2);
+}
+
+.main-btn:active {
+  transform: translateX(-50%) translateY(0); /* 중앙 정렬을 유지하면서 원위치 */
+}
+
+
+
+.final-slide {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+}
+
+.ball-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.ball {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #E2495B, #EEB5B5);
+  border-radius: 50%;
+  position: absolute;
+  top: -60px;
+  left: 10%;
+  animation: bounceBall 2s cubic-bezier(0.36, 0, 0.66, 1) forwards;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes bounceBall {
+  0% {
+    top: -60px;
+    left: 10%;
+    transform: scale(1);
+  }
+  20% {
+    top: 30%;
+    left: 25%;
+    transform: scale(0.8);
+  }
+  40% {
+    top: 10%;
+    left: 40%;
+    transform: scale(1);
+  }
+  60% {
+    top: 50%;
+    left: 55%;
+    transform: scale(0.8);
+  }
+  80% {
+    top: 30%;
+    left: 70%;
+    transform: scale(1);
+  }
+  100% {
+    top: 70%;
+    left: 85%;
+    transform: scale(0.9);
+  }
+}
+
+.final-btn {
+  position: absolute;
+  left: 50%;
+  bottom: -100px;  /* 시작할 때는 화면 밖에 위치 */
+  transform: translateX(-50%);
+  padding: 25px 100px;
+  font-size: 44px;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #E2495B, #EEB5B5);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.final-btn.show {
+  bottom: 100px;
+  opacity: 1;
+}
+
+.final-btn:hover {
+  transform: translateX(-50%) translateY(-5px);
+  box-shadow: 0 8px 25px rgba(226, 73, 91, 0.3);
+}
+
+.final-btn:active {
+  transform: translateX(-50%) translateY(0);
+}
+
+.arrow {
+  display: inline-block;
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+}
+
+.final-btn:hover .arrow {
+  transform: translateX(10px);
+}
+
+
 </style>
