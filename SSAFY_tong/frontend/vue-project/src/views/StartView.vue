@@ -197,11 +197,11 @@
           <div class="ai-features">
             <div class="feature">
               <span class="feature-icon">🎯</span>
-              <span class="feature-text">개인 맞춤 운동 추천</span>
+              <span class="feature-text">고성능 한국어 모델</span>
             </div>
             <div class="feature">
-              <span class="feature-icon">📅</span>
-              <span class="feature-text">실시간 일정 관리</span>
+              <span class="feature-icon">🚀</span>
+              <span class="feature-text">빠르고 안전한 답ㅂ</span>
             </div>
             <div class="feature">
               <span class="feature-icon">💪</span>
@@ -251,22 +251,22 @@
         </div>
       </div>
 
-      <router-link to="/main">
-          <button class="main-btn" :class="{ 'hidden': selectedPanel !== null }">Main →</button>
-      </router-link>
 
     </section>
     <!-- Template에 추가할 섹션 -->
     <section class="slide final-slide">
-      <div class="ball-container">
-        <div class="ball"></div>
+      <div class="tong-animation-wrapper">
+        <div class="bouncing-text">
+          <RouterLink to="/main">
+            <div class="letter-container chewy-regular">
+              <span class="letter">T</span>
+              <span class="letter">O</span>
+              <span class="letter">N</span>
+              <span class="letter">G</span>
+            </div>
+          </RouterLink>
+        </div>
       </div>
-      <router-link to="/main">
-        <button class="final-btn" :class="{ 'show': ballAnimationEnd }">
-          시작하기
-          <span class="arrow">→</span>
-        </button>
-      </router-link>
     </section>
   </div>
 </template>
@@ -293,12 +293,6 @@ export default {
     this.typeTextWithColor(textParts, '.typing-content', 0, 0, 100);
     
     this.setupWheelListener();
-
-    // 볼 애니메이션이 끝나면 버튼 표시
-    const ball = document.querySelector('.ball');
-    ball.addEventListener('animationend', () => {
-      this.ballAnimationEnd = true;
-    });
   },
   methods: {
     typeTextWithColor(textParts, selector, partIndex, charIndex, speed) {
@@ -941,7 +935,7 @@ export default {
   border-radius: 15px;
   padding: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transform: translateX(-100%);
+  transform: translateX(-120%);
   animation: slideInPanel 0.8s ease-out forwards;
   backface-visibility: hidden;
   overflow: hidden;
@@ -951,8 +945,8 @@ export default {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 90vw;
+  height: auto;
   z-index: 1000;
   transform: none !important;
   transform-style: flat;
@@ -967,7 +961,7 @@ export default {
 .model-panel.expanded .panel-inner {
   width: 80%;
   max-width: 1200px;
-  height: 90vh;
+  height: auto;
   background: white;
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
@@ -978,7 +972,7 @@ export default {
 
 .model-panel.expanded .panel-details {
   width: 100%;
-  height: 100%;
+  height: 55vh;
   padding: 3rem;
   opacity: 1;
   visibility: visible;
@@ -1139,7 +1133,7 @@ export default {
   display: block;
 }
 
-/* 반응형 디자인 보완 */
+/* 반응형 ��자인 보완 */
 @media (max-width: 1200px) {
   .model-panel.expanded .panel-details {
     width: 95%;
@@ -1186,7 +1180,7 @@ export default {
 }
 
 .model-panel.expanded .panel-inner::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg,  #777, #777);  /* 그라���이션 적용 */
+  background: linear-gradient(135deg,  #777, #777);  /* 그라이션 적용 */
   border-radius: 10px;
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -1264,63 +1258,91 @@ export default {
   position: relative;
   overflow: hidden;
   height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.ball-container {
-  position: absolute;
+.tong-animation-wrapper {
+  position: relative;
   width: 100%;
-  height: 100%;
+  height: 80vh;
+  overflow: hidden;
+  margin-top: auto;
 }
 
-.ball {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #E2495B, #EEB5B5);
-  border-radius: 50%;
+.bouncing-text {
   position: absolute;
-  top: -60px;
-  left: 10%;
-  animation: bounceBall 2s cubic-bezier(0.36, 0, 0.66, 1) forwards;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  bottom: 30%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  transform: translateY(10%);
 }
 
-@keyframes bounceBall {
-  0% {
-    top: -60px;
-    left: 10%;
-    transform: scale(1);
+.letter-container {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  font-family: 'Chewy', 'Arial', cursive;
+  font-weight: normal;
+  font-display: swap;
+}
+
+.letter {
+  display: inline-block;
+  font-size: 22vw;
+  color: #939393;
+  animation: puddingBounce 2.5s ease-in-out infinite;
+  transform-origin: center bottom;
+  font-weight: normal;
+  line-height: 1;
+  margin: 0 -0.8vw;
+  font-family: 'Chewy', 'Arial', cursive;
+}
+
+.letter:nth-child(1) { animation-delay: 0.0s; }
+.letter:nth-child(2) { animation-delay: 0.2s; }
+.letter:nth-child(3) { animation-delay: 0.4s; }
+.letter:nth-child(4) { animation-delay: 0.6s; }
+
+@keyframes puddingBounce {
+  0%, 100% {
+    transform: scale3d(1, 1, 1) translateY(0);
   }
-  20% {
-    top: 30%;
-    left: 25%;
-    transform: scale(0.8);
+  15% {
+    transform: scale3d(1.4, 0.55, 1) translateY(0);
   }
-  40% {
-    top: 10%;
-    left: 40%;
-    transform: scale(1);
+  25% {
+    transform: scale3d(0.8, 1.3, 1) translateY(-30px);
   }
-  60% {
-    top: 50%;
-    left: 55%;
-    transform: scale(0.8);
+  35% {
+    transform: scale3d(1.2, 0.8, 1) translateY(0);
   }
-  80% {
-    top: 30%;
-    left: 70%;
-    transform: scale(1);
+  45% {
+    transform: scale3d(0.9, 1.1, 1) translateY(-15px);
   }
-  100% {
-    top: 70%;
-    left: 85%;
-    transform: scale(0.9);
+  55% {
+    transform: scale3d(1.05, 0.95, 1) translateY(0);
+  }
+  65% {
+    transform: scale3d(0.98, 1.02, 1) translateY(-8px);
+  }
+  75% {
+    transform: scale3d(1.02, 0.98, 1) translateY(0);
+  }
+  85% {
+    transform: scale3d(1, 1, 1) translateY(-4px);
+  }
+  95% {
+    transform: scale3d(1, 1, 1) translateY(0);
   }
 }
 
 .final-btn {
   position: absolute;
   left: 50%;
-  bottom: -100px;  /* 시작할 때는 화면 밖에 위치 */
+  bottom: 100px;
   transform: translateX(-50%);
   padding: 25px 100px;
   font-size: 44px;
@@ -1336,28 +1358,43 @@ export default {
 }
 
 .final-btn.show {
-  bottom: 100px;
   opacity: 1;
 }
 
-.final-btn:hover {
-  transform: translateX(-50%) translateY(-5px);
-  box-shadow: 0 8px 25px rgba(226, 73, 91, 0.3);
+/* 반응형 디자인 */
+@media (max-width: 1200px) {
+  .bouncing-text .letter {
+    font-size: 6rem;
+  }
 }
 
-.final-btn:active {
-  transform: translateX(-50%) translateY(0);
+@media (max-width: 768px) {
+  .tong-animation-wrapper {
+    height: 18vh;
+  }
+  
+  .bouncing-text {
+    bottom: 40%;
+  }
+  
+  .bouncing-text .letter {
+    font-size: 24vw;
+  }
+  
+  .final-btn {
+    padding: 20px 60px;
+    font-size: 32px;
+  }
 }
 
-.arrow {
-  display: inline-block;
-  margin-left: 10px;
-  transition: transform 0.3s ease;
+@media (max-width: 480px) {
+  .bouncing-text {
+    height: 80px;
+    margin-bottom: -10px;
+  }
+  
+  .bouncing-text .letter {
+    font-size: 4rem;
+  }
 }
-
-.final-btn:hover .arrow {
-  transform: translateX(10px);
-}
-
-
 </style>
