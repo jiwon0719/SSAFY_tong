@@ -397,11 +397,11 @@ const login = async () => {
       alert("로그인 성공!");
       router.push({ name: "main" });
     } else {
-      alert(response.data.message || "로그인 실패. 아이디와 비밀번호를 확인하세요.");
+      alert(response.data.message || "로그인 실패.");
     }
   } catch (error) {
     console.error("로그인 오류:", error);
-    alert("로그인 실패. 서버 연결을 확인하세요.");
+    alert("로그인 실패.");
   }
 };
 

@@ -66,7 +66,8 @@ public class KakaoController {
         String accessToken = new JSONObject(responseBody).getString("access_token");
 
         // 메인 페이지로 리다이렉트하며 액세스 토큰 전달
-        String redirectUrl = "http://localhost:5173/main?accessToken=" + accessToken;
+//        String redirectUrl = "http://localhost:5173/main?accessToken=" + accessToken;
+        String redirectUrl = "http://192.168.210.55:5173/main?accessToken=" + accessToken;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", redirectUrl);
         return ResponseEntity.status(302).headers(headers).build();
@@ -98,6 +99,8 @@ public class KakaoController {
             JSONObject userJson = new JSONObject(userInfo);
             String kakaoId = String.valueOf(userJson.getLong("id")) + "a!";
             
+            System.out.println("userInfo"+ userInfo);
+            
             // 사용자 존재 여부 확인
             User user = userService.findUserByUserId(kakaoId);
             
@@ -113,6 +116,8 @@ public class KakaoController {
                 );
                 return new ResponseEntity<>(kakaoUserInfo, HttpStatus.CREATED);
             } else {
+            	user.setUserProfileImgPath(userJson.getJSONObject("properties").optString("profile_image", ""));
+            	
                 // 기존 사용자
                 KakaoUserInfo kakaoUserInfo = new KakaoUserInfo(
                     kakaoId,

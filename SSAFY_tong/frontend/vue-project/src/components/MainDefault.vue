@@ -37,7 +37,7 @@
             <h3 class="assistant-title">AI 챗봇 상담가</h3>
             <div class="assistant-name">TONGKEY</div>
             <p class="assistant-intro">
-              푸히히히힝~ <br>
+              푸히히히힝~ <br><br>
               안녕하세요! 저는 여러분의 AI 상담가 통키입니다. <br>
               개인정보 유출 걱정없이 솔직한 대화를 할 수 있어요!
             </p>

@@ -36,7 +36,7 @@ import com.ssafy.tong.expert.model.service.ExpertService;
 
 @RestController
 @RequestMapping("/api/expert")
-@CrossOrigin
+@CrossOrigin(origins = "http://192.168.210.55:5173", allowCredentials = "true", allowedHeaders = "*")
 // 전문가
 // 본인 PR 자기소개 페이지
 public class ExpertController {
@@ -171,9 +171,9 @@ public class ExpertController {
         try {
         	
         	// 데이터 잘 오는지 확인
-//            System.out.println("Expert JSON: " + expertJson);
-//            System.out.println("Career JSON: " + careerJson);
-//            System.out.println("Files count: " + files.size());
+            System.out.println("Expert JSON: " + expertJson);
+            System.out.println("Career JSON: " + careerJson);
+            System.out.println("Files count: " + files.size());
             
         	
             ObjectMapper mapper = new ObjectMapper();

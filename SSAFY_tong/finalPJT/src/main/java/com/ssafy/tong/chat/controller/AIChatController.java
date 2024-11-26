@@ -39,6 +39,7 @@ public class AIChatController {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode jsonRequest = mapper.createObjectNode();
             jsonRequest.put("model", "hf.co/QuantFactory/Llama-3-MAAL-8B-Instruct-v0.1-GGUF:Q8_0");
+            jsonRequest.put("max_tokens", 100);  
             
             ArrayNode messages = mapper.createArrayNode();
             
