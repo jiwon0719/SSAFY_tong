@@ -30,10 +30,10 @@ const rotation = reactive({
 // 걷기 애니메이션 상태 수정
 const walkAnimation = reactive({
   time: 0,
-  speed: 0.05,
+  speed: 0.0125,
   legAmplitude: 0.3,
   armAmplitude: 0.2,
-  active: false  // 애니메이션 활성화 상태 추가
+  active: false
 })
 
 // 점프 애니메이션 상태 추가
@@ -44,19 +44,6 @@ const jumpAnimation = reactive({
   height: 2,      // 최대 점프 높이
   startY: -1,     // 시작 높이 (현재 position.y 값)
   onComplete: null  // 애니메이션 완료 후 실행할 콜백 추가
-})
-
-// 생각하는 포즈 애니메이션 상태 수정
-const thinkingAnimation = reactive({
-  active: false,
-  time: 0,
-  duration: 1.0,
-  headRotation: 0.3,
-  neckRotation: 0.2,
-  spineRotation: 0.1,
-  armLiftHeight: 0.8,
-  basePosition: -5, // 기본 y 위치 저장
-  idleAmplitude: 0.1 // 상하 움직임 크기
 })
 
 // 본 참조 저장용 객체
@@ -95,92 +82,14 @@ watch(() => props.isLoading, (newValue) => {
     console.log('Transitioning to thinking pose') // 디버깅
     // 로딩 시작 - 걷기 애니메이션 즉시 중지
     walkAnimation.active = false
-    thinkingAnimation.active = true
-    
-    // 회전 초기화
     rotation.targetX = 0
     rotation.targetY = 0
     rotation.currentX = 0
     rotation.currentY = 0
-    
-    // 생각하는 포즈로 강한 전환
-    gsap.to(horse.rotation, {
-      duration: 0.5,
-      x: 0,
-      y: 0,
-      ease: "power2.inOut"
-    })
-    
-    
-    // 왼쪽 팔 들기
-    if (bones.leftUpperarm) {
-      gsap.to(bones.leftUpperarm.rotation, {
-        duration: 0.5,
-        x: -Math.PI * 0.5, // 더 확실한 움직임
-        z: Math.PI * 0.15,
-        ease: "power2.inOut"
-      })
-      
-      // 왼쪽 아래팔도 구부리기
-      if (bones.leftForearm) {
-        gsap.to(bones.leftForearm.rotation, {
-          duration: 0.5,
-          x: -Math.PI * 0.4,
-          ease: "power2.inOut"
-        })
-      }
-    }
-    
-    // 오른쪽 팔도 살짝 움직이기
-    if (bones.rightUpperarm) {
-      gsap.to(bones.rightUpperarm.rotation, {
-        duration: 0.5,
-        x: -Math.PI * 0.15,
-        ease: "power2.inOut"
-      })
-    }
   } else {
     console.log('Transitioning back to walking') // 디버깅
     // 로딩 종료 - 원래 상태로 복귀
-    thinkingAnimation.active = false
-    
-    // 모든 회전 초기화
-    gsap.to(horse.rotation, {
-      duration: 0.5,
-      x: 0,
-      y: 0,
-      ease: "power2.inOut"
-    })
-    
-    
-    if (bones.leftUpperarm) {
-      gsap.to(bones.leftUpperarm.rotation, {
-        duration: 0.5,
-        x: 0,
-        z: 0,
-        ease: "power2.inOut"
-      })
-      
-      if (bones.leftForearm) {
-        gsap.to(bones.leftForearm.rotation, {
-          duration: 0.5,
-          x: 0,
-          ease: "power2.inOut"
-        })
-      }
-    }
-    
-    if (bones.rightUpperarm) {
-      gsap.to(bones.rightUpperarm.rotation, {
-        duration: 0.5,
-        x: 0,
-        z: 0,
-        ease: "power2.inOut",
-        onComplete: () => {
-          walkAnimation.active = true
-        }
-      })
-    }
+    walkAnimation.active = true
   }
 })
 
@@ -289,132 +198,113 @@ onMounted(() => {
   const clock = new THREE.Clock()
   
   function animate() {
-    requestAnimationFrame(animate)
+    // 4프레임당 1번만 실행되도록 수정
+    if (window.frameCount === undefined) {
+      window.frameCount = 0;
+    }
+    window.frameCount++;
     
-    if (horse) {
-      if (thinkingAnimation.active) {
-        // 생각하는 동작일 때의 움직임
-        const time = Date.now() * 0.001
-        
-        // 전체적인 상하 움직임
-        const baseY = thinkingAnimation.basePosition
-        const idleMovement = Math.sin(time * 1.5) * thinkingAnimation.idleAmplitude
-        horse.position.y = baseY + idleMovement
-        
-        // 미세한 회전 움직임
-        const idleRotation = Math.sin(time * 0.8) * 0.05
-        horse.rotation.y = idleRotation
-        
-        // 팔 미세 움직임
-        if (bones.leftUpperarm) {
-          const armMovement = Math.sin(time * 1.2) * 0.05
-          bones.leftUpperarm.rotation.x += armMovement
-        }
-        
-        // 척추 미세 움직임
-        if (bones.spine) {
-          const spineMovement = Math.sin(time * 1.0) * 0.02
-          bones.spine.rotation.x += spineMovement
-        }
-        
-      } else if (walkAnimation.active) {
-        // 마우스 회전 로직
-        rotation.currentX += (rotation.targetX - rotation.currentX) * 0.05
-        rotation.currentY += (rotation.targetY - rotation.currentY) * 0.05
-        
-        horse.rotation.x = rotation.currentX
-        horse.rotation.y = rotation.currentY
-        
-        // 걷기 애니메이션
-        walkAnimation.time += walkAnimation.speed
-        
-        // 본 움직임 디버깅
-        
-        // 다리 움직임
-        if (bones.leftThigh) {
-          const leftLegRotation = Math.sin(walkAnimation.time) * walkAnimation.legAmplitude
-          bones.leftThigh.rotation.x = leftLegRotation
+    if (window.frameCount % 4 === 0) {  // 4프레임마다 한 번만 실행
+      if (horse) {
+        if (walkAnimation.active) {
+          // 마우스 회전 로직
+          rotation.currentX += (rotation.targetX - rotation.currentX) * 0.05 * 4  // 4배 보정
+          rotation.currentY += (rotation.targetY - rotation.currentY) * 0.05 * 4  // 4배 보정
           
-          if (bones.leftCalf) {
-            bones.leftCalf.rotation.x = Math.sin(walkAnimation.time + Math.PI/4) * walkAnimation.legAmplitude * 0.5
+          horse.rotation.x = rotation.currentX
+          horse.rotation.y = rotation.currentY
+          
+          // 걷기 애니메이션
+          walkAnimation.time += walkAnimation.speed * 4  // 4배 보정
+          
+          // 다리 움직임
+          if (bones.leftThigh) {
+            const leftLegRotation = Math.sin(walkAnimation.time) * walkAnimation.legAmplitude
+            bones.leftThigh.rotation.x = leftLegRotation
+            
+            if (bones.leftCalf) {
+              bones.leftCalf.rotation.x = Math.sin(walkAnimation.time + Math.PI/4) * walkAnimation.legAmplitude * 0.5
+            }
+          }
+          
+          if (bones.rightThigh) {
+            bones.rightThigh.rotation.x = Math.sin(walkAnimation.time + Math.PI) * walkAnimation.legAmplitude
+            if (bones.rightCalf) {
+              bones.rightCalf.rotation.x = Math.sin(walkAnimation.time + Math.PI + Math.PI/4) * walkAnimation.legAmplitude * 0.5
+            }
+          }
+          
+          // 팔 움직임
+          if (bones.leftUpperarm) {
+            bones.leftUpperarm.rotation.x = Math.sin(walkAnimation.time + Math.PI) * walkAnimation.armAmplitude
+            if (bones.leftForearm) {
+              bones.leftForearm.rotation.x = Math.sin(walkAnimation.time + Math.PI + Math.PI/4) * walkAnimation.armAmplitude * 0.5
+            }
+          }
+          
+          if (bones.rightUpperarm) {
+            bones.rightUpperarm.rotation.x = Math.sin(walkAnimation.time) * walkAnimation.armAmplitude
+            if (bones.rightForearm) {
+              bones.rightForearm.rotation.x = Math.sin(walkAnimation.time + Math.PI/4) * walkAnimation.armAmplitude * 0.5
+            }
+          }
+          
+          // 몸체 움직임
+          if (bones.spine) {
+            bones.spine.rotation.x = Math.sin(walkAnimation.time * 2) * 0.05
           }
         }
         
-        if (bones.rightThigh) {
-          bones.rightThigh.rotation.x = Math.sin(walkAnimation.time + Math.PI) * walkAnimation.legAmplitude
-          if (bones.rightCalf) {
-            bones.rightCalf.rotation.x = Math.sin(walkAnimation.time + Math.PI + Math.PI/4) * walkAnimation.legAmplitude * 0.5
+        // 점프 애니메이션
+        if (jumpAnimation.active) {
+          jumpAnimation.time += 0.016 * 4  // 4배 보정
+          
+          // 사인 곡선을 사용한 부드러운 점프
+          const progress = jumpAnimation.time / jumpAnimation.duration
+          
+          if (progress <= 1) {
+            // 포물선 형태의 점프 (sin 곡선 사용)
+            const jumpHeight = Math.sin(progress * Math.PI) * jumpAnimation.height
+            horse.position.y = jumpAnimation.startY + jumpHeight
+            
+            // 점프할 때 약간 앞으로 기울이기
+            const tiltAngle = Math.sin(progress * Math.PI * 2) * 0.2
+            horse.rotation.x = rotation.currentX + tiltAngle
+            
+            // 다리 움직임 추가
+            if (bones.leftThigh && bones.rightThigh) {
+              // 점프 시작시 다리 접기
+              const legAngle = Math.sin(progress * Math.PI) * 0.5
+              bones.leftThigh.rotation.x = -legAngle
+              bones.rightThigh.rotation.x = -legAngle
+              bones.leftCalf.rotation.x = legAngle
+              bones.rightCalf.rotation.x = legAngle
+            }
+          } else {
+            // 점프 종료
+            jumpAnimation.active = false
+            horse.position.y = jumpAnimation.startY
+            // 다리 원위치
+            if (bones.leftThigh && bones.rightThigh) {
+              bones.leftThigh.rotation.x = 0
+              bones.rightThigh.rotation.x = 0
+              bones.leftCalf.rotation.x = 0
+              bones.rightCalf.rotation.x = 0
+            }
+            
+            // 애니메이션 완료 후 콜백 실행
+            if (jumpAnimation.onComplete) {
+              jumpAnimation.onComplete()
+              jumpAnimation.onComplete = null
+            }
           }
-        }
-        
-        // 팔 움직임
-        if (bones.leftUpperarm) {
-          bones.leftUpperarm.rotation.x = Math.sin(walkAnimation.time + Math.PI) * walkAnimation.armAmplitude
-          if (bones.leftForearm) {
-            bones.leftForearm.rotation.x = Math.sin(walkAnimation.time + Math.PI + Math.PI/4) * walkAnimation.armAmplitude * 0.5
-          }
-        }
-        
-        if (bones.rightUpperarm) {
-          bones.rightUpperarm.rotation.x = Math.sin(walkAnimation.time) * walkAnimation.armAmplitude
-          if (bones.rightForearm) {
-            bones.rightForearm.rotation.x = Math.sin(walkAnimation.time + Math.PI/4) * walkAnimation.armAmplitude * 0.5
-          }
-        }
-        
-        // 몸체 움직임
-        if (bones.spine) {
-          bones.spine.rotation.x = Math.sin(walkAnimation.time * 2) * 0.05
         }
       }
       
-      // 점프 애니메이션
-      if (jumpAnimation.active) {
-        jumpAnimation.time += 0.016  // 약 60fps
-        
-        // 사인 곡선을 사용한 부드러운 점프
-        const progress = jumpAnimation.time / jumpAnimation.duration
-        
-        if (progress <= 1) {
-          // 포물선 형태의 점프 (sin 곡선 사용)
-          const jumpHeight = Math.sin(progress * Math.PI) * jumpAnimation.height
-          horse.position.y = jumpAnimation.startY + jumpHeight
-          
-          // 점프할 때 약간 앞으로 기울이기
-          const tiltAngle = Math.sin(progress * Math.PI * 2) * 0.2
-          horse.rotation.x = rotation.currentX + tiltAngle
-          
-          // 다리 움직임 추가
-          if (bones.leftThigh && bones.rightThigh) {
-            // 점프 시작시 다리 접기
-            const legAngle = Math.sin(progress * Math.PI) * 0.5
-            bones.leftThigh.rotation.x = -legAngle
-            bones.rightThigh.rotation.x = -legAngle
-            bones.leftCalf.rotation.x = legAngle
-            bones.rightCalf.rotation.x = legAngle
-          }
-        } else {
-          // 점프 종료
-          jumpAnimation.active = false
-          horse.position.y = jumpAnimation.startY
-          // 다리 원위치
-          if (bones.leftThigh && bones.rightThigh) {
-            bones.leftThigh.rotation.x = 0
-            bones.rightThigh.rotation.x = 0
-            bones.leftCalf.rotation.x = 0
-            bones.rightCalf.rotation.x = 0
-          }
-          
-          // 애니메이션 완료 후 콜백 실행
-          if (jumpAnimation.onComplete) {
-            jumpAnimation.onComplete()
-            jumpAnimation.onComplete = null
-          }
-        }
-      }
+      renderer.render(scene, camera)
     }
     
-    renderer.render(scene, camera)
+    requestAnimationFrame(animate)
   }
   
   animate()
@@ -426,7 +316,7 @@ onMounted(() => {
 
 // handleGlobalMouseMove 수정
 const handleGlobalMouseMove = (e) => {
-  if (!horse || thinkingAnimation.active) return // thinking 중에는 마우스 추적 비활성화
+  if (!horse || !walkAnimation.active) return // walking 중에는 마우스 추적 비활성화
   
   const centerX = window.innerWidth / 2
   const centerY = window.innerHeight / 2

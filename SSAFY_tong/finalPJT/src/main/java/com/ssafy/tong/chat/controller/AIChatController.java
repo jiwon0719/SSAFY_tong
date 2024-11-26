@@ -39,6 +39,7 @@ public class AIChatController {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode jsonRequest = mapper.createObjectNode();
             jsonRequest.put("model", "hf.co/QuantFactory/Llama-3-MAAL-8B-Instruct-v0.1-GGUF:Q8_0");
+            jsonRequest.put("max_tokens", 100);  
             
             ArrayNode messages = mapper.createArrayNode();
             
@@ -70,6 +71,7 @@ public class AIChatController {
             
             // HTTP 연결 설정
             URL url = new URL("http://localhost:11434/api/chat");
+//            URL url = new URL("http://192.168.210.55:11434/api/chat");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

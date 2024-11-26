@@ -201,7 +201,7 @@
             </div>
             <div class="feature">
               <span class="feature-icon">🚀</span>
-              <span class="feature-text">빠르고 안전한 답ㅂ</span>
+              <span class="feature-text">빠르고 안전한 답변</span>
             </div>
             <div class="feature">
               <span class="feature-icon">💪</span>

@@ -46,8 +46,8 @@
             <div class="panel-header">
               <p class="greeting">안녕하세요!</p>
               <p class="username">{{ userName }}님</p>
-              <p class="user-info">{{ userId }}</p>
-              <p class="user-type">{{ userType }}</p>
+              <p class="user-info">아이디 : {{ userId }}</p>
+              <p class="user-type">회원유형 : {{ userType }}</p>
             </div>
             <div class="panel-buttons">
               <button @click="goToMyPage" class="panel-button mypage-btn">

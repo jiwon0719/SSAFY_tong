@@ -140,7 +140,7 @@ const handleJoinRequest = async () => {
     // result가 null이면 이미 매칭이 존재하는 경우
     if (result !== null) {
       alert('매칭 신청이 완료되었습니다.')
-      router.push('/mypage')
+      router.push({ name: 'mypageDefault' })
     }
   } catch (error) {
     console.error('매칭 신청 실패:', error)

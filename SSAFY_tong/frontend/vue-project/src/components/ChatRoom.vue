@@ -67,7 +67,8 @@ const userInput = ref('')
 const isLoading = ref(false)
 const messageContainer = ref(null)
 const darkMode = ref(false)
-const defaultAvatar = "http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg"
+// const defaultAvatar = "http://img1.kakaocdn.net/thumb/R640x640.q70/?fname=http://t1.kakaocdn.net/account_images/default_profile.jpeg"
+const defaultAvatar = "https://p.turbosquid.com/ts-thumb/oh/tfgOIN/te/rend_0000/jpg/1626592152/1920x1080/fit_q87/c36e18b2ca1f416fbd641937a9935aef5601bcf0/rend_0000.jpg"
 
 const darkModeClass = computed(() => (darkMode.value ? "dark-mode" : ""))
 
@@ -96,7 +97,8 @@ const sendMessage = async () => {
       isTyping: true 
     })
 
-    const response = await axios.post('http://localhost:8080/api/ai-chat/message', {
+    // const response = await axios.post('http://localhost:8080/api/ai-chat/message', {
+    const response = await axios.post('http://192.168.210.55:8080/api/ai-chat/message', {
       message: userMessage
     })
     
