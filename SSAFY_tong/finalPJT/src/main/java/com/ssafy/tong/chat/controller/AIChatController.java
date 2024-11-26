@@ -70,6 +70,7 @@ public class AIChatController {
             
             // HTTP 연결 설정
             URL url = new URL("http://localhost:11434/api/chat");
+//            URL url = new URL("http://192.168.210.55:11434/api/chat");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

@@ -96,7 +96,8 @@ const sendMessage = async () => {
       isTyping: true 
     })
 
-    const response = await axios.post('http://localhost:8080/api/ai-chat/message', {
+    // const response = await axios.post('http://localhost:8080/api/ai-chat/message', {
+    const response = await axios.post('http://192.168.210.55:8080/api/ai-chat/message', {
       message: userMessage
     })
     

@@ -41,16 +41,7 @@
         </div>
       </router-link>
 
-      <router-link to="/updateUserInfo" class="text-none">
-        <div class="board-section">
-          <div class="info-board">
-            <span>⚙️ 회원정보 수정</span>
-          </div>
-          <div class="board-item">
-            <span class="board-desc">비밀번호 변경 등</span>
-          </div>
-        </div>
-      </router-link>
+      
 
     </aside>
 
